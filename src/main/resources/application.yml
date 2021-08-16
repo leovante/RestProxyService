@@ -1,0 +1,35 @@
+server:
+  error:
+    include-message: always
+logging:
+  level:
+    org.springframework.web: INFO
+path:
+  admin:
+    data: /stub/data
+    proxy: /stub/proxy
+    error: /stub/error
+  response: /stub/response
+response:
+  error:
+    message: "Stub test error message"
+ribbon:
+  eureka:
+    enabled: false
+zuul:
+  routes:
+    session:
+      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/session
+      path: /session/**
+    session-onb:
+      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/onb/session
+      path: /onb2/onb/session/**
+    card-ul:
+      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/onb/api/v1/etalons/get
+      path: /onb2/onb/api/v1/etalons/get/**
+    card-fl:
+      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/person/get
+      path: /onb2/person/get/**
+    egr:
+      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/cbext/fns/egr/info
+      path: /onb2/cbext/fns/egr/info/**

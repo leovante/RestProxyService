@@ -19,7 +19,7 @@ import javax.validation.constraints.Max;
 public class AdminDataController {
 
     @Autowired
-    AdminDataService service;
+    private AdminDataService service;
 
     @GetMapping
     public ResponseEntity<Object> getResponseData(@RequestParam @ResponseKey String key) {

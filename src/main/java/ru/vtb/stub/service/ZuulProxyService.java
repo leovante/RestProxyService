@@ -17,7 +17,7 @@ public class ZuulProxyService {
     private ZuulProperties zuulProperties;
 
     @Autowired
-    public RoutesRefreshedEvent routesRefreshedEvent;
+    private RoutesRefreshedEvent routesRefreshedEvent;
 
     @Autowired
     public ApplicationEventPublisher publisher;

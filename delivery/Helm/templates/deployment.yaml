@@ -40,6 +40,15 @@ spec:
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           imagePullPolicy: {{ .Values.main.pullPolicy }}
+      volumes:
+        - name: {{ .Release.Name }}-application-config
+          secret:
+            secretName: {{ .Release.Name }}-application-config
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      schedulerName: default-scheduler
+
 {{- if ne .Values.global.stand "prod" }}
   strategy:
     type: Recreate

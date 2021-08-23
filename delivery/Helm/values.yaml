@@ -1,0 +1,38 @@
+global:
+  # Openshift namespace в который производится деплой
+  namespace: dso-smeaccount
+  # Репозиторий из которого загружаются образы
+  registry: nexus-ci.corp.dev.vtb/onb-docker-snapshot
+  # Код проекта для мониторинга
+  projectCode: SMEO
+  # Стенд, используется для создания секретов с нужными сертификатами для конкретного стенда
+  stand: dso
+
+route:
+  enabled: false
+  host:
+
+# Настройки основного приложения
+main:
+  # Количество реплик подов
+  replicaCount: 1
+  # Образ в репозитории
+  image: smeo/rest-proxy-stub
+  # Тег образа
+  tag: ""
+  # Политика кеширования образов на нодах
+  pullPolicy: Always
+  # Порт, на котором принимает запросы приложение
+  port: 8080
+  # Параметры переменных окружения в поде
+  env:
+    # Профиль, используемый Spring Boot
+    springProfile: dso
+  # Ресурсы, выделяемые на под
+  resources:
+    requests:
+      cpu: 100m
+      memory: 200Mi
+    limits:
+      cpu: 100m
+      memory: 200Mi

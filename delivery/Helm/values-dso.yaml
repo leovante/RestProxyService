@@ -1,0 +1,19 @@
+﻿global:
+  # Openshift namespace в который производится деплой
+  namespace: dso-smeonboard
+  # Репозиторий из которого загружаются образы
+  registry: nexus-ci.corp.dev.vtb/onb-docker-snapshot
+  # Код проекта для мониторига
+  projectCode: SMEO
+  # Стенд, используется для создания секретов с нужными сертификатами для конкретного стенда
+  stand: dso
+
+route:
+  enabled: true
+  host: rest-proxy-stub-dso-smeonboard.apps.d0-oscp.corp.dev.vtb
+
+# Настройки основного приложения
+main:
+  env:
+    # Профиль, используемый Spring Boot
+    springProfile: dso

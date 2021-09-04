@@ -9,9 +9,10 @@ logging:
     org.springframework.web: INFO
 path:
   admin:
+    validate: /stub/validate
+    error: /stub/error
     data: /stub/data
     proxy: /stub/proxy
-    error: /stub/error
   response: /stub/response
 response:
   error:

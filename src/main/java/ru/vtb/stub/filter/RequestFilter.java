@@ -8,9 +8,12 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-import static ru.vtb.stub.data.ResponseData.errorData;
-import static ru.vtb.stub.data.ResponseData.responseData;
+import static ru.vtb.stub.data.ResponseData.*;
 
 @Slf4j
 @Component
@@ -29,8 +32,25 @@ public class RequestFilter implements Filter {
 
         String key = request.getRequestURI() + ":" + request.getMethod();
 
-        var error = errorData.get(key);
-        if (error != null) {
+        if (validateData.get(key) != null) {
+            List<String> errors = new ArrayList<>();
+
+            errors.add(validateQueryParams(request, key));
+            errors.add(validateHeaders(request, key));
+            errors.removeAll(Collections.singleton(null));
+
+            if (!errors.isEmpty()) {
+                String errorMessage = String.join("; ", errors);
+                log.info("Request filter. Found validate request errors: {}", errorMessage);
+                response.sendError(500, errorMessage);
+                return;
+            }
+
+            log.info("Request filter. Request successfully validated");
+        }
+
+        if (errorData.get(key) != null) {
+            var error = errorData.get(key);
             var status = (Integer) error.get("status");
             log.info("Request filter. Found error status code: {}", status);
 
@@ -45,11 +65,75 @@ public class RequestFilter implements Filter {
             return;
         }
 
-        var data = responseData.get(key);
-        if (data != null) {
+        if (responseData.get(key) != null) {
             log.info("Request filter. Found response data for key: {}. Redirect to Response data controller", key);
             request.getRequestDispatcher(redirectPath + "?key=" + key).forward(servletRequest, servletResponse);
         } else
             filterChain.doFilter(servletRequest, servletResponse);
+    }
+
+    private String validateQueryParams(HttpServletRequest request, String key) {
+        var data = validateData.get(key);
+
+        var exceptedQueryParams = data.keySet().stream()
+                .filter(k -> k.startsWith("query-"))
+                .collect(Collectors.toMap(k -> k.split("-", 2)[1], data::get));
+
+        if (exceptedQueryParams.isEmpty()) return null;
+
+        if (request.getQueryString() == null) return "Empty required query params";
+
+        List<String> errors = new ArrayList<>();
+        var requestQueryParams = Arrays.stream(request.getQueryString().split("&"))
+                .map(param -> param.split("="))
+                .collect(Collectors.toMap(param -> param[0], param -> param[1]));
+        for (var entry : exceptedQueryParams.entrySet()) {
+            if (!requestQueryParams.containsKey(entry.getKey())) {
+                errors.add("Excepted param: '" + entry.getKey() + "' not found");
+                continue;
+            }
+            Pattern pattern = Pattern.compile((String) entry.getValue());
+            Matcher matcher = pattern.matcher(requestQueryParams.get(entry.getKey()));
+            if (!matcher.matches()) {
+                errors.add("Param: '" + entry.getKey() + "' is not matches: " + entry.getValue());
+            }
+        }
+        if (!errors.isEmpty()) return String.join("; ", errors);
+
+        return null;
+    }
+
+    private String validateHeaders(HttpServletRequest request, String key) {
+        var data = validateData.get(key);
+
+        var exceptedHeaders = data.keySet().stream()
+                .filter(k -> k.startsWith("header-"))
+                .collect(Collectors.toMap(k -> k.split("-", 2)[1], data::get));
+        if (exceptedHeaders.isEmpty()) return null;
+
+        var requestHeaderNames = request.getHeaderNames();
+        Map<String, String> desiredRequestHeaders = new HashMap<>();
+        while (requestHeaderNames.hasMoreElements()) {
+            String headerName = requestHeaderNames.nextElement();
+            if (exceptedHeaders.containsKey(headerName))
+                desiredRequestHeaders.put(headerName, request.getHeader(headerName));
+        }
+        if (desiredRequestHeaders.isEmpty()) return "Empty required headers";
+
+        List<String> errors = new ArrayList<>();
+        for (var entry : exceptedHeaders.entrySet()) {
+            if (!desiredRequestHeaders.containsKey(entry.getKey())) {
+                errors.add("Excepted header: '" + entry.getKey() + "' not found");
+                continue;
+            }
+            Pattern pattern = Pattern.compile((String) entry.getValue());
+            Matcher matcher = pattern.matcher(desiredRequestHeaders.get(entry.getKey()));
+            if (!matcher.matches()) {
+                errors.add("Header: '" + entry.getKey() + "' is not matches: " + entry.getValue());
+            }
+        }
+        if (!errors.isEmpty()) return String.join("; ", errors);
+
+        return null;
     }
 }

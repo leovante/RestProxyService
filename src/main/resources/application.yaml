@@ -1,3 +1,6 @@
+spring:
+  application:
+    name: rest-proxy-stub
 server:
   error:
     include-message: always
@@ -23,13 +26,20 @@ zuul:
       path: /session/**
     session-onb:
       url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/onb/session
-      path: /onb2/onb/session/**
+      path: /onb/session/**
     card-ul:
       url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/onb/api/v1/etalons/get
-      path: /onb2/onb/api/v1/etalons/get/**
+      path: /onb/api/v1/etalons/get/**
     card-fl:
       url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/person/get
-      path: /onb2/person/get/**
+      path: /person/get/**
     egr:
       url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/cbext/fns/egr/info
-      path: /onb2/cbext/fns/egr/info/**
+      path: /cbext/fns/egr/info/**
+team:
+  prefix:
+    - onb1
+    - onb2
+    - onb3
+    - onb4
+    - onb5

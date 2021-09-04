@@ -21,23 +21,25 @@ public class AdminValidateService {
         return data;
     }
 
-    public void putValidateData(String key, HttpServletRequest request) {
+    public void putValidateData(String key, HttpServletRequest request, String body) {
         if (!validateData.containsKey(key)) validateData.put(key, new HashMap<>());
         var data = validateData.get(key);
 
         var headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String header = headerNames.nextElement();
-
             if (header.startsWith("query-")) {
                 log.info("Admin validate service. Set expected query param: {} --> {}", header, request.getHeader(header));
                 data.put(header, request.getHeader(header));
             }
-
             if (header.startsWith("header-")) {
                 log.info("Admin validate service. Set expected header: {} --> {}", header, request.getHeader(header));
                 data.put(header, request.getHeader(header));
             }
+        }
+        if (body != null) {
+            log.info("Admin validate service. Set expected json body: {}", body);
+            data.put("body", body);
         }
     }
 

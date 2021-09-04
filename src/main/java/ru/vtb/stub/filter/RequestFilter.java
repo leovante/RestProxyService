@@ -1,6 +1,12 @@
 package ru.vtb.stub.filter;
 
 import lombok.extern.slf4j.Slf4j;
+import org.everit.json.schema.Schema;
+import org.everit.json.schema.ValidationException;
+import org.everit.json.schema.loader.SchemaLoader;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -35,8 +41,9 @@ public class RequestFilter implements Filter {
         if (validateData.get(key) != null) {
             List<String> errors = new ArrayList<>();
 
-            errors.add(validateQueryParams(request, key));
-            errors.add(validateHeaders(request, key));
+            errors.add(validateQueryParams(request, validateData.get(key)));
+            errors.add(validateHeaders(request, validateData.get(key)));
+            errors.add(validateJsonBody(request, validateData.get(key)));
             errors.removeAll(Collections.singleton(null));
 
             if (!errors.isEmpty()) {
@@ -72,9 +79,7 @@ public class RequestFilter implements Filter {
             filterChain.doFilter(servletRequest, servletResponse);
     }
 
-    private String validateQueryParams(HttpServletRequest request, String key) {
-        var data = validateData.get(key);
-
+    private String validateQueryParams(HttpServletRequest request, Map<String, String> data) {
         var exceptedQueryParams = data.keySet().stream()
                 .filter(k -> k.startsWith("query-"))
                 .collect(Collectors.toMap(k -> k.split("-", 2)[1], data::get));
@@ -92,7 +97,7 @@ public class RequestFilter implements Filter {
                 errors.add("Excepted param: '" + entry.getKey() + "' not found");
                 continue;
             }
-            Pattern pattern = Pattern.compile((String) entry.getValue());
+            Pattern pattern = Pattern.compile(entry.getValue());
             Matcher matcher = pattern.matcher(requestQueryParams.get(entry.getKey()));
             if (!matcher.matches()) {
                 errors.add("Param: '" + entry.getKey() + "' is not matches: " + entry.getValue());
@@ -103,9 +108,7 @@ public class RequestFilter implements Filter {
         return null;
     }
 
-    private String validateHeaders(HttpServletRequest request, String key) {
-        var data = validateData.get(key);
-
+    private String validateHeaders(HttpServletRequest request, Map<String, String> data) {
         var exceptedHeaders = data.keySet().stream()
                 .filter(k -> k.startsWith("header-"))
                 .collect(Collectors.toMap(k -> k.split("-", 2)[1], data::get));
@@ -126,13 +129,35 @@ public class RequestFilter implements Filter {
                 errors.add("Excepted header: '" + entry.getKey() + "' not found");
                 continue;
             }
-            Pattern pattern = Pattern.compile((String) entry.getValue());
+            Pattern pattern = Pattern.compile(entry.getValue());
             Matcher matcher = pattern.matcher(desiredRequestHeaders.get(entry.getKey()));
             if (!matcher.matches()) {
                 errors.add("Header: '" + entry.getKey() + "' is not matches: " + entry.getValue());
             }
         }
         if (!errors.isEmpty()) return String.join("; ", errors);
+
+        return null;
+    }
+
+    private String validateJsonBody(HttpServletRequest request, Map<String, String> data) throws IOException {
+        String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+
+        JSONObject jsonSchema = new JSONObject(new JSONTokener(data.get("body")));
+
+        try {
+            new JSONTokener(body);
+        } catch (JSONException e) {
+            return e.getMessage();
+        }
+        JSONObject jsonSubject = new JSONObject(new JSONTokener(body));
+
+        Schema schema = SchemaLoader.load(jsonSchema);
+        try {
+            schema.validate(jsonSubject);
+        } catch (ValidationException e) {
+            return e.getMessage();
+        }
 
         return null;
     }

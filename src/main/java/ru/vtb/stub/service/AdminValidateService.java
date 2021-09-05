@@ -1,7 +1,11 @@
 package ru.vtb.stub.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONException;
+import org.json.JSONTokener;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -38,8 +42,20 @@ public class AdminValidateService {
             }
         }
         if (body != null) {
+            try {
+                new JSONTokener(body);
+            } catch (JSONException e) {
+                log.info("Admin validate service. Body is not a JSON: {}", body);
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            }
             log.info("Admin validate service. Set expected json body: {}", body);
             data.put("body", body);
+        }
+
+        if (data.isEmpty()) {
+            log.info("Admin validate service. Data does not contain body and not headers starts with 'query-' or 'header-'");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Validate data does not contain body and not headers starts with 'query-' or 'header-'");
         }
     }
 

@@ -142,6 +142,7 @@ public class RequestFilter implements Filter {
 
     private String validateJsonBody(HttpServletRequest request, Map<String, String> data) throws IOException {
         String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+        if (body.isEmpty()) return null;
 
         JSONObject jsonSchema = new JSONObject(new JSONTokener(data.get("body")));
 

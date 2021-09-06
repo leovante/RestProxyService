@@ -132,7 +132,7 @@ public class RequestFilter implements Filter {
             Pattern pattern = Pattern.compile(entry.getValue());
             Matcher matcher = pattern.matcher(desiredRequestHeaders.get(entry.getKey()));
             if (!matcher.matches()) {
-                errors.add("Header: '" + entry.getKey() + "' is not matches: " + entry.getValue());
+                errors.add("Header: '" + entry.getKey() + "'='" + desiredRequestHeaders.get(entry.getKey()) + "' is not matches: " + entry.getValue());
             }
         }
         if (!errors.isEmpty()) return String.join("; ", errors);

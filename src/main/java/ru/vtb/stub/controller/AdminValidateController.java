@@ -29,7 +29,7 @@ public class AdminValidateController {
     @PostMapping
     public ResponseEntity<Void> putValidateData(
             @RequestParam @ResponseKey String key,
-            @RequestBody(required = false) String body,
+            @RequestParam(required = false) String body,
             HttpServletRequest request
     ) {
         log.info("Admin validate controller. Put validate data for key: {}", key);

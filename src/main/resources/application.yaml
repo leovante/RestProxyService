@@ -2,6 +2,7 @@ spring:
   application:
     name: rest-proxy-stub
 server:
+  port: 8888
   error:
     include-message: always
 logging:
@@ -20,27 +21,27 @@ response:
 ribbon:
   eureka:
     enabled: false
-zuul:
-  routes:
-    session:
-      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/session
-      path: /session/**
-    session-onb:
-      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/onb/session
-      path: /onb/session/**
-    card-ul:
-      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/onb/api/v1/etalons/get
-      path: /onb/api/v1/etalons/get/**
-    card-fl:
-      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/person/get
-      path: /person/get/**
-    egr:
-      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/cbext/fns/egr/info
-      path: /cbext/fns/egr/info/**
-team:
-  prefix:
-    - onb1
-    - onb2
-    - onb3
-    - onb4
-    - onb5
+#zuul:
+#  routes:
+#    session:
+#      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/session
+#      path: /session/**
+#    session-onb:
+#      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/onb/session
+#      path: /onb/session/**
+#    card-ul:
+#      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/onb/api/v1/etalons/get
+#      path: /onb/api/v1/etalons/get/**
+#    card-fl:
+#      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/person/get
+#      path: /person/get/**
+#    egr:
+#      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/cbext/fns/egr/info
+#      path: /cbext/fns/egr/info/**
+#team:
+#  prefix:
+#    - onb1
+#    - onb2
+#    - onb3
+#    - onb4
+#    - onb5

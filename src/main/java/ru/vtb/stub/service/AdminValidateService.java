@@ -48,7 +48,7 @@ public class AdminValidateService {
                 log.info("Admin validate service. Body is not a JSON: {}", body);
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
             }
-            log.info("Admin validate service. Set expected json body: {}", body);
+            log.info("Admin validate service. Set expected json schema: {}", body);
             data.put("body", body);
         }
 

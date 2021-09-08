@@ -33,27 +33,30 @@ public class RequestFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        // Without wrapper - exception:
+        // java.lang.IllegalStateException: getReader() has already been called for this request
+        // in filterChain.doFilter(servletRequest, servletResponse);
+        RequestWrapper wrappedRequest = new RequestWrapper((HttpServletRequest) servletRequest);
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-        String key = request.getRequestURI() + ":" + request.getMethod();
+        String key = wrappedRequest.getRequestURI() + ":" + wrappedRequest.getMethod();
 
         if (validateData.get(key) != null) {
             List<String> errors = new ArrayList<>();
 
-            errors.add(validateQueryParams(request, validateData.get(key)));
-            errors.add(validateHeaders(request, validateData.get(key)));
-            errors.add(validateJsonBody(request, validateData.get(key)));
+            errors.add(validateQueryParams(wrappedRequest, validateData.get(key)));
+            errors.add(validateHeaders(wrappedRequest, validateData.get(key)));
+            errors.add(validateJsonBody(wrappedRequest, validateData.get(key)));
             errors.removeAll(Collections.singleton(null));
 
             if (!errors.isEmpty()) {
                 String errorMessage = String.join("; ", errors);
-                log.info("Request filter. Found validate request errors: {}", errorMessage);
+                log.info("Request filter. Found validate errors: {} for: {}", errorMessage, key);
                 response.sendError(500, errorMessage);
                 return;
             }
 
-            log.info("Request filter. Request successfully validated");
+            log.info("Request filter. Successfully validated request to: {}", key);
         }
 
         if (errorData.get(key) != null) {
@@ -74,9 +77,9 @@ public class RequestFilter implements Filter {
 
         if (responseData.get(key) != null) {
             log.info("Request filter. Found response data for key: {}. Redirect to Response data controller", key);
-            request.getRequestDispatcher(redirectPath + "?key=" + key).forward(servletRequest, servletResponse);
+            wrappedRequest.getRequestDispatcher(redirectPath + "?key=" + key).forward(servletRequest, servletResponse);
         } else
-            filterChain.doFilter(servletRequest, servletResponse);
+            filterChain.doFilter(wrappedRequest, servletResponse);
     }
 
     private String validateQueryParams(HttpServletRequest request, Map<String, String> data) {
@@ -140,17 +143,19 @@ public class RequestFilter implements Filter {
         return null;
     }
 
-    private String validateJsonBody(HttpServletRequest request, Map<String, String> data) throws IOException {
+    private String validateJsonBody(RequestWrapper request, Map<String, String> data) {
+        if (data.get("body") == null) return null;
+
         String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-        if (body.isEmpty()) return null;
+        if (body.isEmpty()) return "Required body is empty";
 
-        JSONObject jsonSchema = new JSONObject(new JSONTokener(data.get("body")));
-
-        try {
+        try { // only JSON now
             new JSONTokener(body);
         } catch (JSONException e) {
             return e.getMessage();
         }
+
+        JSONObject jsonSchema = new JSONObject(new JSONTokener(data.get("body")));
         JSONObject jsonSubject = new JSONObject(new JSONTokener(body));
 
         Schema schema = SchemaLoader.load(jsonSchema);

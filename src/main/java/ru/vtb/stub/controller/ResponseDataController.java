@@ -17,7 +17,7 @@ public class ResponseDataController {
     @RequestMapping(path = "${path.response}", method = {GET, POST, PUT, PATCH, DELETE})
     public ResponseEntity<Object> response(@RequestParam String key) {
         var request = key.split(":");
-        log.info("Response data controller. Request endpoint: {}, method: {}", request[0], request[1]);
+        log.info("Response data controller. Incoming request to: {}", key);
 
         HttpStatus status = (responseData.get(key).get("status") != null)
                 ? HttpStatus.valueOf((Integer) responseData.get(key).get("status"))

@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static ru.vtb.stub.data.ResponseData.responseData;
 
@@ -20,19 +22,29 @@ public class AdminDataService {
         return data;
     }
 
-    public void putResponseData(String key, Object body, Integer status) {
+    public void putResponseData(String key, Integer status, Map<String, String> headers, Object body) {
         if (!responseData.containsKey(key)) responseData.put(key, new HashMap<>());
         var data = responseData.get(key);
-        if (body != null) {
-            log.info("Admin data service. Set response body: {}", body);
-            data.put("body", body);
-        }
+
+        var responseHeaders = headers.keySet().stream()
+                .filter(k -> k.startsWith("response-"))
+                .collect(Collectors.toMap(k -> k.split("-", 2)[1], headers::get));
+
+        if (status == null && responseHeaders.isEmpty() && body == null)
+            log.info("Admin data service. Response status, headers and body are not passed");
+
         if (status != null) {
             log.info("Admin data service. Set response status: {}", status);
             data.put("status", status);
         }
-        if (body == null && status == null)
-            log.info("Admin data service. Body and status not passed");
+        if (!responseHeaders.isEmpty()) {
+            log.info("Admin data service. Set response headers: {}", responseHeaders);
+            data.put("headers", responseHeaders);
+        }
+        if (body != null) {
+            log.info("Admin data service. Set response body: {}", body);
+            data.put("body", body);
+        }
     }
 
     public Object removeResponseData(String key) {

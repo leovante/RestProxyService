@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.vtb.stub.service.AdminValidateService;
 import ru.vtb.stub.validate.ResponseKey;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 @Slf4j
 @Validated
@@ -30,10 +30,10 @@ public class AdminValidateController {
     public ResponseEntity<Void> putValidateData(
             @RequestParam @ResponseKey String key,
             @RequestBody(required = false) String body,
-            HttpServletRequest request
+            @RequestHeader Map<String, String> headers
     ) {
         log.info("Admin validate controller. Put validate data for key: {}", key);
-        service.putValidateData(key, request, body);
+        service.putValidateData(key, headers, body);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

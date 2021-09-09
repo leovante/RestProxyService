@@ -7,8 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.Map;
 
 import static ru.vtb.stub.data.ResponseData.validateData;
 
@@ -25,22 +25,16 @@ public class AdminValidateService {
         return data;
     }
 
-    public void putValidateData(String key, HttpServletRequest request, String body) {
+    public void putValidateData(String key, Map<String, String> headers, String body) {
         if (!validateData.containsKey(key)) validateData.put(key, new HashMap<>());
         var data = validateData.get(key);
 
-        var headerNames = request.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String header = headerNames.nextElement();
-            if (header.startsWith("query-")) {
-                log.info("Admin validate service. Set expected query param: {} --> {}", header, request.getHeader(header));
-                data.put(header, request.getHeader(header));
+        headers.forEach((k, v) -> {
+            if (k.startsWith("query-") || k.startsWith("header-")) {
+                log.info("Admin validate service. Set expected " + k.split("-", 2)[0] + ": {} --> {}", k, v);
+                data.put(k, v);
             }
-            if (header.startsWith("header-")) {
-                log.info("Admin validate service. Set expected header: {} --> {}", header, request.getHeader(header));
-                data.put(header, request.getHeader(header));
-            }
-        }
+        });
         if (body != null) {
             try {
                 new JSONTokener(body);

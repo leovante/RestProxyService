@@ -40,6 +40,7 @@ public class RequestFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
         String key = wrappedRequest.getRequestURI() + ":" + wrappedRequest.getMethod();
+        log.info("Request filter. Request to: {}", key);
 
         if (validateData.get(key) != null) {
             List<String> errors = new ArrayList<>();
@@ -51,32 +52,25 @@ public class RequestFilter implements Filter {
 
             if (!errors.isEmpty()) {
                 String errorMessage = String.join("; ", errors);
-                log.info("Request filter. Found validate errors: {} for: {}", errorMessage, key);
+                log.info("\tValidation errors found: {}", errorMessage);
                 response.sendError(500, errorMessage);
                 return;
             }
 
-            log.info("Request filter. Successfully validated request to: {}", key);
+            log.info("\tSuccessful request validation");
         }
 
         if (errorData.get(key) != null) {
             var error = errorData.get(key);
             var status = (Integer) error.get("status");
-            log.info("Request filter. Found error status code: {}", status);
-
-            String message = (String) error.get("message");
-            if (message != null)
-                log.info("Request filter. Found error message: {}", message);
-            else
-                message = defaultErrorMessage;
-
-            log.info("Request filter. Throw exception. Status code: {}", status);
+            String message = error.get("message") != null ? (String) error.get("message") : defaultErrorMessage;
+            log.info("\tFound data to send error message. Status code: {}. Message: {}", status, message);
             response.sendError(status, message);
             return;
         }
 
         if (responseData.get(key) != null) {
-            log.info("Request filter. Found response data for key: {}. Redirect to Response data controller", key);
+            log.info("\tRedirect to Response data controller");
             wrappedRequest.getRequestDispatcher(redirectPath + "?key=" + key).forward(servletRequest, servletResponse);
         } else
             filterChain.doFilter(wrappedRequest, servletResponse);

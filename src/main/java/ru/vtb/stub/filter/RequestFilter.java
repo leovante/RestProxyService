@@ -1,5 +1,6 @@
 package ru.vtb.stub.filter;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.ValidationException;
@@ -8,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
@@ -19,10 +21,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static java.net.URLDecoder.decode;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static ru.vtb.stub.data.ResponseData.*;
 
 @Slf4j
+@Setter
 @Component
+@ConfigurationProperties(prefix = "path")
 public class RequestFilter implements Filter {
 
     @Value("${path.response}")
@@ -31,32 +37,52 @@ public class RequestFilter implements Filter {
     @Value("${response.error.message}")
     private String defaultErrorMessage;
 
+    private Map<String, String> admin;
+
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        HttpServletResponse response = (HttpServletResponse) servletResponse;
+
+        String key = request.getRequestURI() + ":" + request.getMethod();
+
+        // Cannot set admin routes
+        if (admin.containsValue(request.getRequestURI())) {
+            String queryString = request.getQueryString();
+            if (!queryString.contains("key=")) {
+                String error = "Request filter. Request to: " + request.getRequestURI() + " without required param 'key'";
+                log.error(error);
+                response.sendError(500, error);
+                return;
+            }
+            var requestQueryParams = getRequestQueryParams(queryString);
+            String routeToSet = decode(requestQueryParams.get("key"), UTF_8.name()).split(":")[0];
+            if (admin.containsValue(routeToSet)) {
+                String error = "Route: " + routeToSet + " is admin route. See application.yaml --> path.admin";
+                log.error(error);
+                response.sendError(500, error);
+                return;
+            }
+        } else
+            log.info("Request filter. Request to: {}", key);
+
         // Without wrapper - exception:
         // java.lang.IllegalStateException: getReader() has already been called for this request
         // in filterChain.doFilter(servletRequest, servletResponse);
-        RequestWrapper wrappedRequest = new RequestWrapper((HttpServletRequest) servletRequest);
-        HttpServletResponse response = (HttpServletResponse) servletResponse;
-
-        String key = wrappedRequest.getRequestURI() + ":" + wrappedRequest.getMethod();
-        log.info("Request filter. Request to: {}", key);
+        RequestWrapper wrappedRequest = new RequestWrapper(request);
 
         if (validateData.get(key) != null) {
             List<String> errors = new ArrayList<>();
-
             errors.add(validateQueryParams(wrappedRequest, validateData.get(key)));
             errors.add(validateHeaders(wrappedRequest, validateData.get(key)));
             errors.add(validateJsonBody(wrappedRequest, validateData.get(key)));
             errors.removeAll(Collections.singleton(null));
-
             if (!errors.isEmpty()) {
                 String errorMessage = String.join("; ", errors);
                 log.info("\tValidation errors found: {}", errorMessage);
                 response.sendError(500, errorMessage);
                 return;
             }
-
             log.info("\tSuccessful request validation");
         }
 
@@ -76,19 +102,17 @@ public class RequestFilter implements Filter {
             filterChain.doFilter(wrappedRequest, servletResponse);
     }
 
-    private String validateQueryParams(HttpServletRequest request, Map<String, String> data) {
+    private String validateQueryParams(RequestWrapper wrappedRequest, Map<String, String> data) {
         var exceptedQueryParams = data.keySet().stream()
                 .filter(k -> k.startsWith("query-"))
                 .collect(Collectors.toMap(k -> k.split("-", 2)[1], data::get));
 
         if (exceptedQueryParams.isEmpty()) return null;
 
-        if (request.getQueryString() == null) return "Empty required query params";
+        var requestQueryParams = getRequestQueryParams(wrappedRequest.getQueryString());
+        if (requestQueryParams == null) return "Empty required query params";
 
         List<String> errors = new ArrayList<>();
-        var requestQueryParams = Arrays.stream(request.getQueryString().split("&"))
-                .map(param -> param.split("="))
-                .collect(Collectors.toMap(param -> param[0], param -> param[1]));
         for (var entry : exceptedQueryParams.entrySet()) {
             if (!requestQueryParams.containsKey(entry.getKey())) {
                 errors.add("Excepted param: '" + entry.getKey() + "' not found");
@@ -101,7 +125,6 @@ public class RequestFilter implements Filter {
             }
         }
         if (!errors.isEmpty()) return String.join("; ", errors);
-
         return null;
     }
 
@@ -133,7 +156,6 @@ public class RequestFilter implements Filter {
             }
         }
         if (!errors.isEmpty()) return String.join("; ", errors);
-
         return null;
     }
 
@@ -158,7 +180,12 @@ public class RequestFilter implements Filter {
         } catch (ValidationException e) {
             return e.getMessage();
         }
-
         return null;
+    }
+
+    private Map<String, String> getRequestQueryParams(String queryString) {
+        return Arrays.stream(queryString.split("&"))
+                .map(p -> p.split("="))
+                .collect(Collectors.toMap(p -> p[0], p -> p[1]));
     }
 }

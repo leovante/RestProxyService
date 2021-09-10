@@ -79,7 +79,7 @@ public class RequestFilter implements Filter {
             errors.removeAll(Collections.singleton(null));
             if (!errors.isEmpty()) {
                 String errorMessage = String.join("; ", errors);
-                log.info("\tValidation errors found: {}", errorMessage);
+                log.error("\tValidation errors found: {}", errorMessage);
                 response.sendError(500, errorMessage);
                 return;
             }
@@ -90,7 +90,7 @@ public class RequestFilter implements Filter {
             var error = errorData.get(key);
             var status = (Integer) error.get("status");
             String message = error.get("message") != null ? (String) error.get("message") : defaultErrorMessage;
-            log.info("\tFound data to send error message. Status code: {}. Message: {}", status, message);
+            log.error("\tFound data to send error message. Status code: {}. Message: {}", status, message);
             response.sendError(status, message);
             return;
         }

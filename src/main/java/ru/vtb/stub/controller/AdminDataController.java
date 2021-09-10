@@ -11,6 +11,7 @@ import ru.vtb.stub.validate.ResponseKey;
 
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Max;
+import java.util.Map;
 
 @Slf4j
 @Validated
@@ -31,10 +32,11 @@ public class AdminDataController {
     public ResponseEntity<Void> putResponseData(
             @RequestParam @ResponseKey String key,
             @RequestParam(required = false) @Digits(integer = 3, fraction = 0) @Max(value = 399) Integer status,
+            @RequestHeader(required = false) Map<String, String> headers,
             @RequestBody(required = false) Object body
     ) {
         log.info("Admin data controller. Put response data for key: {}", key);
-        service.putResponseData(key, body, status);
+        service.putResponseData(key, status, headers, body);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

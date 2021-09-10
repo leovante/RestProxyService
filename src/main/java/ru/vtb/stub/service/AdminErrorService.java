@@ -23,6 +23,10 @@ public class AdminErrorService {
     public void putErrorData(String key, String message, Integer status) {
         if (!errorData.containsKey(key)) errorData.put(key, new HashMap<>());
         var error = errorData.get(key);
+
+        if (status == null && (message == null || message.isEmpty()))
+            log.info("Admin error service. Status and message not passed");
+
         if (status != null) {
             log.info("Admin error service. Set error status: {}", status);
             error.put("status", status);
@@ -34,8 +38,6 @@ public class AdminErrorService {
             log.info("Admin error service. Set error message: {}", message);
             error.put("message", message);
         }
-        if (status == null && (message == null || message.isEmpty()))
-            log.info("Admin error service. Status and message not passed");
     }
 
     public Object removeErrorData(String key) {

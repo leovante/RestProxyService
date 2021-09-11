@@ -24,6 +24,8 @@ import java.util.stream.Collectors;
 import static java.net.URLDecoder.decode;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static ru.vtb.stub.data.ResponseData.*;
+import static ru.vtb.stub.utils.CommonUtils.QUERY_PREFIX;
+import static ru.vtb.stub.utils.CommonUtils.getRequestQueryParams;
 
 @Slf4j
 @Setter
@@ -105,8 +107,8 @@ public class RequestFilter implements Filter {
 
     private String validateQueryParams(RequestWrapper wrappedRequest, Map<String, String> data) {
         var exceptedQueryParams = data.keySet().stream()
-                .filter(k -> k.startsWith("query-"))
-                .collect(Collectors.toMap(k -> k.split("-", 2)[1], data::get));
+                .filter(k -> k.startsWith(QUERY_PREFIX))
+                .collect(Collectors.toMap(k -> k.split(QUERY_PREFIX, 2)[1], data::get));
 
         if (exceptedQueryParams.isEmpty()) return null;
 
@@ -182,11 +184,5 @@ public class RequestFilter implements Filter {
             return e.getMessage();
         }
         return null;
-    }
-
-    private Map<String, String> getRequestQueryParams(String queryString) {
-        return Arrays.stream(queryString.split("&"))
-                .map(p -> p.split("="))
-                .collect(Collectors.toMap(p -> p[0], p -> p[1]));
     }
 }

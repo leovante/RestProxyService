@@ -24,7 +24,7 @@ response:
     message: "Stub test error message"
 
 header:
-  prefix: stub-
+  prefix: header-
 
 ribbon:
   eureka:

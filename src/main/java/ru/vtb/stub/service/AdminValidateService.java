@@ -3,6 +3,7 @@ package ru.vtb.stub.service;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.json.JSONTokener;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -15,6 +16,9 @@ import static ru.vtb.stub.data.ResponseData.validateData;
 @Slf4j
 @Service
 public class AdminValidateService {
+
+    @Value("${header.prefix}")
+    private  String headerPrefix;
 
     public Object getValidateData(String key) {
         var data = validateData.get(key);
@@ -29,9 +33,16 @@ public class AdminValidateService {
         if (!validateData.containsKey(key)) validateData.put(key, new HashMap<>());
         var data = validateData.get(key);
 
+        // TODO - останется обработка данных из QueryString
         headers.forEach((k, v) -> {
-            if (k.startsWith("query-") || k.startsWith("header-")) {
+            if (k.startsWith("query-")) {
                 log.info("Admin validate service. Set expected " + k.split("-", 2)[0] + ": {} --> {}", k, v);
+                data.put(k, v);
+            }
+        });
+        headers.forEach((k, v) -> {
+            if (k.startsWith(headerPrefix)) {
+                log.info("Admin validate service. Set expected header: {} --> {}", k, v);
                 data.put(k, v);
             }
         });

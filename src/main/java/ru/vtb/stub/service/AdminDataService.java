@@ -1,6 +1,7 @@
 package ru.vtb.stub.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -12,6 +13,9 @@ import static ru.vtb.stub.data.ResponseData.responseData;
 @Slf4j
 @Service
 public class AdminDataService {
+
+    @Value("${header.prefix}")
+    private  String headerPrefix;
 
     public Object getResponseData(String key) {
         var data = responseData.get(key);
@@ -27,8 +31,8 @@ public class AdminDataService {
         var data = responseData.get(key);
 
         var responseHeaders = headers.keySet().stream()
-                .filter(k -> k.startsWith("response-"))
-                .collect(Collectors.toMap(k -> k.split("-", 2)[1], headers::get));
+                .filter(k -> k.startsWith(headerPrefix))
+                .collect(Collectors.toMap(k -> k.split(headerPrefix, 2)[1], headers::get));
 
         if (status == null && responseHeaders.isEmpty() && body == null)
             log.info("Admin data service. Response status, headers and body are not passed");
@@ -37,6 +41,7 @@ public class AdminDataService {
             log.info("Admin data service. Set response status: {}", status);
             data.put("status", status);
         }
+        // TODO - поправить log.info
         if (!responseHeaders.isEmpty()) {
             log.info("Admin data service. Set response headers: {}", responseHeaders);
             data.put("headers", responseHeaders);

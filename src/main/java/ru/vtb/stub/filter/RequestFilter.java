@@ -33,9 +33,10 @@ public class RequestFilter implements Filter {
 
     @Value("${path.response}")
     private String redirectPath;
-
     @Value("${response.error.message}")
     private String defaultErrorMessage;
+    @Value("${header.prefix}")
+    private  String headerPrefix;
 
     private Map<String, String> admin;
 
@@ -130,8 +131,8 @@ public class RequestFilter implements Filter {
 
     private String validateHeaders(HttpServletRequest request, Map<String, String> data) {
         var exceptedHeaders = data.keySet().stream()
-                .filter(k -> k.startsWith("header-"))
-                .collect(Collectors.toMap(k -> k.split("-", 2)[1], data::get));
+                .filter(k -> k.startsWith(headerPrefix))
+                .collect(Collectors.toMap(k -> k.split(headerPrefix, 2)[1], data::get));
         if (exceptedHeaders.isEmpty()) return null;
 
         var requestHeaderNames = request.getHeaderNames();

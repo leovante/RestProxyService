@@ -9,6 +9,7 @@ server:
 
 logging:
   level:
+    ru.vtb.stub: DEBUG
     org.springframework.web: INFO
 
 path:

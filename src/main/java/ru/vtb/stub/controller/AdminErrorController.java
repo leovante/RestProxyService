@@ -23,7 +23,7 @@ public class AdminErrorController {
 
     @GetMapping
     public ResponseEntity<Object> getErrorData(@RequestParam @ResponseKey String key) {
-        log.info("Admin error controller. Get error data for key: {}", key);
+        log.debug("Admin error controller. Get error data for key: {}", key);
         return ResponseEntity.ok(service.getErrorData(key));
     }
 
@@ -33,14 +33,14 @@ public class AdminErrorController {
             @RequestParam(required = false) @Digits(integer = 3, fraction = 0) @Min(value = 400) Integer status,
             @RequestParam(required = false) String message
     ) {
-        log.info("Admin error controller. Put error data for key: {}", key);
+        log.debug("Admin error controller. Put error data for key: {}", key);
         service.putErrorData(key, message, status);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping
     public ResponseEntity<Void> removeErrorData(@RequestParam @ResponseKey String key) {
-        log.info("Admin error controller. Delete error data for key: {}", key);
+        log.debug("Admin error controller. Delete error data for key: {}", key);
         return service.removeErrorData(key) != null ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 }

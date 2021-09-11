@@ -25,9 +25,9 @@ public class ZuulProxyService {
     public ZuulRoute getProxyHost(String id) {
         var route = zuulProperties.getRoutes().get(id);
         if (route != null)
-            log.info("Zuul proxy service. Get route: {}", route);
+            log.debug("Zuul proxy service. Get route: {}", route);
         else
-            log.info("Zuul proxy service. No route for id: {}", id);
+            log.debug("Zuul proxy service. No route for id: {}", id);
         return route;
     }
 
@@ -39,16 +39,16 @@ public class ZuulProxyService {
 
         zuulProperties.getRoutes().put(route.getId(), route);
         publisher.publishEvent(routesRefreshedEvent);
-        log.info("Zuul proxy service. Published new route: {}", route);
+        log.debug("Zuul proxy service. Published new route: {}", route);
     }
 
     public ZuulRoute removeProxyHost(String id) {
         var route = zuulProperties.getRoutes().remove(id);
         publisher.publishEvent(routesRefreshedEvent);
         if (route != null)
-            log.info("Zuul proxy service. Delete route: {}", route);
+            log.debug("Zuul proxy service. Delete route: {}", route);
         else
-            log.info("Zuul proxy service. No route for id: {}", id);
+            log.debug("Zuul proxy service. No route for id: {}", id);
         return route;
     }
 }

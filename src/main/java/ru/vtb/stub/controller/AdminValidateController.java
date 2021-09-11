@@ -22,7 +22,7 @@ public class AdminValidateController {
 
     @GetMapping
     public ResponseEntity<Object> getValidateData(@RequestParam @ResponseKey String key) {
-        log.info("Admin validate controller. Get validate data for key: {}", key);
+        log.debug("Admin validate controller. Get validate data for key: {}", key);
         return ResponseEntity.ok(service.getValidateData(key));
     }
 
@@ -32,14 +32,14 @@ public class AdminValidateController {
             @RequestBody(required = false) String body,
             @RequestHeader Map<String, String> headers
     ) {
-        log.info("Admin validate controller. Put validate data for key: {}", key);
+        log.debug("Admin validate controller. Put validate data for key: {}", key);
         service.putValidateData(key, headers, body);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping
     public ResponseEntity<Void> removeValidateData(@RequestParam @ResponseKey String key) {
-        log.info("Admin validate controller. Delete validate data for key: {}", key);
+        log.debug("Admin validate controller. Delete validate data for key: {}", key);
         return service.removeValidateData(key) != null ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 }

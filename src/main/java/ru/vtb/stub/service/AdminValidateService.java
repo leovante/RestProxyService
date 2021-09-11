@@ -25,9 +25,9 @@ public class AdminValidateService {
     public Object getValidateData(String key) {
         var data = validateData.get(key);
         if (data != null)
-            log.info("Admin validate service. Get validate data: {}", data);
+            log.debug("Admin validate service. Get validate data: {}", data);
         else
-            log.info("Admin validate service. No validate data for key: {}", key);
+            log.debug("Admin validate service. No validate data for key: {}", key);
         return data;
     }
 
@@ -37,13 +37,13 @@ public class AdminValidateService {
 
         headers.forEach((k, v) -> {
             if (k.startsWith(queryPrefix)) {
-                log.info("Admin validate service. Set expected query: {} --> {}", k, v);
+                log.debug("Admin validate service. Set expected query: {} --> {}", k, v);
                 data.put(k, v);
             }
         });
         headers.forEach((k, v) -> {
             if (k.startsWith(headerPrefix)) {
-                log.info("Admin validate service. Set expected header: {} --> {}", k, v);
+                log.debug("Admin validate service. Set expected header: {} --> {}", k, v);
                 data.put(k, v);
             }
         });
@@ -51,15 +51,15 @@ public class AdminValidateService {
             try {
                 new JSONTokener(body);
             } catch (JSONException e) {
-                log.info("Admin validate service. Body is not a JSON: {}", body);
+                log.debug("Admin validate service. Body is not a JSON: {}", body);
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
             }
-            log.info("Admin validate service. Set expected json schema: {}", body);
+            log.debug("Admin validate service. Set expected json schema: {}", body);
             data.put("body", body);
         }
 
         if (data.isEmpty()) {
-            log.info("Admin validate service. Data does not contain body and not headers starts with 'query-' or 'header-'");
+            log.debug("Admin validate service. Data does not contain body and not headers starts with 'query-' or 'header-'");
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                     "Validate data does not contain body and not headers starts with 'query-' or 'header-'");
         }
@@ -68,9 +68,9 @@ public class AdminValidateService {
     public Object removeValidateData(String key) {
         var data = validateData.remove(key);
         if (data != null)
-            log.info("Admin validate service. Delete validate data: {}", data);
+            log.debug("Admin validate service. Delete validate data: {}", data);
         else
-            log.info("Admin validate service. No validate data for key: {}", key);
+            log.debug("Admin validate service. No validate data for key: {}", key);
         return data;
     }
 }

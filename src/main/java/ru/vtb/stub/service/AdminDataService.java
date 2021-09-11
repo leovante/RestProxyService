@@ -20,9 +20,9 @@ public class AdminDataService {
     public Object getResponseData(String key) {
         var data = responseData.get(key);
         if (data != null)
-            log.info("Admin data service. Get response data: {}", data);
+            log.debug("Admin data service. Get response data: {}", data);
         else
-            log.info("Admin data service. No response data for key: {}", key);
+            log.debug("Admin data service. No response data for key: {}", key);
         return data;
     }
 
@@ -35,18 +35,18 @@ public class AdminDataService {
                 .collect(Collectors.toMap(k -> k.split(headerPrefix, 2)[1], headers::get));
 
         if (status == null && responseHeaders.isEmpty() && body == null)
-            log.info("Admin data service. Response status, headers and body are not passed");
+            log.debug("Admin data service. Response status, headers and body are not passed");
 
         if (status != null) {
-            log.info("Admin data service. Set response status: {}", status);
+            log.debug("Admin data service. Set response status: {}", status);
             data.put("status", status);
         }
         if (!responseHeaders.isEmpty()) {
-            responseHeaders.forEach((k, v) -> log.info("Admin data service. Set response header: {} --> {}", k, v));
+            responseHeaders.forEach((k, v) -> log.debug("Admin data service. Set response header: {} --> {}", k, v));
             data.put("headers", responseHeaders);
         }
         if (body != null) {
-            log.info("Admin data service. Set response body: {}", body);
+            log.debug("Admin data service. Set response body: {}", body);
             data.put("body", body);
         }
     }
@@ -54,9 +54,9 @@ public class AdminDataService {
     public Object removeResponseData(String key) {
         var data = responseData.remove(key);
         if (data != null)
-            log.info("Admin data service. Delete response data: {}", data);
+            log.debug("Admin data service. Delete response data: {}", data);
         else
-            log.info("Admin data service. No response data for key: {}", key);
+            log.debug("Admin data service. No response data for key: {}", key);
         return data;
     }
 }

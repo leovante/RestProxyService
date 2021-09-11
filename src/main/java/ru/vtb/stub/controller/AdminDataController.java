@@ -24,7 +24,7 @@ public class AdminDataController {
 
     @GetMapping
     public ResponseEntity<Object> getResponseData(@RequestParam @ResponseKey String key) {
-        log.info("Admin data controller. Get response data for key: {}", key);
+        log.debug("Admin data controller. Get response data for key: {}", key);
         return ResponseEntity.ok(service.getResponseData(key));
     }
 
@@ -35,14 +35,14 @@ public class AdminDataController {
             @RequestHeader(required = false) Map<String, String> headers,
             @RequestBody(required = false) Object body
     ) {
-        log.info("Admin data controller. Put response data for key: {}", key);
+        log.debug("Admin data controller. Put response data for key: {}", key);
         service.putResponseData(key, status, headers, body);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping
     public ResponseEntity<Void> removeResponseData(@RequestParam @ResponseKey String key) {
-        log.info("Admin data controller. Delete response data for key: {}", key);
+        log.debug("Admin data controller. Delete response data for key: {}", key);
         return service.removeResponseData(key) != null ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 }

@@ -23,7 +23,7 @@ public class ZuulProxyController {
 
     @GetMapping
     public ResponseEntity<ZuulRoute> getProxyHost(@RequestParam @ProxyId String id) {
-        log.info("Zuul proxy controller. Get route for id: {}", id);
+        log.debug("Zuul proxy controller. Get route for id: {}", id);
         return ResponseEntity.ok(service.getProxyHost(id));
     }
 
@@ -33,14 +33,14 @@ public class ZuulProxyController {
             @RequestParam @URL String url,
             @RequestParam String path
     ) {
-        log.info("Zuul proxy controller. Put route for id: {}", id);
+        log.debug("Zuul proxy controller. Put route for id: {}", id);
         service.putProxyHost(id, url, path);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping
     public ResponseEntity<Void> removeProxyHost(String id) {
-        log.info("Zuul proxy controller. Delete route for id: {}", id);
+        log.debug("Zuul proxy controller. Delete route for id: {}", id);
         return service.removeProxyHost(id) != null ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 }

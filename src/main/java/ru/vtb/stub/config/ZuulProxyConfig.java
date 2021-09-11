@@ -26,10 +26,10 @@ import static org.springframework.cloud.netflix.zuul.filters.ZuulProperties.Zuul
 @Slf4j
 @Setter
 @Configuration
-@ConfigurationProperties(prefix = "team")
+@ConfigurationProperties(prefix = "prefix")
 public class ZuulProxyConfig {
 
-    private List<String> prefix;
+    private List<String> teams;
 
     @Bean
     public HostFilter simpleFilter() {
@@ -65,14 +65,14 @@ public class ZuulProxyConfig {
                 return;
             }
 
-            if (prefix == null || prefix.isEmpty()) {
+            if (teams == null || teams.isEmpty()) {
                 log.info("Zuul proxy config. No teams prefixes. Default routes:");
                 zuulProperties.getRoutes().forEach((k, v) -> log.info("{} --> {}", k, v));
                 return;
             }
 
             var routes = new HashMap<>(zuulProperties.getRoutes());
-            prefix.forEach(p -> routes.forEach((k, r) -> {
+            teams.forEach(p -> routes.forEach((k, r) -> {
                 ZuulRoute route = new ZuulRoute();
                 route.setId(p + "-" + k);
                 route.setPath("/" + p + r.getPath());

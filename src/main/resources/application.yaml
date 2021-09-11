@@ -23,9 +23,6 @@ response:
   error:
     message: "Stub test error message"
 
-header:
-  prefix: header-
-
 ribbon:
   eureka:
     enabled: false
@@ -47,9 +44,11 @@ ribbon:
 #    egr:
 #      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/cbext/fns/egr/info
 #      path: /cbext/fns/egr/info/**
-#
-#team:
-#  prefix:
+
+prefix:
+  header: header-
+  query: query-
+#  teams:
 #    - onb1
 #    - onb2
 #    - onb3

@@ -6,8 +6,6 @@ import java.util.stream.Collectors;
 
 public class CommonUtils {
 
-    public static final String QUERY_PREFIX = "query-";
-
     public static Map<String, String> getRequestQueryParams(String queryString) {
         return Arrays.stream(queryString.split("&"))
                 .map(p -> p.split("="))

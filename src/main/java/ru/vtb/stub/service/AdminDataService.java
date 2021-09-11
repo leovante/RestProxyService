@@ -14,8 +14,8 @@ import static ru.vtb.stub.data.ResponseData.responseData;
 @Service
 public class AdminDataService {
 
-    @Value("${header.prefix}")
-    private  String headerPrefix;
+    @Value("${prefix.header}")
+    private String headerPrefix;
 
     public Object getResponseData(String key) {
         var data = responseData.get(key);
@@ -41,9 +41,8 @@ public class AdminDataService {
             log.info("Admin data service. Set response status: {}", status);
             data.put("status", status);
         }
-        // TODO - поправить log.info
         if (!responseHeaders.isEmpty()) {
-            log.info("Admin data service. Set response headers: {}", responseHeaders);
+            responseHeaders.forEach((k, v) -> log.info("Admin data service. Set response header: {} --> {}", k, v));
             data.put("headers", responseHeaders);
         }
         if (body != null) {

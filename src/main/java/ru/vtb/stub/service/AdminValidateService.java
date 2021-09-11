@@ -17,8 +17,10 @@ import static ru.vtb.stub.data.ResponseData.validateData;
 @Service
 public class AdminValidateService {
 
-    @Value("${header.prefix}")
+    @Value("${prefix.header}")
     private  String headerPrefix;
+    @Value("${prefix.query}")
+    private  String queryPrefix;
 
     public Object getValidateData(String key) {
         var data = validateData.get(key);
@@ -33,10 +35,9 @@ public class AdminValidateService {
         if (!validateData.containsKey(key)) validateData.put(key, new HashMap<>());
         var data = validateData.get(key);
 
-        // TODO - останется обработка данных из QueryString
         headers.forEach((k, v) -> {
-            if (k.startsWith("query-")) {
-                log.info("Admin validate service. Set expected " + k.split("-", 2)[0] + ": {} --> {}", k, v);
+            if (k.startsWith(queryPrefix)) {
+                log.info("Admin validate service. Set expected query: {} --> {}", k, v);
                 data.put(k, v);
             }
         });

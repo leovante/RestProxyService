@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 import static java.net.URLDecoder.decode;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static ru.vtb.stub.data.ResponseData.*;
-import static ru.vtb.stub.utils.CommonUtils.QUERY_PREFIX;
 import static ru.vtb.stub.utils.CommonUtils.getRequestQueryParams;
 
 @Slf4j
@@ -37,8 +36,10 @@ public class RequestFilter implements Filter {
     private String redirectPath;
     @Value("${response.error.message}")
     private String defaultErrorMessage;
-    @Value("${header.prefix}")
+    @Value("${prefix.header}")
     private  String headerPrefix;
+    @Value("${prefix.query}")
+    private  String queryPrefix;
 
     private Map<String, String> admin;
 
@@ -82,7 +83,7 @@ public class RequestFilter implements Filter {
             errors.removeAll(Collections.singleton(null));
             if (!errors.isEmpty()) {
                 String errorMessage = String.join("; ", errors);
-                log.error("\tValidation errors found: {}", errorMessage);
+                log.error("\tValidation errors: {}", errorMessage);
                 response.sendError(500, errorMessage);
                 return;
             }
@@ -107,24 +108,24 @@ public class RequestFilter implements Filter {
 
     private String validateQueryParams(RequestWrapper wrappedRequest, Map<String, String> data) {
         var exceptedQueryParams = data.keySet().stream()
-                .filter(k -> k.startsWith(QUERY_PREFIX))
-                .collect(Collectors.toMap(k -> k.split(QUERY_PREFIX, 2)[1], data::get));
+                .filter(k -> k.startsWith(queryPrefix))
+                .collect(Collectors.toMap(k -> k.split(queryPrefix, 2)[1], data::get));
 
         if (exceptedQueryParams.isEmpty()) return null;
 
+        if (wrappedRequest.getQueryString() == null) return "empty required query params";
         var requestQueryParams = getRequestQueryParams(wrappedRequest.getQueryString());
-        if (requestQueryParams == null) return "Empty required query params";
 
         List<String> errors = new ArrayList<>();
         for (var entry : exceptedQueryParams.entrySet()) {
             if (!requestQueryParams.containsKey(entry.getKey())) {
-                errors.add("Excepted param: '" + entry.getKey() + "' not found");
+                errors.add("excepted param: '" + entry.getKey() + "' not found");
                 continue;
             }
             Pattern pattern = Pattern.compile(entry.getValue());
             Matcher matcher = pattern.matcher(requestQueryParams.get(entry.getKey()));
             if (!matcher.matches()) {
-                errors.add("Param: '" + entry.getKey() + "' is not matches: " + entry.getValue());
+                errors.add("param: '" + entry.getKey() + "' is not matches: " + entry.getValue());
             }
         }
         if (!errors.isEmpty()) return String.join("; ", errors);
@@ -144,18 +145,18 @@ public class RequestFilter implements Filter {
             if (exceptedHeaders.containsKey(headerName))
                 desiredRequestHeaders.put(headerName, request.getHeader(headerName));
         }
-        if (desiredRequestHeaders.isEmpty()) return "Empty required headers";
+        if (desiredRequestHeaders.isEmpty()) return "empty required headers";
 
         List<String> errors = new ArrayList<>();
         for (var entry : exceptedHeaders.entrySet()) {
             if (!desiredRequestHeaders.containsKey(entry.getKey())) {
-                errors.add("Excepted header: '" + entry.getKey() + "' not found");
+                errors.add("excepted header: '" + entry.getKey() + "' not found");
                 continue;
             }
             Pattern pattern = Pattern.compile(entry.getValue());
             Matcher matcher = pattern.matcher(desiredRequestHeaders.get(entry.getKey()));
             if (!matcher.matches()) {
-                errors.add("Header: '" + entry.getKey() + "'='" + desiredRequestHeaders.get(entry.getKey()) + "' is not matches: " + entry.getValue());
+                errors.add("header: '" + entry.getKey() + "'='" + desiredRequestHeaders.get(entry.getKey()) + "' is not matches: " + entry.getValue());
             }
         }
         if (!errors.isEmpty()) return String.join("; ", errors);
@@ -166,7 +167,7 @@ public class RequestFilter implements Filter {
         if (data.get("body") == null) return null;
 
         String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-        if (body.isEmpty()) return "Required body is empty";
+        if (body.isEmpty()) return "required body is empty";
 
         try { // only JSON now
             new JSONTokener(body);

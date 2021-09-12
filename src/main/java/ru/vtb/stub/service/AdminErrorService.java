@@ -1,23 +1,27 @@
 package ru.vtb.stub.service;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.Set;
 
 import static ru.vtb.stub.data.ResponseData.errorData;
+import static ru.vtb.stub.utils.CommonUtils.*;
 
 @Slf4j
+@Setter
 @Service
+@ConfigurationProperties(prefix = "prefix")
 public class AdminErrorService {
 
+    private Set<String> teams;
+    private static final String SERVICE = "Admin error service";
+
     public Object getErrorData(String key) {
-        var data = errorData.get(key);
-        if (data != null)
-            log.debug("Admin error service. Get data: {}", data);
-        else
-            log.debug("Admin error service. No data for key: {}", key);
-        return data;
+        return getData(errorData, key, SERVICE);
     }
 
     public void putErrorData(String key, String message, Integer status) {
@@ -25,27 +29,25 @@ public class AdminErrorService {
         var error = errorData.get(key);
 
         if (status == null && (message == null || message.isEmpty()))
-            log.debug("Admin error service. Status and message not passed");
+            log.debug("{}. Status and message not passed", SERVICE);
 
         if (status != null) {
-            log.debug("Admin error service. Set error status: {}", status);
+            log.debug("{}. Set status --> {}", SERVICE, status);
             error.put("status", status);
         } else {
-            log.debug("Admin error service. Set default error status: 500");
+            log.debug("{}. Set default status --> 500", SERVICE);
             error.put("status", 500);
         }
         if (message != null && !message.isEmpty()) {
-            log.debug("Admin error service. Set error message: {}", message);
+            log.debug("{}. Set message --> {}", SERVICE, message);
             error.put("message", message);
         }
     }
 
-    public Object removeErrorData(String key) {
-        var data = errorData.remove(key);
-        if (data != null)
-            log.debug("Admin error service. Delete data: {}", data);
-        else
-            log.debug("Admin error service. No data for key: {}", key);
-        return data;
+    public boolean removeErrorData(String key) {
+        String[] parts = key.split(KEY_DELIMITER, 2);
+        return parts[1].equals(ALL)
+                ? removeAllKeys(errorData, parts[0], teams, SERVICE)
+                : removeOneKey(errorData, key, SERVICE);
     }
 }

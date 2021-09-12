@@ -41,6 +41,6 @@ public class AdminErrorController {
     @DeleteMapping
     public ResponseEntity<Void> removeErrorData(@RequestParam @RouteKey String key) {
         log.debug("Admin error controller. Delete error data for key: {}", key);
-        return service.removeErrorData(key) != null ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+        return service.removeErrorData(key) ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 }

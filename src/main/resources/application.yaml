@@ -49,9 +49,9 @@ ribbon:
 prefix:
   header: header-
   query: query-
-#  teams:
+  teams:
 #    - onb1
-#    - onb2
+    - onb2
 #    - onb3
 #    - onb4
 #    - onb5

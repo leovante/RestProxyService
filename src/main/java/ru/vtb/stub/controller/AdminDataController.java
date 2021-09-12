@@ -43,6 +43,6 @@ public class AdminDataController {
     @DeleteMapping
     public ResponseEntity<Void> removeResponseData(@RequestParam @RouteKey String key) {
         log.debug("Admin data controller. Delete response data for key: {}", key);
-        return service.removeResponseData(key) != null ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+        return service.removeResponseData(key) ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 }

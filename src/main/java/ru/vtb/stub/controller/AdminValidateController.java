@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.vtb.stub.service.AdminValidateService;
-import ru.vtb.stub.validate.ResponseKey;
+import ru.vtb.stub.validate.RouteKey;
 
 import java.util.Map;
 
@@ -21,14 +21,14 @@ public class AdminValidateController {
     private AdminValidateService service;
 
     @GetMapping
-    public ResponseEntity<Object> getValidateData(@RequestParam @ResponseKey String key) {
+    public ResponseEntity<Object> getValidateData(@RequestParam @RouteKey String key) {
         log.debug("Admin validate controller. Get validate data for key: {}", key);
         return ResponseEntity.ok(service.getValidateData(key));
     }
 
     @PostMapping
     public ResponseEntity<Void> putValidateData(
-            @RequestParam @ResponseKey String key,
+            @RequestParam @RouteKey String key,
             @RequestBody(required = false) String body,
             @RequestHeader Map<String, String> headers
     ) {
@@ -38,7 +38,7 @@ public class AdminValidateController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> removeValidateData(@RequestParam @ResponseKey String key) {
+    public ResponseEntity<Void> removeValidateData(@RequestParam @RouteKey String key) {
         log.debug("Admin validate controller. Delete validate data for key: {}", key);
         return service.removeValidateData(key) != null ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }

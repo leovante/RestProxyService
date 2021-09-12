@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.vtb.stub.service.AdminErrorService;
-import ru.vtb.stub.validate.ResponseKey;
+import ru.vtb.stub.validate.RouteKey;
 
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
@@ -22,14 +22,14 @@ public class AdminErrorController {
     private AdminErrorService service;
 
     @GetMapping
-    public ResponseEntity<Object> getErrorData(@RequestParam @ResponseKey String key) {
+    public ResponseEntity<Object> getErrorData(@RequestParam @RouteKey String key) {
         log.debug("Admin error controller. Get error data for key: {}", key);
         return ResponseEntity.ok(service.getErrorData(key));
     }
 
     @PostMapping
     public ResponseEntity<Void> putErrorData(
-            @RequestParam @ResponseKey String key,
+            @RequestParam @RouteKey String key,
             @RequestParam(required = false) @Digits(integer = 3, fraction = 0) @Min(value = 400) Integer status,
             @RequestParam(required = false) String message
     ) {
@@ -39,7 +39,7 @@ public class AdminErrorController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> removeErrorData(@RequestParam @ResponseKey String key) {
+    public ResponseEntity<Void> removeErrorData(@RequestParam @RouteKey String key) {
         log.debug("Admin error controller. Delete error data for key: {}", key);
         return service.removeErrorData(key) != null ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }

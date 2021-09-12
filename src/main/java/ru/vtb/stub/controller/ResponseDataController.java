@@ -11,6 +11,7 @@ import java.util.Map;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static ru.vtb.stub.data.ResponseData.responseData;
+import static ru.vtb.stub.utils.CommonUtils.KEY_DELIMITER;
 
 @Slf4j
 @RestController
@@ -18,7 +19,7 @@ public class ResponseDataController {
 
     @RequestMapping(path = "${path.response}", method = {GET, POST, PUT, PATCH, DELETE})
     public ResponseEntity<Object> response(@RequestParam String key) {
-        var request = key.split(":");
+        var request = key.split(KEY_DELIMITER);
 
         HttpStatus status = (responseData.get(key).get("status") != null)
                 ? HttpStatus.valueOf((Integer) responseData.get(key).get("status"))

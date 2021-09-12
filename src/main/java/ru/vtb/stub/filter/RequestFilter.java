@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import static java.net.URLDecoder.decode;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static ru.vtb.stub.data.ResponseData.*;
+import static ru.vtb.stub.utils.CommonUtils.KEY_DELIMITER;
 import static ru.vtb.stub.utils.CommonUtils.getRequestQueryParams;
 
 @Slf4j
@@ -48,7 +49,7 @@ public class RequestFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-        String key = request.getRequestURI() + ":" + request.getMethod();
+        String key = request.getRequestURI() + KEY_DELIMITER + request.getMethod();
 
         // Cannot set admin routes
         if (admin.containsValue(request.getRequestURI())) {
@@ -60,7 +61,7 @@ public class RequestFilter implements Filter {
                 return;
             }
             var requestQueryParams = getRequestQueryParams(queryString);
-            String routeToSet = decode(requestQueryParams.get("key"), UTF_8.name()).split(":")[0];
+            String routeToSet = decode(requestQueryParams.get("key"), UTF_8.name()).split(KEY_DELIMITER)[0];
             if (admin.containsValue(routeToSet)) {
                 String error = "Route: " + routeToSet + " is admin route. See application.yaml --> path.admin";
                 log.error(error);

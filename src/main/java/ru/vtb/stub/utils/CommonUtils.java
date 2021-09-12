@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 public class CommonUtils {
 
     public static final String ALL = "ALL";
+    public static final String KEY_DELIMITER = ":";
 
     public static Map<String, String> getRequestQueryParams(String queryString) {
         return Arrays.stream(queryString.split("&"))

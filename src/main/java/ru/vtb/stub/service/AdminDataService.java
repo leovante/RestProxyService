@@ -59,7 +59,7 @@ public class AdminDataService {
     }
 
     public boolean removeResponseData(String key) {
-        String[] parts = key.split(":", 2);
+        String[] parts = key.split(KEY_DELIMITER, 2);
 
         if (parts[1].equals(ALL)) {
             String team = parts[0].substring(1);

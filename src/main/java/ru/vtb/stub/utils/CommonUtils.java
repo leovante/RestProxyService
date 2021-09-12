@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -30,7 +31,12 @@ public class CommonUtils {
         }
     }
 
-    public static boolean removeAllKeys(Map<String, Map<String, Object>> data, String keyStarts, String team, String service) {
+    public static boolean removeAllKeys(Map<String, Map<String, Object>> data, String keyStarts, Set<String> teams, String service) {
+        String team = keyStarts.substring(1);
+        if (!teams.contains(team)) {
+            log.debug("{}. No team: '{}' in config file", service, team);
+            return false;
+        }
         var keysToDelete = data.keySet().stream().filter(k -> k.startsWith(keyStarts)).collect(Collectors.toSet());
         if (keysToDelete.isEmpty()) {
             log.debug("{}. No data for: {}", service, team);

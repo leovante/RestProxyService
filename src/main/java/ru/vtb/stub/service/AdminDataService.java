@@ -60,15 +60,8 @@ public class AdminDataService {
 
     public boolean removeResponseData(String key) {
         String[] parts = key.split(KEY_DELIMITER, 2);
-
-        if (parts[1].equals(ALL)) {
-            String team = parts[0].substring(1);
-            if (!teams.contains(team)) {
-                log.debug("{}. No team: {} in application.yaml", SERVICE, team);
-                return false;
-            }
-            return removeAllKeys(responseData, parts[0], team, SERVICE);
-        } else
-            return removeOneKey(responseData, key, SERVICE);
+        return parts[1].equals(ALL)
+                ? removeAllKeys(responseData, parts[0], teams, SERVICE)
+                : removeOneKey(responseData, key, SERVICE);
     }
 }

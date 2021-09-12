@@ -40,6 +40,6 @@ public class AdminValidateController {
     @DeleteMapping
     public ResponseEntity<Void> removeValidateData(@RequestParam @RouteKey String key) {
         log.debug("Admin validate controller. Delete validate data for key: {}", key);
-        return service.removeValidateData(key) != null ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+        return service.removeValidateData(key) ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 }

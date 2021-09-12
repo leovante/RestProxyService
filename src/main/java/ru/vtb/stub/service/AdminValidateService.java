@@ -1,34 +1,35 @@
 package ru.vtb.stub.service;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.json.JSONTokener;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import static ru.vtb.stub.data.ResponseData.validateData;
+import static ru.vtb.stub.utils.CommonUtils.*;
 
 @Slf4j
+@Setter
 @Service
+@ConfigurationProperties(prefix = "prefix")
 public class AdminValidateService {
+    
+    private String header;
+    private String query;
+    private Set<String> teams;
 
-    @Value("${prefix.header}")
-    private  String headerPrefix;
-    @Value("${prefix.query}")
-    private  String queryPrefix;
+    private static final String SERVICE = "Admin validate service";
 
     public Object getValidateData(String key) {
-        var data = validateData.get(key);
-        if (data != null)
-            log.debug("Admin validate service. Get validate data: {}", data);
-        else
-            log.debug("Admin validate service. No validate data for key: {}", key);
-        return data;
+        return getData(validateData, key, SERVICE);
     }
 
     public void putValidateData(String key, Map<String, String> headers, String body) {
@@ -36,14 +37,14 @@ public class AdminValidateService {
         var data = validateData.get(key);
 
         headers.forEach((k, v) -> {
-            if (k.startsWith(queryPrefix)) {
-                log.debug("Admin validate service. Set expected query: {} --> {}", k, v);
+            if (k.startsWith(query)) {
+                log.debug("{}. Set query: {} --> {}", SERVICE, k, v);
                 data.put(k, v);
             }
         });
         headers.forEach((k, v) -> {
-            if (k.startsWith(headerPrefix)) {
-                log.debug("Admin validate service. Set expected header: {} --> {}", k, v);
+            if (k.startsWith(header)) {
+                log.debug("{}. Set header: {} --> {}", SERVICE, k, v);
                 data.put(k, v);
             }
         });
@@ -51,26 +52,24 @@ public class AdminValidateService {
             try {
                 new JSONTokener(body);
             } catch (JSONException e) {
-                log.debug("Admin validate service. Body is not a JSON: {}", body);
+                log.debug("{}. Body is not a JSON: {}", SERVICE, body);
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
             }
-            log.debug("Admin validate service. Set expected json schema: {}", body);
+            log.debug("{}. Set json schema --> {}", SERVICE, body);
             data.put("body", body);
         }
 
         if (data.isEmpty()) {
-            log.debug("Admin validate service. Data does not contain body and not headers starts with 'query-' or 'header-'");
+            log.error("{}. Data does not contain body and not headers starts with '{}' or '{}'", query, header, SERVICE);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Validate data does not contain body and not headers starts with 'query-' or 'header-'");
+                    "Validate data does not contain body and not headers starts with '" + query + "' or '" + header + "'");
         }
     }
 
-    public Object removeValidateData(String key) {
-        var data = validateData.remove(key);
-        if (data != null)
-            log.debug("Admin validate service. Delete validate data: {}", data);
-        else
-            log.debug("Admin validate service. No validate data for key: {}", key);
-        return data;
+    public boolean removeValidateData(String key) {
+        String[] parts = key.split(KEY_DELIMITER, 2);
+        return parts[1].equals(ALL)
+                ? removeAllKeys(validateData, parts[0], teams, SERVICE)
+                : removeOneKey(validateData, key, SERVICE);
     }
 }

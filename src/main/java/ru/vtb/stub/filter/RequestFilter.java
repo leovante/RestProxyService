@@ -38,9 +38,9 @@ public class RequestFilter implements Filter {
     @Value("${response.error.message}")
     private String defaultErrorMessage;
     @Value("${prefix.header}")
-    private  String headerPrefix;
+    private String headerPrefix;
     @Value("${prefix.query}")
-    private  String queryPrefix;
+    private String queryPrefix;
 
     private Map<String, String> admin;
 
@@ -107,7 +107,7 @@ public class RequestFilter implements Filter {
             filterChain.doFilter(wrappedRequest, servletResponse);
     }
 
-    private String validateQueryParams(RequestWrapper wrappedRequest, Map<String, String> data) {
+    private String validateQueryParams(RequestWrapper wrappedRequest, Map<String, Object> data) {
         var exceptedQueryParams = data.keySet().stream()
                 .filter(k -> k.startsWith(queryPrefix))
                 .collect(Collectors.toMap(k -> k.split(queryPrefix, 2)[1], data::get));
@@ -123,7 +123,7 @@ public class RequestFilter implements Filter {
                 errors.add("excepted param: '" + entry.getKey() + "' not found");
                 continue;
             }
-            Pattern pattern = Pattern.compile(entry.getValue());
+            Pattern pattern = Pattern.compile((String) entry.getValue());
             Matcher matcher = pattern.matcher(requestQueryParams.get(entry.getKey()));
             if (!matcher.matches()) {
                 errors.add("param: '" + entry.getKey() + "' is not matches: " + entry.getValue());
@@ -133,7 +133,7 @@ public class RequestFilter implements Filter {
         return null;
     }
 
-    private String validateHeaders(HttpServletRequest request, Map<String, String> data) {
+    private String validateHeaders(HttpServletRequest request, Map<String, Object> data) {
         var exceptedHeaders = data.keySet().stream()
                 .filter(k -> k.startsWith(headerPrefix))
                 .collect(Collectors.toMap(k -> k.split(headerPrefix, 2)[1], data::get));
@@ -154,7 +154,7 @@ public class RequestFilter implements Filter {
                 errors.add("excepted header: '" + entry.getKey() + "' not found");
                 continue;
             }
-            Pattern pattern = Pattern.compile(entry.getValue());
+            Pattern pattern = Pattern.compile((String) entry.getValue());
             Matcher matcher = pattern.matcher(desiredRequestHeaders.get(entry.getKey()));
             if (!matcher.matches()) {
                 errors.add("header: '" + entry.getKey() + "'='" + desiredRequestHeaders.get(entry.getKey()) + "' is not matches: " + entry.getValue());
@@ -164,7 +164,7 @@ public class RequestFilter implements Filter {
         return null;
     }
 
-    private String validateJsonBody(RequestWrapper request, Map<String, String> data) {
+    private String validateJsonBody(RequestWrapper request, Map<String, Object> data) {
         if (data.get("body") == null) return null;
 
         String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
@@ -176,7 +176,7 @@ public class RequestFilter implements Filter {
             return e.getMessage();
         }
 
-        JSONObject jsonSchema = new JSONObject(new JSONTokener(data.get("body")));
+        JSONObject jsonSchema = new JSONObject(new JSONTokener((String) data.get("body")));
         JSONObject jsonSubject = new JSONObject(new JSONTokener(body));
 
         Schema schema = SchemaLoader.load(jsonSchema);

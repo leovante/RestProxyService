@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static ru.vtb.stub.data.ResponseData.responseData;
-
 @Slf4j
 public class CommonUtils {
 

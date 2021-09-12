@@ -38,13 +38,13 @@ public class AdminValidateService {
 
         headers.forEach((k, v) -> {
             if (k.startsWith(query)) {
-                log.debug("{}. Set query: {} --> {}", SERVICE, k, v);
+                log.debug("{}. Set query --> {}: {}", SERVICE, k, v);
                 data.put(k, v);
             }
         });
         headers.forEach((k, v) -> {
             if (k.startsWith(header)) {
-                log.debug("{}. Set header: {} --> {}", SERVICE, k, v);
+                log.debug("{}. Set header --> {}: {}", SERVICE, k, v);
                 data.put(k, v);
             }
         });

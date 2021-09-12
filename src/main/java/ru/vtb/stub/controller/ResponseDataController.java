@@ -25,7 +25,7 @@ public class ResponseDataController {
                 ? HttpStatus.valueOf((Integer) responseData.get(key).get("status"))
                 : setResponseStatus(request[1]);
 
-        StringBuilder info = new StringBuilder("Response data controller. Send response. Status: " + status);
+        StringBuilder info = new StringBuilder("Response data controller --> " + status);
         var response = ResponseEntity.status(status);
 
         if (responseData.get(key).get("headers") != null) {

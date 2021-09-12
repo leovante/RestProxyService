@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static ru.vtb.stub.data.ResponseData.responseData;
+
 @Slf4j
 public class CommonUtils {
 
@@ -19,10 +21,19 @@ public class CommonUtils {
                 .collect(Collectors.toMap(p -> p[0], p -> p[1]));
     }
 
+    public static Object getData(Map<String, Map<String, Object>> map, String key, String service) {
+        var data = map.get(key);
+        if (data != null)
+            log.debug("{} --> {}", service, data);
+        else
+            log.debug("{} --> {}", service, key);
+        return data;
+    }
+
     public static boolean removeOneKey(Map<String, Map<String, Object>> map, String key, String service) {
         var removedData = map.remove(key);
         if (removedData != null) {
-            log.debug("{}. Deleted data: {}", service, removedData);
+            log.debug("{} --> {} deleted", service, removedData);
             return true;
         }
         else {
@@ -44,7 +55,7 @@ public class CommonUtils {
         }
         keysToDelete.forEach(k -> {
             data.remove(k);
-            log.debug("{}. Deleted data: {}", service, k);
+            log.debug("{} --> {} deleted", service, k);
         });
         return true;
     }

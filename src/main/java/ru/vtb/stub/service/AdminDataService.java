@@ -25,12 +25,7 @@ public class AdminDataService {
     private static final String SERVICE = "Admin data service";
 
     public Object getResponseData(String key) {
-        var data = responseData.get(key);
-        if (data != null)
-            log.debug("{}. Get response data: {}", SERVICE, data);
-        else
-            log.debug("{}. No response data for: {}", SERVICE, key);
-        return data;
+        return getData(responseData, key, SERVICE);
     }
 
     public void putResponseData(String key, Integer status, Map<String, String> headers, Object body) {
@@ -45,15 +40,15 @@ public class AdminDataService {
             log.debug("{}. Response status, headers and body are not passed", SERVICE);
 
         if (status != null) {
-            log.debug("{}. Set response status: {}", SERVICE, status);
+            log.debug("{}. Set status --> {}", SERVICE, status);
             data.put("status", status);
         }
         if (!responseHeaders.isEmpty()) {
-            responseHeaders.forEach((k, v) -> log.debug("{}. Set response header: {} --> {}", SERVICE, k, v));
+            responseHeaders.forEach((k, v) -> log.debug("{}. Set header: {} --> {}", SERVICE, k, v));
             data.put("headers", responseHeaders);
         }
         if (body != null) {
-            log.debug("{}. Set response body: {}", SERVICE, body);
+            log.debug("{}. Set body --> {}", SERVICE, body);
             data.put("body", body);
         }
     }

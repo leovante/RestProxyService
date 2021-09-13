@@ -31,7 +31,7 @@ public class CommonUtils {
     public static boolean removeOneKey(Map<String, Map<String, Object>> map, String key, String service) {
         var removedData = map.remove(key);
         if (removedData != null) {
-            log.debug("{} --> {} deleted", service, removedData);
+            log.debug("{} --> {} --> deleted", service, removedData);
             return true;
         }
         else {
@@ -53,7 +53,7 @@ public class CommonUtils {
         }
         keysToDelete.forEach(k -> {
             data.remove(k);
-            log.debug("{} --> {} deleted", service, k);
+            log.debug("{} --> {} --> deleted", service, k);
         });
         return true;
     }

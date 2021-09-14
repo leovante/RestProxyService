@@ -15,7 +15,7 @@ import static org.springframework.cloud.netflix.zuul.filters.ZuulProperties.Zuul
 @Slf4j
 @Validated
 @RestController
-@RequestMapping("${path.admin.proxy}")
+@RequestMapping("${path.proxy}")
 public class ZuulProxyController {
 
     @Autowired

@@ -24,72 +24,76 @@ import java.util.stream.Collectors;
 import static java.net.URLDecoder.decode;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static ru.vtb.stub.data.ResponseData.*;
-import static ru.vtb.stub.utils.CommonUtils.KEY_DELIMITER;
-import static ru.vtb.stub.utils.CommonUtils.getRequestQueryParams;
 
 @Slf4j
 @Setter
 @Component
-@ConfigurationProperties(prefix = "path")
 public class RequestFilter implements Filter {
 
+    @Value("${path.admin}")
+    private String adminPath;
     @Value("${path.response}")
     private String redirectPath;
     @Value("${response.error.message}")
     private String defaultErrorMessage;
-    @Value("${prefix.header}")
-    private String headerPrefix;
-    @Value("${prefix.query}")
-    private String queryPrefix;
 
     private Map<String, String> admin;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
+
+
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-
-        String key = request.getRequestURI() + KEY_DELIMITER + request.getMethod();
-
-        // Cannot set admin routes
-        if (admin.containsValue(request.getRequestURI())) {
-            String queryString = request.getQueryString();
-            if (!queryString.contains("key=")) {
-                String error = "Request filter. Request to: " + request.getRequestURI() + " without required param 'key'";
-                log.error(error);
-                response.sendError(500, error);
-                return;
-            }
-            var requestQueryParams = getRequestQueryParams(queryString);
-            String routeToSet = decode(requestQueryParams.get("key"), UTF_8.name()).split(KEY_DELIMITER)[0];
-            if (admin.containsValue(routeToSet)) {
-                String error = "Route: " + routeToSet + " is admin route. See application.yaml --> path.admin";
-                log.error(error);
-                response.sendError(500, error);
-                return;
-            }
-        } else
-            log.info("Request filter. Request to: {}", key);
 
         // Without wrapper - exception:
         // java.lang.IllegalStateException: getReader() has already been called for this request
         // in filterChain.doFilter(servletRequest, servletResponse);
-        RequestWrapper wrappedRequest = new RequestWrapper(request);
+        RequestWrapper wrappedRequest = new RequestWrapper((HttpServletRequest) servletRequest);
 
-        if (validateData.get(key) != null) {
-            List<String> errors = new ArrayList<>();
-            errors.add(validateQueryParams(wrappedRequest, validateData.get(key)));
-            errors.add(validateHeaders(wrappedRequest, validateData.get(key)));
-            errors.add(validateJsonBody(wrappedRequest, validateData.get(key)));
-            errors.removeAll(Collections.singleton(null));
-            if (!errors.isEmpty()) {
-                String errorMessage = String.join("; ", errors);
-                log.error("\tValidation errors: {}", errorMessage);
-                response.sendError(500, errorMessage);
-                return;
-            }
-            log.info("\tSuccessful request validation");
+        if (wrappedRequest.getRequestURI().equals(adminPath)) {
+            filterChain.doFilter(wrappedRequest, servletResponse);
+            return;
         }
+
+
+        String key = wrappedRequest.getRequestURI() + ":" + wrappedRequest.getMethod();
+
+//        String body = wrappedRequest.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+        // Cannot set admin routes
+//        if (admin.containsValue(request.getRequestURI())) {
+//            String queryString = request.getQueryString();
+//            if (!queryString.contains("key=")) {
+//                String error = "Request filter. Request to: " + request.getRequestURI() + " without required param 'key'";
+//                log.error(error);
+//                response.sendError(500, error);
+//                return;
+//            }
+//            var requestQueryParams = getRequestQueryParams(queryString);
+//            String routeToSet = decode(requestQueryParams.get("key"), UTF_8.name()).split(KEY_DELIMITER)[0];
+//            if (admin.containsValue(routeToSet)) {
+//                String error = "Route: " + routeToSet + " is admin route. See application.yaml --> path.admin";
+//                log.error(error);
+//                response.sendError(500, error);
+//                return;
+//            }
+//        } else
+//            log.info("Request filter. Request to: {}", key);
+
+//        if (validateData.get(key) != null) {
+//            List<String> errors = new ArrayList<>();
+//            errors.add(validateQueryParams(wrappedRequest, validateData.get(key)));
+//            errors.add(validateHeaders(wrappedRequest, validateData.get(key)));
+//            errors.add(validateJsonBody(wrappedRequest, validateData.get(key)));
+//            errors.removeAll(Collections.singleton(null));
+//            if (!errors.isEmpty()) {
+//                String errorMessage = String.join("; ", errors);
+//                log.error("\tValidation errors: {}", errorMessage);
+//                response.sendError(500, errorMessage);
+//                return;
+//            }
+//            log.info("\tSuccessful request validation");
+//        }
 
         if (errorData.get(key) != null) {
             var error = errorData.get(key);
@@ -107,84 +111,84 @@ public class RequestFilter implements Filter {
             filterChain.doFilter(wrappedRequest, servletResponse);
     }
 
-    private String validateQueryParams(RequestWrapper wrappedRequest, Map<String, Object> data) {
-        var exceptedQueryParams = data.keySet().stream()
-                .filter(k -> k.startsWith(queryPrefix))
-                .collect(Collectors.toMap(k -> k.split(queryPrefix, 2)[1], data::get));
-
-        if (exceptedQueryParams.isEmpty()) return null;
-
-        if (wrappedRequest.getQueryString() == null) return "empty required query params";
-        var requestQueryParams = getRequestQueryParams(wrappedRequest.getQueryString());
-
-        List<String> errors = new ArrayList<>();
-        for (var entry : exceptedQueryParams.entrySet()) {
-            if (!requestQueryParams.containsKey(entry.getKey())) {
-                errors.add("excepted param: '" + entry.getKey() + "' not found");
-                continue;
-            }
-            Pattern pattern = Pattern.compile((String) entry.getValue());
-            Matcher matcher = pattern.matcher(requestQueryParams.get(entry.getKey()));
-            if (!matcher.matches()) {
-                errors.add("param: '" + entry.getKey() + "' is not matches: " + entry.getValue());
-            }
-        }
-        if (!errors.isEmpty()) return String.join("; ", errors);
-        return null;
-    }
-
-    private String validateHeaders(HttpServletRequest request, Map<String, Object> data) {
-        var exceptedHeaders = data.keySet().stream()
-                .filter(k -> k.startsWith(headerPrefix))
-                .collect(Collectors.toMap(k -> k.split(headerPrefix, 2)[1], data::get));
-        if (exceptedHeaders.isEmpty()) return null;
-
-        var requestHeaderNames = request.getHeaderNames();
-        Map<String, String> desiredRequestHeaders = new HashMap<>();
-        while (requestHeaderNames.hasMoreElements()) {
-            String headerName = requestHeaderNames.nextElement();
-            if (exceptedHeaders.containsKey(headerName))
-                desiredRequestHeaders.put(headerName, request.getHeader(headerName));
-        }
-        if (desiredRequestHeaders.isEmpty()) return "empty required headers";
-
-        List<String> errors = new ArrayList<>();
-        for (var entry : exceptedHeaders.entrySet()) {
-            if (!desiredRequestHeaders.containsKey(entry.getKey())) {
-                errors.add("excepted header: '" + entry.getKey() + "' not found");
-                continue;
-            }
-            Pattern pattern = Pattern.compile((String) entry.getValue());
-            Matcher matcher = pattern.matcher(desiredRequestHeaders.get(entry.getKey()));
-            if (!matcher.matches()) {
-                errors.add("header: '" + entry.getKey() + "'='" + desiredRequestHeaders.get(entry.getKey()) + "' is not matches: " + entry.getValue());
-            }
-        }
-        if (!errors.isEmpty()) return String.join("; ", errors);
-        return null;
-    }
-
-    private String validateJsonBody(RequestWrapper request, Map<String, Object> data) {
-        if (data.get("body") == null) return null;
-
-        String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-        if (body.isEmpty()) return "required body is empty";
-
-        try { // only JSON now
-            new JSONTokener(body);
-        } catch (JSONException e) {
-            return e.getMessage();
-        }
-
-        JSONObject jsonSchema = new JSONObject(new JSONTokener((String) data.get("body")));
-        JSONObject jsonSubject = new JSONObject(new JSONTokener(body));
-
-        Schema schema = SchemaLoader.load(jsonSchema);
-        try {
-            schema.validate(jsonSubject);
-        } catch (ValidationException e) {
-            return e.getMessage();
-        }
-        return null;
-    }
+//    private String validateQueryParams(RequestWrapper wrappedRequest, Map<String, Object> data) {
+//        var exceptedQueryParams = data.keySet().stream()
+//                .filter(k -> k.startsWith(queryPrefix))
+//                .collect(Collectors.toMap(k -> k.split(queryPrefix, 2)[1], data::get));
+//
+//        if (exceptedQueryParams.isEmpty()) return null;
+//
+//        if (wrappedRequest.getQueryString() == null) return "empty required query params";
+//        var requestQueryParams = getRequestQueryParams(wrappedRequest.getQueryString());
+//
+//        List<String> errors = new ArrayList<>();
+//        for (var entry : exceptedQueryParams.entrySet()) {
+//            if (!requestQueryParams.containsKey(entry.getKey())) {
+//                errors.add("excepted param: '" + entry.getKey() + "' not found");
+//                continue;
+//            }
+//            Pattern pattern = Pattern.compile((String) entry.getValue());
+//            Matcher matcher = pattern.matcher(requestQueryParams.get(entry.getKey()));
+//            if (!matcher.matches()) {
+//                errors.add("param: '" + entry.getKey() + "' is not matches: " + entry.getValue());
+//            }
+//        }
+//        if (!errors.isEmpty()) return String.join("; ", errors);
+//        return null;
+//    }
+//
+//    private String validateHeaders(HttpServletRequest request, Map<String, Object> data) {
+//        var exceptedHeaders = data.keySet().stream()
+//                .filter(k -> k.startsWith(headerPrefix))
+//                .collect(Collectors.toMap(k -> k.split(headerPrefix, 2)[1], data::get));
+//        if (exceptedHeaders.isEmpty()) return null;
+//
+//        var requestHeaderNames = request.getHeaderNames();
+//        Map<String, String> desiredRequestHeaders = new HashMap<>();
+//        while (requestHeaderNames.hasMoreElements()) {
+//            String headerName = requestHeaderNames.nextElement();
+//            if (exceptedHeaders.containsKey(headerName))
+//                desiredRequestHeaders.put(headerName, request.getHeader(headerName));
+//        }
+//        if (desiredRequestHeaders.isEmpty()) return "empty required headers";
+//
+//        List<String> errors = new ArrayList<>();
+//        for (var entry : exceptedHeaders.entrySet()) {
+//            if (!desiredRequestHeaders.containsKey(entry.getKey())) {
+//                errors.add("excepted header: '" + entry.getKey() + "' not found");
+//                continue;
+//            }
+//            Pattern pattern = Pattern.compile((String) entry.getValue());
+//            Matcher matcher = pattern.matcher(desiredRequestHeaders.get(entry.getKey()));
+//            if (!matcher.matches()) {
+//                errors.add("header: '" + entry.getKey() + "'='" + desiredRequestHeaders.get(entry.getKey()) + "' is not matches: " + entry.getValue());
+//            }
+//        }
+//        if (!errors.isEmpty()) return String.join("; ", errors);
+//        return null;
+//    }
+//
+//    private String validateJsonBody(RequestWrapper request, Map<String, Object> data) {
+//        if (data.get("body") == null) return null;
+//
+//        String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+//        if (body.isEmpty()) return "required body is empty";
+//
+//        try { // only JSON now
+//            new JSONTokener(body);
+//        } catch (JSONException e) {
+//            return e.getMessage();
+//        }
+//
+//        JSONObject jsonSchema = new JSONObject(new JSONTokener((String) data.get("body")));
+//        JSONObject jsonSubject = new JSONObject(new JSONTokener(body));
+//
+//        Schema schema = SchemaLoader.load(jsonSchema);
+//        try {
+//            schema.validate(jsonSubject);
+//        } catch (ValidationException e) {
+//            return e.getMessage();
+//        }
+//        return null;
+//    }
 }

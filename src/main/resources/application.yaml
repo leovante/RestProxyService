@@ -13,12 +13,9 @@ logging:
     org.springframework.web: INFO
 
 path:
-  admin:
-    validate: /stub/validate
-    error: /stub/error
-    data: /stub/data
-    proxy: /stub/proxy
+  admin: /stub/admin
   response: /stub/response
+  proxy: /stub/proxy
 
 response:
   error:

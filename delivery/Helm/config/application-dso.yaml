@@ -12,16 +12,8 @@ logging:
     org.springframework.web: INFO
 
 path:
-  admin:
-    validate: /stub/validate
-    error: /stub/error
-    data: /stub/data
-    proxy: /stub/proxy
+  admin: /stub/admin
   response: /stub/response
-
-response:
-  error:
-    message: "Stub test error message"
 
 ribbon:
   eureka:
@@ -46,8 +38,6 @@ zuul:
       path: /cbext/fns/egr/info/**
 
 prefix:
-  header: header-
-  query: query-
   teams:
     - onb1
     - onb2

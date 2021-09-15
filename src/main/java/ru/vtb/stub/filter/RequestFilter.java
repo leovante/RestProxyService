@@ -2,28 +2,15 @@ package ru.vtb.stub.filter;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.everit.json.schema.Schema;
-import org.everit.json.schema.ValidationException;
-import org.everit.json.schema.loader.SchemaLoader;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
-import static java.net.URLDecoder.decode;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static ru.vtb.stub.data.ResponseData.*;
+import static ru.vtb.stub.data.ResponseData.dataMap;
 
 @Slf4j
 @Setter
@@ -55,15 +42,17 @@ public class RequestFilter implements Filter {
         var data = dataMap.get(key);
 
         if (data.getValidate() != null) {
-            log.info("TBD - validate");
+            log.info("Validate request - TBD");
+            response.sendError(500, "Validate request - TBD");
+            return;
         }
         if (data.getError() != null) {
-            log.info("Response with error");
+            log.info("Request to: {} --> Response with error: {}", key, data.getError().getStatus());
             response.sendError(data.getError().getStatus(), defaultErrorMessage);
             return;
         }
         if (data.getResponse() != null) {
-            log.info("Redirect to Response controller");
+            log.debug("Request to: {} --> Redirect to Response controller", key);
             wrappedRequest.getRequestDispatcher(redirectPath + "?key=" + key).forward(servletRequest, servletResponse);
         }
 

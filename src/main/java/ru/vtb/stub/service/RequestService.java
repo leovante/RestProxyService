@@ -11,7 +11,7 @@ import static ru.vtb.stub.data.ResponseData.dataMap;
 public class RequestService {
 
     public void putData(StubData data) {
-        String key = "/" + data.getId() + data.getRoute() + ":" + data.getMethod();
+        String key = data.getRoute() + ":" + data.getMethod();
         log.debug("Put data: {} --> {}", key, data);
         dataMap.put(key, data);
     }

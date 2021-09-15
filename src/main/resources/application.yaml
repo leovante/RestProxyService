@@ -43,6 +43,12 @@ ribbon:
 #      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/cbext/fns/egr/info
 #      path: /cbext/fns/egr/info/**
 
+zuul:
+  routes:
+    test:
+      url: http://localhost:8888/example/path
+      path: /example/path/**
+
 prefix:
   header: header-
   query: query-

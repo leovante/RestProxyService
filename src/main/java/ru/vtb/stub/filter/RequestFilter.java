@@ -62,7 +62,7 @@ public class RequestFilter implements Filter {
             response.sendError(data.getError().getStatus(), defaultErrorMessage);
             return;
         }
-        if (data.getData() != null) {
+        if (data.getResponse() != null) {
             log.info("Redirect to Response controller");
             wrappedRequest.getRequestDispatcher(redirectPath + "?key=" + key).forward(servletRequest, servletResponse);
         }

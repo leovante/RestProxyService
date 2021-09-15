@@ -16,7 +16,7 @@ public class ResponseController {
     @RequestMapping(path = "${path.response}", method = {GET, POST, PUT, PATCH, DELETE})
     public ResponseEntity<Object> response(@RequestParam String key) {
 
-        var data = dataMap.get(key).getData();
+        var data = dataMap.get(key).getResponse();
         log.info("Request to: {} --> {}", key, data);
 
         var response = ResponseEntity.status(data.getStatus());

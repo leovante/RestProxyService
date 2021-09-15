@@ -8,6 +8,8 @@ import ru.vtb.stub.domain.StubData;
 import ru.vtb.stub.service.RequestService;
 import ru.vtb.stub.validate.RouteKey;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("${path.admin}")
 public class RequestController {
@@ -16,7 +18,7 @@ public class RequestController {
     private RequestService service;
 
     @PostMapping
-    public ResponseEntity<Void> putData(@RequestBody StubData data) {
+    public ResponseEntity<Void> putData(@Valid @RequestBody StubData data) {
         service.putData(data);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -27,7 +29,7 @@ public class RequestController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> removeAllData(@RequestParam @RouteKey String key) {
+    public ResponseEntity<Void> removeData(@RequestParam @RouteKey String key) {
         service.removeAllData(key);
         return ResponseEntity.ok().build();
     }

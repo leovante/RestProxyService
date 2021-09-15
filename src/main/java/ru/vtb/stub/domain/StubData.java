@@ -1,6 +1,5 @@
 package ru.vtb.stub.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -48,17 +47,10 @@ public class StubData {
      *  }
      */
 
-    @JsonProperty(required = true)
     private String id;
-
-    @JsonProperty(required = true)
     private String route;
-
-    @JsonProperty(required = true)
     private String method;
-
     private DataBlock data;
     private DataBlock error;
     private DataBlock validate;
-
 }

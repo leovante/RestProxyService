@@ -37,29 +37,37 @@ public class RequestFilter implements Filter {
     @Value("${response.error.message}")
     private String defaultErrorMessage;
 
-    private Map<String, String> admin;
-
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
-
-
-        HttpServletResponse response = (HttpServletResponse) servletResponse;
-
         // Without wrapper - exception:
         // java.lang.IllegalStateException: getReader() has already been called for this request
         // in filterChain.doFilter(servletRequest, servletResponse);
         RequestWrapper wrappedRequest = new RequestWrapper((HttpServletRequest) servletRequest);
+        HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-        if (wrappedRequest.getRequestURI().equals(adminPath)) {
+        String key = wrappedRequest.getRequestURI() + ":" + wrappedRequest.getMethod();
+
+        if (wrappedRequest.getRequestURI().equals(adminPath) || !dataMap.containsKey(key)) {
             filterChain.doFilter(wrappedRequest, servletResponse);
             return;
         }
 
+        var data = dataMap.get(key);
 
-        String key = wrappedRequest.getRequestURI() + ":" + wrappedRequest.getMethod();
+        if (data.getValidate() != null) {
+            log.info("TBD - validate");
+        }
+        if (data.getError() != null) {
+            log.info("Response with error");
+            response.sendError(data.getError().getStatus(), defaultErrorMessage);
+            return;
+        }
+        if (data.getData() != null) {
+            log.info("Redirect to Response controller");
+            wrappedRequest.getRequestDispatcher(redirectPath + "?key=" + key).forward(servletRequest, servletResponse);
+        }
 
-//        String body = wrappedRequest.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+
         // Cannot set admin routes
 //        if (admin.containsValue(request.getRequestURI())) {
 //            String queryString = request.getQueryString();
@@ -95,20 +103,20 @@ public class RequestFilter implements Filter {
 //            log.info("\tSuccessful request validation");
 //        }
 
-        if (errorData.get(key) != null) {
-            var error = errorData.get(key);
-            var status = (Integer) error.get("status");
-            String message = error.get("message") != null ? (String) error.get("message") : defaultErrorMessage;
-            log.error("\tFound data to send error message. Status code: {}. Message: {}", status, message);
-            response.sendError(status, message);
-            return;
-        }
-
-        if (responseData.get(key) != null) {
-            log.info("\tRedirect to Response data controller");
-            wrappedRequest.getRequestDispatcher(redirectPath + "?key=" + key).forward(servletRequest, servletResponse);
-        } else
-            filterChain.doFilter(wrappedRequest, servletResponse);
+//        if (errorData.get(key) != null) {
+//            var error = errorData.get(key);
+//            var status = (Integer) error.get("status");
+//            String message = error.get("message") != null ? (String) error.get("message") : defaultErrorMessage;
+//            log.error("\tFound data to send error message. Status code: {}. Message: {}", status, message);
+//            response.sendError(status, message);
+//            return;
+//        }
+//
+//        if (responseData.get(key) != null) {
+//            log.info("\tRedirect to Response data controller");
+//            wrappedRequest.getRequestDispatcher(redirectPath + "?key=" + key).forward(servletRequest, servletResponse);
+//        } else
+//            filterChain.doFilter(wrappedRequest, servletResponse);
     }
 
 //    private String validateQueryParams(RequestWrapper wrappedRequest, Map<String, Object> data) {

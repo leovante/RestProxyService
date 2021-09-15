@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static ru.vtb.stub.data.ResponseData.dataMap;
+import static ru.vtb.stub.data.DataMap.dataMap;
 
 @Slf4j
 @Service
@@ -46,15 +46,14 @@ public class RequestService {
         var keys = dataMap.keySet().stream()
                 .filter(k -> k.startsWith("/" + team))
                 .collect(Collectors.toList());
-
-        if (keys.isEmpty()) return new StubData[]{};
+        if (keys.isEmpty()) return null;
 
         log.debug("Start deleting team '{}' data...", team);
         List<StubData> removed = new ArrayList<>();
         keys.forEach(k -> {
             var data = dataMap.remove(k);
             removed.add(data);
-            log.debug("Delete data: {} --> {}, key, data", k, data);
+            log.debug("Delete data: {} --> {}", k, data);
         });
         return removed.toArray(StubData[]::new);
     }

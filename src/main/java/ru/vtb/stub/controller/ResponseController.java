@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
-import static ru.vtb.stub.data.ResponseData.dataMap;
+import static ru.vtb.stub.data.DataMap.dataMap;
 
 @Slf4j
 @RestController
@@ -21,7 +21,7 @@ public class ResponseController {
 
         var response = ResponseEntity.status(data.getStatus());
 
-        if(data.getHeaders() != null && !data.getHeaders().isEmpty()) {
+        if (data.getHeaders() != null && !data.getHeaders().isEmpty()) {
             data.getHeaders().forEach(h -> response.header(h.getName(), h.getValue()));
         }
         return data.getBody() != null ? response.body(data.getBody()) : response.build();

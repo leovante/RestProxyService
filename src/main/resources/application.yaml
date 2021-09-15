@@ -15,46 +15,33 @@ logging:
 path:
   admin: /stub/admin
   response: /stub/response
-  proxy: /stub/proxy
-
-response:
-  error:
-    message: "Stub test error message"
 
 ribbon:
   eureka:
     enabled: false
 
-#zuul:
-#  routes:
-#    session:
-#      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/session
-#      path: /session/**
-#    session-onb:
-#      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/onb/session
-#      path: /onb/session/**
-#    card-ul:
-#      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/onb/api/v1/etalons/get
-#      path: /onb/api/v1/etalons/get/**
-#    card-fl:
-#      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/person/get
-#      path: /person/get/**
-#    egr:
-#      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/cbext/fns/egr/info
-#      path: /cbext/fns/egr/info/**
-
 zuul:
   routes:
-    test:
-      url: http://localhost:8888/example/path
-      path: /example/path/**
+    session:
+      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/session
+      path: /session/**
+    session-onb:
+      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/onb/session
+      path: /onb/session/**
+    card-ul:
+      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/onb/api/v1/etalons/get
+      path: /onb/api/v1/etalons/get/**
+    card-fl:
+      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/person/get
+      path: /person/get/**
+    egr:
+      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/cbext/fns/egr/info
+      path: /cbext/fns/egr/info/**
 
 prefix:
-  header: header-
-  query: query-
   teams:
-#    - onb1
+    - onb1
     - onb2
-#    - onb3
-#    - onb4
-#    - onb5
+    - onb3
+    - onb4
+    - onb5

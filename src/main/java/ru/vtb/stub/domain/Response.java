@@ -13,11 +13,11 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DataBlock {
+public class Response {
 
     @NotNull
     @Min(200)
-    @Max(999)
+    @Max(399)
     private Integer status;
     private List<Header> headers;
     private JsonNode body;

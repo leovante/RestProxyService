@@ -24,13 +24,24 @@ public class RequestController {
     }
 
     @GetMapping
-    public ResponseEntity<StubData> getData(@RequestParam @RouteKey String key) {
-        return ResponseEntity.ok(service.getData(key));
+    public ResponseEntity<StubData> getDataByKey(@RequestParam @RouteKey String key) {
+        return ResponseEntity.ok(service.getDataByKey(key));
+    }
+
+    @GetMapping("/{team}")
+    public ResponseEntity<StubData[]> getTeamData(@PathVariable String team) {
+        return ResponseEntity.ok(service.getTeamData(team));
     }
 
     @DeleteMapping
     public ResponseEntity<StubData> removeData(@RequestParam @RouteKey String key) {
-        var data = service.removeData(key);
+        var data = service.removeDataByKey(key);
         return data != null ? ResponseEntity.ok(data) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @DeleteMapping("/{team}")
+    public ResponseEntity<StubData[]> removeTeamData(@PathVariable String team) {
+        var data = service.removeTeamData(team);
+        return data.length != 0 ? ResponseEntity.ok(data) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

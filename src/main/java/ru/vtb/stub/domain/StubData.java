@@ -13,13 +13,13 @@ import javax.validation.constraints.NotBlank;
 public class StubData {
 
     @NotBlank
-    private String route;
+    private String team;
+    @NotBlank
+    private String path;
     @NotBlank
     private String method;
     @Valid
-    private DataBlock response;
+    private Response response;
     @Valid
-    private DataBlock error;
-    @Valid
-    private DataBlock validate;
+    private Error error;
 }

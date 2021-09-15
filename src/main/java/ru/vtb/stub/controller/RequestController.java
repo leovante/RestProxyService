@@ -29,8 +29,8 @@ public class RequestController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> removeData(@RequestParam @RouteKey String key) {
-        service.removeAllData(key);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<StubData> removeData(@RequestParam @RouteKey String key) {
+        var data = service.removeData(key);
+        return data != null ? ResponseEntity.ok(data) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

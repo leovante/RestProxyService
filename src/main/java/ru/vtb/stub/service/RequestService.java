@@ -18,12 +18,13 @@ public class RequestService {
 
     public StubData getData(String key) {
         var data = dataMap.get(key);
-        log.debug("Getting data: {} --> {}", key, data);
+        log.debug("Get data: {} --> {}", key, data);
         return data;
     }
 
-    public void removeAllData(String key) {
+    public StubData removeData(String key) {
         var data = dataMap.remove(key);
-        log.debug("Deleting data: {} --> {}", key, data);
+        log.debug("Delete data: {} --> {}", key, data);
+        return data;
     }
 }

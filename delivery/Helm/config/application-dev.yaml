@@ -28,10 +28,10 @@ zuul:
       url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/onb/session
       path: /onb/session/**
     card-ul:
-      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/onb/api/v1/etalons/get
+      url: http://card-ul-stub-stubs-ds1-genr01-onbc-onb-development.apps.ds1-genr01.corp.dev.vtb/onb/api/v1/etalons/get
       path: /onb/api/v1/etalons/get/**
     card-fl:
-      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/person/get
+      url: http://card-fl-stub-stubs-ds1-genr01-onbc-onb-development.apps.ds1-genr01.corp.dev.vtb/person/get
       path: /person/get/**
     egr:
       url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/cbext/fns/egr/info

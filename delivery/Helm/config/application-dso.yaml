@@ -22,7 +22,7 @@ ribbon:
 zuul:
   routes:
     session:
-      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/session
+      url: http://session-stub-stubs-ds1-genr01-onbc-onb-development.apps.ds1-genr01.corp.dev.vtb/session
       path: /session/**
     session-onb:
       url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/onb/session

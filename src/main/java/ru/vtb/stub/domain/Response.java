@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -19,6 +20,7 @@ public class Response {
     @Min(200)
     @Max(399)
     private Integer status;
+    @Valid
     private List<Header> headers;
     private JsonNode body;
 }

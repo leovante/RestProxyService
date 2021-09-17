@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 
 @Data
@@ -12,6 +14,9 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class StubData {
 
+    @Min(100)
+    @Max(60_000)
+    private Integer wait;
     @NotBlank
     private String team;
     @NotBlank

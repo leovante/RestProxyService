@@ -17,3 +17,10 @@ main:
   env:
     # Профиль, используемый Spring Boot
     springProfile: dev
+  resources:
+    requests:
+      cpu: 100m
+      memory: 300Mi
+    limits:
+      cpu: 100m
+      memory: 300Mi

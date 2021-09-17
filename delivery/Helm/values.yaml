@@ -32,7 +32,7 @@ main:
   resources:
     requests:
       cpu: 100m
-      memory: 300Mi
+      memory: 200Mi
     limits:
       cpu: 100m
-      memory: 300Mi
+      memory: 200Mi

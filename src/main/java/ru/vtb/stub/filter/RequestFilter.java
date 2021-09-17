@@ -43,7 +43,11 @@ public class RequestFilter implements Filter {
         }
         if (data.getResponse() != null) {
             log.debug("Request to: {} --> Redirect to Response controller", key);
-            wrappedRequest.getRequestDispatcher(redirectPath + "?key=" + key).forward(servletRequest, servletResponse);
+            String queryString = wrappedRequest.getQueryString();
+            String forward = queryString == null || queryString.isEmpty()
+                    ? redirectPath + "?key=" + key
+                    : redirectPath + "?key=" + key + "&" + queryString;
+            wrappedRequest.getRequestDispatcher(forward).forward(wrappedRequest, servletResponse);
         }
     }
 }

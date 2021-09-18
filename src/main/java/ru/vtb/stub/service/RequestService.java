@@ -39,18 +39,32 @@ public class RequestService {
                 .map(Map.Entry::getValue)
                 .toArray(StubData[]::new);
         log.debug("Get data: {} --> {}", team, data);
-        return data;
+        return data.length == 0 ? null : data;
     }
 
     public StubData removeDataByKey(String key) {
-        var requests = requestMap.remove(key);
-        log.debug("Deleted history: {} --> {}", key, requests);
         var data = dataMap.remove(key);
         log.debug("Deleted data: {} --> {}", key, data);
+        var requests = requestMap.remove(key);
+        if (!ObjectUtils.isEmpty(requests))
+            log.debug("Deleted history: {} --> {}", key, requests);
         return data;
     }
 
     public StubData[] removeTeamData(String team) {
+        var keys = dataMap.keySet().stream()
+                .filter(k -> k.startsWith("/" + team))
+                .collect(Collectors.toList());
+        List<StubData> removed = new ArrayList<>();
+        if (!keys.isEmpty()) {
+            log.debug("Start deleting team '{}' data...", team);
+            keys.forEach(k -> {
+                var data = dataMap.remove(k);
+                removed.add(data);
+                log.debug("Deleted data: {} --> {}", k, data);
+            });
+        }
+
         var requests = requestMap.keySet().stream()
                 .filter(k -> k.startsWith("/" + team))
                 .collect(Collectors.toList());
@@ -59,19 +73,7 @@ public class RequestService {
             log.debug("Deleted all history for: {}", team);
         }
 
-        var keys = dataMap.keySet().stream()
-                .filter(k -> k.startsWith("/" + team))
-                .collect(Collectors.toList());
-        if (keys.isEmpty()) return null;
-
-        log.debug("Start deleting team '{}' data...", team);
-        List<StubData> removed = new ArrayList<>();
-        keys.forEach(k -> {
-            var data = dataMap.remove(k);
-            removed.add(data);
-            log.debug("Deleted data: {} --> {}", k, data);
-        });
-        return removed.toArray(StubData[]::new);
+        return removed.isEmpty() ? null : removed.toArray(StubData[]::new);
     }
 
     public List<Request> getHistoryByKey(String key) {

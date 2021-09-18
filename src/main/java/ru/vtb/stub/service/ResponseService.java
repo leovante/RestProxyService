@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import ru.vtb.stub.domain.Request;
 import ru.vtb.stub.filter.RequestWrapper;
 
@@ -34,10 +35,6 @@ public class ResponseService {
                 .body(servletRequest.getReader().lines().collect(Collectors.joining(System.lineSeparator())))
                 .build();
 
-        var requests = requestMap.computeIfAbsent(key, k -> new ArrayList<>());
-        requests.add(request);
-        log.debug("Updated history: {} --> {}", key, requestMap.get(key));
-
         if (wait != null) {
             log.info("Request to: {} --> Waiting {} ms...", key, wait);
             Thread.sleep(wait);
@@ -45,8 +42,12 @@ public class ResponseService {
         } else
             log.info("Request to: {} --> {}", key, responseData);
 
+        var requests = requestMap.computeIfAbsent(key, k -> new ArrayList<>());
+        requests.add(request);
+        log.debug("Updated history: {} --> {}", key, requestMap.get(key));
+
         var response = ResponseEntity.status(responseData.getStatus());
-        if (responseData.getHeaders() != null && !responseData.getHeaders().isEmpty()) {
+        if (!ObjectUtils.isEmpty(responseData.getHeaders())) {
             responseData.getHeaders().forEach(h -> response.header(h.getName(), h.getValue()));
         }
         return responseData.getBody() != null ? response.body(responseData.getBody()) : response.build();

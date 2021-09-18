@@ -42,7 +42,7 @@ public class RequestFilter implements Filter {
             return;
         }
         if (data.getResponse() != null) {
-            log.debug("Request to: {} --> Redirect to Response controller", key);
+            log.debug("Request to: {} --> Forwarding to Response controller", key);
             String queryString = wrappedRequest.getQueryString();
             String forward = queryString == null || queryString.isEmpty()
                     ? redirectPath + "?key=" + key

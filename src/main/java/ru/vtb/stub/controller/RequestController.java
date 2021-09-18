@@ -1,5 +1,7 @@
 package ru.vtb.stub.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +22,15 @@ public class RequestController {
     private RequestService service;
 
     @PostMapping
+    @Operation(summary = "Установка данных для endpoint и method")
     public ResponseEntity<Void> putData(@Valid @RequestBody StubData data) {
         service.putData(data);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping
+    @Operation(summary = "Получение данных, установленных для endpoint и method")
+    @Parameter(name = "key", description = "Пример: /path/example:GET")
     public ResponseEntity<StubData> getDataByKey(@RequestParam @RouteKey String key) {
         return ResponseEntity.ok(service.getDataByKey(key));
     }

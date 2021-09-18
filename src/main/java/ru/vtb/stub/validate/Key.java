@@ -11,7 +11,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Constraint(validatedBy = {})
-public @interface RouteKey {
+public @interface Key {
     String message() default "{javax.validation.constraints.ResponseKey.message}";
 
     Class<?>[] groups() default {};

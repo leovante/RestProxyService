@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.vtb.stub.domain.Request;
 import ru.vtb.stub.domain.StubData;
 import ru.vtb.stub.service.RequestService;
-import ru.vtb.stub.validate.RouteKey;
+import ru.vtb.stub.validate.Key;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -31,7 +31,7 @@ public class RequestController {
     @GetMapping
     @Operation(summary = "Получение данных, установленных для endpoint и method")
     @Parameter(name = "key", description = "Пример: /path/example:GET")
-    public ResponseEntity<StubData> getDataByKey(@RequestParam @RouteKey String key) {
+    public ResponseEntity<StubData> getDataByKey(@RequestParam @Key String key) {
         return ResponseEntity.ok(service.getDataByKey(key));
     }
 
@@ -41,7 +41,7 @@ public class RequestController {
     }
 
     @DeleteMapping
-    public ResponseEntity<StubData> removeData(@RequestParam @RouteKey String key) {
+    public ResponseEntity<StubData> removeData(@RequestParam @Key String key) {
         var data = service.removeDataByKey(key);
         return data != null ? ResponseEntity.ok(data) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -52,7 +52,7 @@ public class RequestController {
     }
 
     @GetMapping("/history")
-    public ResponseEntity<List<Request>> getHistoryByKey(@RequestParam @RouteKey String key) {
+    public ResponseEntity<List<Request>> getHistoryByKey(@RequestParam @Key String key) {
         return ResponseEntity.ok(service.getHistoryByKey(key));
     }
 }

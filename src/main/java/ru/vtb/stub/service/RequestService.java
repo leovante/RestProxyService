@@ -39,7 +39,7 @@ public class RequestService {
                 .map(Map.Entry::getValue)
                 .toArray(StubData[]::new);
         log.debug("Get data: {} --> {}", team, data);
-        return data.length == 0 ? null : data;
+        return data;
     }
 
     public StubData removeDataByKey(String key) {
@@ -73,12 +73,12 @@ public class RequestService {
             log.debug("Deleted all history for: {}", team);
         }
 
-        return removed.isEmpty() ? null : removed.toArray(StubData[]::new);
+        return removed.toArray(StubData[]::new);
     }
 
     public List<Request> getHistoryByKey(String key) {
         var requests = requestMap.get(key);
         log.debug("Get history: {} --> {}", key, requests);
-        return requests;
+        return ObjectUtils.isEmpty(requests) ? new ArrayList<>() : requests;
     }
 }

@@ -48,8 +48,7 @@ public class RequestController {
 
     @DeleteMapping("/{team}")
     public ResponseEntity<StubData[]> removeTeamData(@PathVariable String team) {
-        var data = service.removeTeamData(team);
-        return data != null ? ResponseEntity.ok(data) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return service.removeTeamData(team) ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping("/history")

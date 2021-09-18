@@ -51,20 +51,19 @@ public class RequestService {
         return data;
     }
 
-    public StubData[] removeTeamData(String team) {
+    public boolean removeTeamData(String team) {
         var keys = dataMap.keySet().stream()
                 .filter(k -> k.startsWith("/" + team))
                 .collect(Collectors.toList());
-        List<StubData> removed = new ArrayList<>();
+        boolean removed = false;
         if (!keys.isEmpty()) {
+            removed = true;
             log.debug("Start deleting team '{}' data...", team);
             keys.forEach(k -> {
                 var data = dataMap.remove(k);
-                removed.add(data);
                 log.debug("Deleted data: {} --> {}", k, data);
             });
         }
-
         var requests = requestMap.keySet().stream()
                 .filter(k -> k.startsWith("/" + team))
                 .collect(Collectors.toList());
@@ -72,8 +71,7 @@ public class RequestService {
             requests.forEach(k -> requestMap.remove(k));
             log.debug("Deleted all history for: {}", team);
         }
-
-        return removed.toArray(StubData[]::new);
+        return removed;
     }
 
     public List<Request> getHistoryByKey(String key) {

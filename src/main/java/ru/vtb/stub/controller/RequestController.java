@@ -5,16 +5,19 @@ import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.vtb.stub.domain.Request;
 import ru.vtb.stub.domain.StubData;
 import ru.vtb.stub.service.RequestService;
-import ru.vtb.stub.validate.Key;
+import ru.vtb.stub.validate.Method;
+import ru.vtb.stub.validate.Path;
 
 import javax.validation.Valid;
 import java.util.List;
 
 @RestController
+@Validated
 @RequestMapping("${path.admin}")
 public class RequestController {
 
@@ -30,9 +33,10 @@ public class RequestController {
 
     @GetMapping
     @Operation(summary = "Получение данных, установленных для endpoint и method")
-    @Parameter(name = "key", description = "Пример: /path/example:GET")
-    public ResponseEntity<StubData> getDataByKey(@RequestParam @Key String key) {
-        return ResponseEntity.ok(service.getDataByKey(key));
+    @Parameter(name = "path", description = "Пример: /path/example")
+    @Parameter(name = "method", description = "Пример: GET")
+    public ResponseEntity<StubData> getDataByKey(@RequestParam @Path String path, @RequestParam @Method String method) {
+        return ResponseEntity.ok(service.getDataByKey(path + ":" + method));
     }
 
     @GetMapping("/{team}")
@@ -41,8 +45,8 @@ public class RequestController {
     }
 
     @DeleteMapping
-    public ResponseEntity<StubData> removeData(@RequestParam @Key String key) {
-        var data = service.removeDataByKey(key);
+    public ResponseEntity<StubData> removeData(@RequestParam @Path String path, @RequestParam @Method String method) {
+        var data = service.removeDataByKey(path + ":" + method);
         return data != null ? ResponseEntity.ok(data) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -52,7 +56,7 @@ public class RequestController {
     }
 
     @GetMapping("/history")
-    public ResponseEntity<List<Request>> getHistoryByKey(@RequestParam @Key String key) {
-        return ResponseEntity.ok(service.getHistoryByKey(key));
+    public ResponseEntity<List<Request>> getHistoryByKey(@RequestParam @Path String path, @RequestParam @Method String method) {
+        return ResponseEntity.ok(service.getHistoryByKey(path + ":" + method));
     }
 }

@@ -5,14 +5,14 @@ import javax.validation.Payload;
 import javax.validation.constraints.Pattern;
 import java.lang.annotation.*;
 
-@Pattern(regexp = "^[a-zA-Z0-9/_-]+:[A-Z]+$")
+@Pattern(regexp = "^[A-Z]+$")
 
 @Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Constraint(validatedBy = {})
-public @interface Key {
-    String message() default "{javax.validation.constraints.ResponseKey.message}";
+public @interface Method {
+    String message() default "{javax.validation.constraints.Method.message}";
 
     Class<?>[] groups() default {};
 

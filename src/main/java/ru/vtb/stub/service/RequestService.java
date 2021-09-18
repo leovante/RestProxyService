@@ -2,6 +2,7 @@ package ru.vtb.stub.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import ru.vtb.stub.domain.Request;
 import ru.vtb.stub.domain.StubData;
 
@@ -20,6 +21,9 @@ public class RequestService {
     public void putData(StubData data) {
         String key = "/" + data.getTeam() + data.getPath() + ":" + data.getMethod();
         log.debug("Put data: {} --> {}", key, data);
+        var requests = requestMap.remove(key);
+        if (!ObjectUtils.isEmpty(requests))
+            log.debug("Deleted history: {} --> {}", key, requests);
         dataMap.put(key, data);
     }
 

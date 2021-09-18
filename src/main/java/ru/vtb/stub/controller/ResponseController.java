@@ -1,5 +1,6 @@
 package ru.vtb.stub.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,7 @@ public class ResponseController {
     @Autowired
     private ResponseService service;
 
+    @Operation(hidden = true)
     @RequestMapping(path = "${path.response}", method = {GET, POST, PUT, PATCH, DELETE})
     public ResponseEntity<Object> response(@RequestParam String key, RequestWrapper servletRequest) {
 

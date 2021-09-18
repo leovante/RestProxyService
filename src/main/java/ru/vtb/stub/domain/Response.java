@@ -18,7 +18,7 @@ public class Response {
 
     @NotNull
     @Min(200)
-    @Max(399)
+    @Max(599)
     private Integer status;
     @Valid
     private List<Header> headers;

@@ -21,7 +21,7 @@ public class StubData {
     private Integer wait;
 
     @NotBlank
-    @Schema(description = "Имя (prefix) команды", example = "onb2", required = true)
+    @Schema(description = "Уникальный prefix для одновременной работы разных команд", example = "team1", required = true)
     private String team;
 
     @NotBlank
@@ -33,10 +33,6 @@ public class StubData {
     private String method;
 
     @Valid
-    @Schema(description = "Тело ответа. Статус < 400")
+    @Schema(description = "Параметры ответа")
     private Response response;
-
-    @Valid
-    @Schema(description = "Тело ответа. Статус >= 400")
-    private Error error;
 }

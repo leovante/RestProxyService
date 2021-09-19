@@ -26,7 +26,7 @@ public class Request {
     @Schema(description = "Map<String, String> заголовков запроса")
     private Map<String, String> headers;
 
-    @Schema(description = "Map<String, String> параметров запроса")
+    @Schema(description = "Map<String, String> параметров строки запроса")
     private Map<String, String> params;
 
     @Schema(description = "Строка с телом запроса")

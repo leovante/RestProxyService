@@ -4,10 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.vtb.stub.validate.Status;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -16,9 +15,8 @@ import java.util.List;
 @AllArgsConstructor
 public class Response {
 
+    @Status
     @NotNull
-    @Min(200)
-    @Max(599)
     private Integer status;
     @Valid
     private List<Header> headers;

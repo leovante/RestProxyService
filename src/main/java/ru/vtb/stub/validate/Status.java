@@ -7,9 +7,9 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Constraint(validatedBy = MethodValidator.class)
-public @interface Method {
-    String message() default "Wrong method value!";
+@Constraint(validatedBy = StatusValidator.class)
+public @interface Status {
+    String message() default "Wrong status value!";
 
     Class<?>[] groups() default {};
 

@@ -13,10 +13,10 @@ import javax.validation.constraints.NotBlank;
 public class Header {
 
     @NotBlank
-    @Schema(description = "Имя заголовка", example = "Authorization", required = true)
+    @Schema(description = "Имя заголовка", example = "Content-Type", required = true)
     private String name;
 
     @NotBlank
-    @Schema(description = "Значение заголовка", example = "Bearer token", required = true)
+    @Schema(description = "Значение заголовка", example = "application/json", required = true)
     private String value;
 }

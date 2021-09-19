@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,27 +41,29 @@ public class RequestController {
 
     @GetMapping
     @Operation(summary = "Получение данных, установленных для team, path и method")
-    @Parameter(name = "path", description = "пример: /path/example")
-    @Parameter(name = "method", description = "пример: GET")
+    @Parameter(name = "team", example = "team1")
+    @Parameter(name = "path", example = "/path/example")
+    @Parameter(name = "method", example = "GET")
     @ApiResponse(
             responseCode = "200",
             description = "Данные получены",
-            content = @Content(schema = @Schema(implementation = StubData.class))
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = StubData.class))
     )
     public ResponseEntity<StubData> getData(
+            @RequestParam @Team String team,
             @RequestParam @Path String path,
             @RequestParam @Method String method
     ) {
-        return ResponseEntity.ok(service.getData(path + ":" + method));
+        return ResponseEntity.ok(service.getData("/" + team + path + ":" + method));
     }
 
     @GetMapping("/{team}")
-    @Operation(summary = "Получение всех данных, установленных для префикса (команды)")
-    @Parameter(name = "team", description = "пример: team1")
+    @Operation(summary = "Получение всех данных, установленных для team)")
+    @Parameter(name = "team", example = "team1")
     @ApiResponse(
             responseCode = "200",
             description = "Данные получены",
-            content = @Content(array = @ArraySchema(schema = @Schema(implementation = StubData.class)))
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = StubData.class)))
     )
     public ResponseEntity<StubData[]> getTeamData(@PathVariable @Team String team) {
         return ResponseEntity.ok(service.getTeamData(team));
@@ -68,46 +71,48 @@ public class RequestController {
 
     @DeleteMapping
     @Operation(summary = "Удаление данных, установленных для team, path и method")
-    @Parameter(name = "path", description = "пример: /path/example")
-    @Parameter(name = "method", description = "пример: GET")
+    @Parameter(name = "team", example = "team1")
+    @Parameter(name = "path", example = "/path/example")
+    @Parameter(name = "method", example = "GET")
     @ApiResponse(
             responseCode = "200",
             description = "Данные удалены",
-            content = @Content(schema = @Schema(implementation = StubData.class))
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = StubData.class))
     )
-    @ApiResponse(
-            responseCode = "204",
-            description = "Нет данных"
-    )
+    @ApiResponse(responseCode = "204", description = "Нет данных", content = @Content())
     public ResponseEntity<StubData> removeData(
+            @RequestParam @Team String team,
             @RequestParam @Path String path,
             @RequestParam @Method String method
     ) {
-        var data = service.removeData(path + ":" + method);
+        var data = service.removeData("/" + team + path + ":" + method);
         return data != null ? ResponseEntity.ok(data) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @DeleteMapping("/{team}")
-    @Operation(summary = "Удаление всех данных, установленных для префикса (команды)")
-    @Parameter(name = "team", description = "пример: team1")
-    @ApiResponse(responseCode = "200", description = "Данные удалены")
+    @Operation(summary = "Удаление всех данных, установленных для team")
+    @Parameter(name = "team", example = "team1")
+    @ApiResponse(responseCode = "200", description = "Данные удалены", content = @Content())
+    @ApiResponse(responseCode = "204", description = "Нет данных", content = @Content())
     public ResponseEntity<StubData[]> removeTeamData(@PathVariable @Team String team) {
         return service.removeTeamData(team) ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping("/history")
     @Operation(summary = "Получение истории запросов для team, path и method")
-    @Parameter(name = "path", description = "пример: /path/example")
-    @Parameter(name = "method", description = "пример: GET")
+    @Parameter(name = "team", example = "team1")
+    @Parameter(name = "path", example = "/path/example")
+    @Parameter(name = "method", example = "GET")
     @ApiResponse(
             responseCode = "200",
             description = "История запросов получена",
-            content = @Content(schema = @Schema(implementation = Request.class))
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Request.class))
     )
     public ResponseEntity<List<Request>> getHistory(
+            @RequestParam @Team String team,
             @RequestParam @Path String path,
             @RequestParam @Method String method
     ) {
-        return ResponseEntity.ok(service.getHistory(path + ":" + method));
+        return ResponseEntity.ok(service.getHistory("/" + team + path + ":" + method));
     }
 }

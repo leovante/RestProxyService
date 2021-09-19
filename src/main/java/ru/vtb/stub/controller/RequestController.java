@@ -42,8 +42,8 @@ public class RequestController {
     @Parameter(name = "path", description = "пример: /path/example")
     @Parameter(name = "method", description = "пример: GET")
     @ApiResponse(responseCode = "200", description = "Данные получены", content = @Content(schema = @Schema(implementation = StubData.class)))
-    public ResponseEntity<StubData> getDataByKey(@RequestParam @Path String path, @RequestParam @Method String method) {
-        return ResponseEntity.ok(service.getDataByKey(path + ":" + method));
+    public ResponseEntity<StubData> getData(@RequestParam @Path String path, @RequestParam @Method String method) {
+        return ResponseEntity.ok(service.getData(path + ":" + method));
     }
 
     @GetMapping("/{team}")
@@ -61,7 +61,7 @@ public class RequestController {
     @ApiResponse(responseCode = "200", description = "Данные удалены", content = @Content(schema = @Schema(implementation = StubData.class)))
     @ApiResponse(responseCode = "204", description = "Нет данных")
     public ResponseEntity<StubData> removeData(@RequestParam @Path String path, @RequestParam @Method String method) {
-        var data = service.removeDataByKey(path + ":" + method);
+        var data = service.removeData(path + ":" + method);
         return data != null ? ResponseEntity.ok(data) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -78,7 +78,7 @@ public class RequestController {
     @Parameter(name = "path", description = "пример: /path/example")
     @Parameter(name = "method", description = "пример: GET")
     @ApiResponse(responseCode = "200", description = "История запросов получена", content = @Content(schema = @Schema(implementation = Request.class)))
-    public ResponseEntity<List<Request>> getHistoryByKey(@RequestParam @Path String path, @RequestParam @Method String method) {
-        return ResponseEntity.ok(service.getHistoryByKey(path + ":" + method));
+    public ResponseEntity<List<Request>> getHistory(@RequestParam @Path String path, @RequestParam @Method String method) {
+        return ResponseEntity.ok(service.getHistory(path + ":" + method));
     }
 }

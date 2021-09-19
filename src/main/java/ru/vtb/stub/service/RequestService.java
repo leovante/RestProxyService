@@ -27,7 +27,7 @@ public class RequestService {
         dataMap.put(key, data);
     }
 
-    public StubData getDataByKey(String key) {
+    public StubData getData(String key) {
         var data = dataMap.get(key);
         log.debug("Get data: {} --> {}", key, data);
         return data;
@@ -42,7 +42,7 @@ public class RequestService {
         return data;
     }
 
-    public StubData removeDataByKey(String key) {
+    public StubData removeData(String key) {
         var data = dataMap.remove(key);
         log.debug("Deleted data: {} --> {}", key, data);
         var requests = requestMap.remove(key);
@@ -74,7 +74,7 @@ public class RequestService {
         return removed;
     }
 
-    public List<Request> getHistoryByKey(String key) {
+    public List<Request> getHistory(String key) {
         var requests = requestMap.get(key);
         log.debug("Get history: {} --> {}", key, requests);
         return ObjectUtils.isEmpty(requests) ? new ArrayList<>() : requests;

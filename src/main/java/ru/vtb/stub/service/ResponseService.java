@@ -54,6 +54,7 @@ public class ResponseService {
 
     private Map<String, String> getHeaders(RequestWrapper request) {
         var headers = request.getHeaderNames();
+        if (ObjectUtils.isEmpty(headers)) return null;
         return Collections.list(headers).stream().collect(Collectors.toMap(h -> h, request::getHeader));
     }
 

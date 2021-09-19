@@ -18,14 +18,9 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class StubData {
 
-    @Min(100)
-    @Max(60_000)
-    @Schema(description = "Тайм-аут ответа от заглушки")
-    private Integer wait;
-
     @Team
     @NotBlank
-    @Schema(description = "Уникальный prefix для одновременной работы разных команд", example = "team1", required = true)
+    @Schema(description = "Уникальный префикс для одновременной работы разных команд", example = "team1", required = true)
     private String team;
 
     @Path
@@ -35,8 +30,13 @@ public class StubData {
 
     @Method
     @NotBlank
-    @Schema(description = "HTTP метод ответа", example = "GET", required = true)
+    @Schema(description = "HTTP метод для которого устанавливается ответ", example = "GET", required = true)
     private String method;
+
+    @Min(100)
+    @Max(60_000)
+    @Schema(description = "Тайм-аут ответа")
+    private Integer wait;
 
     @Valid
     @Schema(description = "Параметры ответа")

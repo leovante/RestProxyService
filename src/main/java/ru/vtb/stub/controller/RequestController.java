@@ -58,7 +58,7 @@ public class RequestController {
     }
 
     @GetMapping("/{team}")
-    @Operation(summary = "Получение всех данных, установленных для team)")
+    @Operation(summary = "Получение всех данных, установленных для team")
     @Parameter(name = "team", example = "team1")
     @ApiResponse(
             responseCode = "200",

@@ -51,13 +51,11 @@ public class RequestService {
         return data;
     }
 
-    public boolean removeTeamData(String team) {
+    public void removeTeamData(String team) {
         var keys = dataMap.keySet().stream()
                 .filter(k -> k.startsWith("/" + team))
                 .collect(Collectors.toList());
-        boolean removed = false;
         if (!keys.isEmpty()) {
-            removed = true;
             log.debug("Start deleting team '{}' data...", team);
             keys.forEach(k -> {
                 var data = dataMap.remove(k);
@@ -71,7 +69,6 @@ public class RequestService {
             requests.forEach(k -> requestMap.remove(k));
             log.debug("Deleted all history for: {}", team);
         }
-        return removed;
     }
 
     public List<Request> getHistory(String key) {

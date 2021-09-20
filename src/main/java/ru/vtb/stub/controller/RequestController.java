@@ -24,7 +24,7 @@ import java.util.List;
 
 @RestController
 @Validated
-@RequestMapping("${path.admin}")
+@RequestMapping("${path.data}")
 public class RequestController {
 
     @Autowired
@@ -79,23 +79,22 @@ public class RequestController {
             description = "Данные удалены",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = StubData.class))
     )
-    @ApiResponse(responseCode = "204", description = "Нет данных", content = @Content())
     public ResponseEntity<StubData> removeData(
             @RequestParam @Team String team,
             @RequestParam @Path String path,
             @RequestParam @Method String method
     ) {
         var data = service.removeData("/" + team + path + ":" + method);
-        return data != null ? ResponseEntity.ok(data) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.ok(data);
     }
 
     @DeleteMapping("/{team}")
     @Operation(summary = "Удаление всех данных, установленных для team")
     @Parameter(name = "team", example = "team1")
     @ApiResponse(responseCode = "200", description = "Данные удалены", content = @Content())
-    @ApiResponse(responseCode = "204", description = "Нет данных", content = @Content())
-    public ResponseEntity<StubData[]> removeTeamData(@PathVariable @Team String team) {
-        return service.removeTeamData(team) ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    public ResponseEntity<Void> removeTeamData(@PathVariable @Team String team) {
+        service.removeTeamData(team);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/history")

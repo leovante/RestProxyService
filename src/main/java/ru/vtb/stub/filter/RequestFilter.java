@@ -14,7 +14,7 @@ import static ru.vtb.stub.data.DataMap.dataMap;
 @Component
 public class RequestFilter implements Filter {
 
-    @Value("${path.admin}")
+    @Value("${path.data}")
     private String adminPath;
     @Value("${path.response}")
     private String redirectPath;

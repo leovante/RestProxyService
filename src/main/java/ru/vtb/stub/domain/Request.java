@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Data
@@ -14,6 +15,10 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Request {
+
+    @NotBlank
+    @Schema(description = "Время, когда поступил запрос. Заполняется автоматически", required = true)
+    private LocalDateTime date;
 
     @NotBlank
     @Schema(description = "End-point на который пришел запрос", example = "/path/example", required = true)

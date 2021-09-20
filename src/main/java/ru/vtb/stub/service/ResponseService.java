@@ -10,6 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.vtb.stub.domain.Request;
 import ru.vtb.stub.filter.RequestWrapper;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,6 +29,7 @@ public class ResponseService {
         var responseData = data.getResponse();
         var status = HttpStatus.valueOf(responseData.getStatus());
         var request = Request.builder()
+                .date(LocalDateTime.now())
                 .path(key.split(":")[0])
                 .method(key.split(":")[1])
                 .headers(getHeaders(servletRequest))

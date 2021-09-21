@@ -3,7 +3,6 @@ spring:
     name: rest-proxy-stub
 
 server:
-  port: 8888
   error:
     include-message: always
 

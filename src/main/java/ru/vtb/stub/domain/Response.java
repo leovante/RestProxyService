@@ -1,13 +1,13 @@
 package ru.vtb.stub.domain;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.vtb.stub.validate.Status;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -16,11 +16,15 @@ import java.util.List;
 @AllArgsConstructor
 public class Response {
 
+    @Status
     @NotNull
-    @Min(200)
-    @Max(399)
+    @Schema(description = "Код ответа", example = "200", required = true)
     private Integer status;
+
     @Valid
+    @Schema(description = "Список заголовков ответа")
     private List<Header> headers;
+
+    @Schema(description = "Тело ответа в формате JSON")
     private JsonNode body;
 }

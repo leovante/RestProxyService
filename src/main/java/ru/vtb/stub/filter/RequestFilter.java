@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static ru.vtb.stub.data.DataMap.dataMap;
@@ -15,35 +14,26 @@ import static ru.vtb.stub.data.DataMap.dataMap;
 @Component
 public class RequestFilter implements Filter {
 
-    @Value("${path.admin}")
+    @Value("${path.data}")
     private String adminPath;
     @Value("${path.response}")
     private String redirectPath;
 
-    private static final String ERROR_MESSAGE = "Stub test error message";
-
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         RequestWrapper wrappedRequest = new RequestWrapper((HttpServletRequest) servletRequest);
-        HttpServletResponse response = (HttpServletResponse) servletResponse;
+        String uri = wrappedRequest.getRequestURI();
+        String method = wrappedRequest.getMethod();
+        String key = uri + ":" + method;
 
-        String key = wrappedRequest.getRequestURI() + ":" + wrappedRequest.getMethod();
-
-        if (wrappedRequest.getRequestURI().equals(adminPath) || !dataMap.containsKey(key)) {
+        if (uri.equals(adminPath) || !dataMap.containsKey(key)) {
             filterChain.doFilter(wrappedRequest, servletResponse);
             return;
         }
-
-        var data = dataMap.get(key);
-
-        if (data.getError() != null) {
-            log.info("Request to: {} --> Response with error: {}", key, data.getError().getStatus());
-            response.sendError(data.getError().getStatus(), ERROR_MESSAGE);
-            return;
-        }
-        if (data.getResponse() != null) {
-            log.debug("Request to: {} --> Redirect to Response controller", key);
-            wrappedRequest.getRequestDispatcher(redirectPath + "?key=" + key).forward(servletRequest, servletResponse);
-        }
+        String queryString = wrappedRequest.getQueryString();
+        String forward = queryString == null || queryString.isEmpty()
+                ? redirectPath + "?key=" + key
+                : redirectPath + "?key=" + key + "&" + queryString;
+        wrappedRequest.getRequestDispatcher(forward).forward(wrappedRequest, servletResponse);
     }
 }

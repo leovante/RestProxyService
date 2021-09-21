@@ -2,17 +2,14 @@ package ru.vtb.stub.validate;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
-import javax.validation.constraints.Pattern;
 import java.lang.annotation.*;
-
-@Pattern(regexp = "^[a-zA-Z0-9/_-]+:[A-Z]+$")
 
 @Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Constraint(validatedBy = {})
-public @interface RouteKey {
-    String message() default "{javax.validation.constraints.ResponseKey.message}";
+@Constraint(validatedBy = MethodValidator.class)
+public @interface Method {
+    String message() default "Wrong method value!";
 
     Class<?>[] groups() default {};
 

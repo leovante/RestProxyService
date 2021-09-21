@@ -1,8 +1,12 @@
 package ru.vtb.stub.domain;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.vtb.stub.validate.Method;
+import ru.vtb.stub.validate.Path;
+import ru.vtb.stub.validate.Team;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
@@ -14,17 +18,27 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class StubData {
 
+    @Team
+    @NotBlank
+    @Schema(description = "Уникальный префикс для одновременной работы разных команд", example = "team1", required = true)
+    private String team;
+
+    @Path
+    @NotBlank
+    @Schema(description = "End-point для которого устанавливается ответ", example = "/path/example", required = true)
+    private String path;
+
+    @Method
+    @NotBlank
+    @Schema(description = "HTTP метод для которого устанавливается ответ", example = "GET", required = true)
+    private String method;
+
     @Min(100)
     @Max(60_000)
+    @Schema(description = "Тайм-аут ответа")
     private Integer wait;
-    @NotBlank
-    private String team;
-    @NotBlank
-    private String path;
-    @NotBlank
-    private String method;
+
     @Valid
+    @Schema(description = "Параметры ответа")
     private Response response;
-    @Valid
-    private Error error;
 }

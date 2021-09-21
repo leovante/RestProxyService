@@ -16,6 +16,7 @@ import org.springframework.cloud.netflix.zuul.filters.discovery.ServiceRouteMapp
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.ObjectUtils;
 import ru.vtb.stub.filter.HostFilter;
 
 import java.util.HashMap;
@@ -60,17 +61,15 @@ public class ZuulProxyConfig {
             ApplicationEventPublisher publisher
     ) {
         return (args) -> {
-            if (zuulProperties.getRoutes().isEmpty()) {
+            if (ObjectUtils.isEmpty(zuulProperties.getRoutes())) {
                 log.info("Zuul proxy config. No default routes");
                 return;
             }
-
-            if (teams == null || teams.isEmpty()) {
+            if (ObjectUtils.isEmpty(teams)) {
                 log.info("Zuul proxy config. No teams prefixes. Default routes:");
                 zuulProperties.getRoutes().forEach((k, v) -> log.info("{} --> {}", k, v));
                 return;
             }
-
             var routes = new HashMap<>(zuulProperties.getRoutes());
             teams.forEach(p -> routes.forEach((k, r) -> {
                 ZuulRoute route = new ZuulRoute();

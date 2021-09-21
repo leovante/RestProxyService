@@ -13,7 +13,7 @@ logging:
     org.springframework.web: INFO
 
 path:
-  admin: /stub/admin
+  data: /stub/data
   response: /stub/response
 
 ribbon:

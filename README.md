@@ -1,4 +1,4 @@
 ## REST Proxy Stub
 
 ### Описание
-TBD
+См. /swagger-ui.html (http://path-to-stub/swagger-ui.html)

@@ -3,6 +3,7 @@ spring:
     name: rest-proxy-stub
 
 server:
+  port: 8888
   error:
     include-message: always
 
@@ -12,7 +13,7 @@ logging:
     org.springframework.web: INFO
 
 path:
-  admin: /stub/admin
+  data: /stub/data
   response: /stub/response
 
 ribbon:

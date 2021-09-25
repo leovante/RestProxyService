@@ -22,16 +22,24 @@ import static ru.vtb.stub.data.DataMap.*;
 public class ResponseService {
 
     @SneakyThrows
-    public ResponseEntity<Object> sendResponse(String key, RequestWrapper servletRequest) {
-        var data = getData(key);
+    public ResponseEntity<Object> sendResponse(String tempKey, RequestWrapper servletRequest) {
+        String key;
+        StubData data;
+        if (dataByKeyMap.containsKey(tempKey)) {
+            key = tempKey;
+            data = dataByKeyMap.get(key);
+        } else {
+            key = dataByRegexMap.keySet().stream().filter(tempKey::matches).findFirst().orElse("1");
+            data = dataByRegexMap.get(key);
+        }
         var history = requestMap.computeIfAbsent(key, k -> new ArrayList<>());
         var wait = data.getWait();
         var responseData = data.getResponse();
         var status = HttpStatus.valueOf(responseData.getStatus());
         var request = Request.builder()
                 .date(LocalDateTime.now())
-                .path(key.split(":")[0])
-                .method(key.split(":")[1])
+                .path(tempKey.split(":")[0])
+                .method(tempKey.split(":")[1])
                 .headers(getHeaders(servletRequest))
                 .params(getQueryParams(servletRequest.getQueryString()))
                 .body(servletRequest.getReader().lines().collect(Collectors.joining(System.lineSeparator())))
@@ -69,15 +77,5 @@ public class ResponseService {
     private void updateHistory(List<Request> history, Request request, String key) {
         history.add(request);
         log.debug("Updated history: {} --> {}", key, requestMap.get(key));
-    }
-
-    private StubData getData(String key) {
-        var dataByKey = dataByKeyMap.get(key);
-        var dataByRegex = dataByRegexMap.keySet().stream()
-                .filter(key::matches)
-                .findFirst()
-                .map(s -> dataByRegexMap.get(s))
-                .orElse(null);
-        return dataByKey != null ? dataByKey : dataByRegex;
     }
 }

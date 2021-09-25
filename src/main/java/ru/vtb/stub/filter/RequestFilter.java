@@ -16,9 +16,9 @@ import static ru.vtb.stub.data.DataMap.dataByRegexMap;
 public class RequestFilter implements Filter {
 
     @Value("${path.data}")
-    private String adminPath;
+    private String dataPath;
     @Value("${path.response}")
-    private String redirectPath;
+    private String forwardPath;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -27,14 +27,14 @@ public class RequestFilter implements Filter {
         String method = wrappedRequest.getMethod();
         String key = uri + ":" + method;
 
-        if (uri.equals(adminPath) || !(dataByKeyMap.containsKey(key) || dataByRegexMap.keySet().stream().anyMatch(key::matches))) {
+        if (uri.equals(dataPath) || !(dataByKeyMap.containsKey(key) || dataByRegexMap.keySet().stream().anyMatch(key::matches))) {
             filterChain.doFilter(wrappedRequest, servletResponse);
             return;
         }
         String queryString = wrappedRequest.getQueryString();
         String forward = queryString == null || queryString.isEmpty()
-                ? redirectPath + "?key=" + key
-                : redirectPath + "?key=" + key + "&" + queryString;
+                ? forwardPath + "?key=" + key
+                : forwardPath + "?key=" + key + "&" + queryString;
         wrappedRequest.getRequestDispatcher(forward).forward(wrappedRequest, servletResponse);
     }
 }

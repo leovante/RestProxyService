@@ -8,14 +8,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.server.ResponseStatusException;
 import ru.vtb.stub.domain.Request;
+import ru.vtb.stub.domain.StubData;
 import ru.vtb.stub.filter.RequestWrapper;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.vtb.stub.data.DataMap.dataMap;
-import static ru.vtb.stub.data.DataMap.requestMap;
+import static ru.vtb.stub.data.DataMap.*;
 
 @Slf4j
 @Service
@@ -23,7 +23,7 @@ public class ResponseService {
 
     @SneakyThrows
     public ResponseEntity<Object> sendResponse(String key, RequestWrapper servletRequest) {
-        var data = dataMap.get(key);
+        var data = getData(key);
         var history = requestMap.computeIfAbsent(key, k -> new ArrayList<>());
         var wait = data.getWait();
         var responseData = data.getResponse();
@@ -69,5 +69,15 @@ public class ResponseService {
     private void updateHistory(List<Request> history, Request request, String key) {
         history.add(request);
         log.debug("Updated history: {} --> {}", key, requestMap.get(key));
+    }
+
+    private StubData getData(String key) {
+        var dataByKey = dataByKeyMap.get(key);
+        var dataByRegex = dataByRegexMap.keySet().stream()
+                .filter(key::matches)
+                .findFirst()
+                .map(s -> dataByRegexMap.get(s))
+                .orElse(null);
+        return dataByKey != null ? dataByKey : dataByRegex;
     }
 }

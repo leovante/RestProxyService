@@ -8,7 +8,8 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-import static ru.vtb.stub.data.DataMap.dataMap;
+import static ru.vtb.stub.data.DataMap.dataByKeyMap;
+import static ru.vtb.stub.data.DataMap.dataByRegexMap;
 
 @Slf4j
 @Component
@@ -26,7 +27,7 @@ public class RequestFilter implements Filter {
         String method = wrappedRequest.getMethod();
         String key = uri + ":" + method;
 
-        if (uri.equals(adminPath) || !dataMap.containsKey(key)) {
+        if (uri.equals(adminPath) || !(dataByKeyMap.containsKey(key) || dataByRegexMap.keySet().stream().anyMatch(key::matches))) {
             filterChain.doFilter(wrappedRequest, servletResponse);
             return;
         }

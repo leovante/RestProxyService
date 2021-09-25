@@ -11,8 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static ru.vtb.stub.data.DataMap.dataMap;
-import static ru.vtb.stub.data.DataMap.requestMap;
+import static ru.vtb.stub.data.DataMap.*;
 
 @Slf4j
 @Service
@@ -20,21 +19,20 @@ public class RequestService {
 
     public void putData(StubData data) {
         String key = "/" + data.getTeam() + data.getPath() + ":" + data.getMethod();
-        log.debug("Put data: {} --> {}", key, data);
         var requests = requestMap.remove(key);
         if (!ObjectUtils.isEmpty(requests))
             log.debug("Deleted history: {} --> {}", key, requests);
-        dataMap.put(key, data);
+        putDataToMap(data, key);
     }
 
     public StubData getData(String key) {
-        var data = dataMap.get(key);
+        var data = dataByKeyMap.get(key);
         log.debug("Get data: {} --> {}", key, data);
         return data;
     }
 
     public StubData[] getTeamData(String team) {
-        var data = dataMap.entrySet().stream()
+        var data = dataByKeyMap.entrySet().stream()
                 .filter(e -> e.getKey().startsWith("/" + team))
                 .map(Map.Entry::getValue)
                 .toArray(StubData[]::new);
@@ -43,7 +41,7 @@ public class RequestService {
     }
 
     public StubData removeData(String key) {
-        var data = dataMap.remove(key);
+        var data = dataByKeyMap.remove(key);
         log.debug("Deleted data: {} --> {}", key, data);
         var requests = requestMap.remove(key);
         if (!ObjectUtils.isEmpty(requests))
@@ -52,13 +50,13 @@ public class RequestService {
     }
 
     public void removeTeamData(String team) {
-        var keys = dataMap.keySet().stream()
+        var keys = dataByKeyMap.keySet().stream()
                 .filter(k -> k.startsWith("/" + team))
                 .collect(Collectors.toList());
         if (!keys.isEmpty()) {
             log.debug("Start deleting team '{}' data...", team);
             keys.forEach(k -> {
-                var data = dataMap.remove(k);
+                var data = dataByKeyMap.remove(k);
                 log.debug("Deleted data: {} --> {}", k, data);
             });
         }
@@ -75,5 +73,21 @@ public class RequestService {
         var requests = requestMap.get(key);
         log.debug("Get history: {} --> {}", key, requests);
         return ObjectUtils.isEmpty(requests) ? new ArrayList<>() : requests;
+    }
+
+    private void putDataToMap(StubData data, String key) {
+        if (key.contains("{}")) {
+            String regexKey = buildRegexKey(key);
+            log.debug("Put data: {} --> {}", regexKey, data);
+            dataByRegexMap.put(regexKey, data);
+        }
+        else {
+            log.debug("Put data: {} --> {}", key, data);
+            dataByKeyMap.put(key, data);
+        }
+    }
+
+    private String buildRegexKey(String key) {
+         return "^" + key.replaceAll("\\{}", "[a-zA-Z0-9_-]+").replaceAll("/", "\\/") + "$";
     }
 }

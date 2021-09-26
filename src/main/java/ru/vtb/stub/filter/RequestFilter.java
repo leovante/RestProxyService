@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import static ru.vtb.stub.data.DataMap.dataByKeyMap;
 import static ru.vtb.stub.data.DataMap.dataByRegexMap;
@@ -31,10 +33,14 @@ public class RequestFilter implements Filter {
             filterChain.doFilter(wrappedRequest, servletResponse);
             return;
         }
+        String regexKey = dataByRegexMap.keySet().stream().filter(key::matches).findFirst().orElse(null);
+        if (regexKey != null)
+            regexKey = URLEncoder.encode(regexKey, StandardCharsets.UTF_8);
+
         String queryString = wrappedRequest.getQueryString();
         String forward = queryString == null || queryString.isEmpty()
-                ? forwardPath + "?key=" + key
-                : forwardPath + "?key=" + key + "&" + queryString;
+                ? forwardPath + "?rpsKey=" + key + "&rpsRegexKey=" + regexKey
+                : forwardPath + "?rpsKey=" + key + "&rpsRegexKey=" + regexKey + "&" + queryString;
         wrappedRequest.getRequestDispatcher(forward).forward(wrappedRequest, servletResponse);
     }
 }

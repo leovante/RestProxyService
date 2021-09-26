@@ -25,7 +25,8 @@ public class StubData {
 
     @Path
     @NotBlank
-    @Schema(description = "End-point для которого устанавливается ответ", example = "/path/example", required = true)
+    @Schema(description = "End-point для которого устанавливается ответ. С помощью \"--\" можно указать, что подходит любой path param",
+            example = "/path/example, /path/--/example/--", required = true)
     private String path;
 
     @Method

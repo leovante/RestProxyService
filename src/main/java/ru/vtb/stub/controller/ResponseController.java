@@ -20,10 +20,10 @@ public class ResponseController {
     @Operation(hidden = true)
     @RequestMapping(path = "${path.response}", method = {GET, POST, PUT, PATCH, DELETE})
     public ResponseEntity<Object> response(
+            @RequestParam String rpsRequest,
             @RequestParam String rpsKey,
-            @RequestParam String rpsRegexKey,
             RequestWrapper servletRequest
     ) {
-        return service.sendResponse(rpsKey, rpsRegexKey, servletRequest);
+        return service.sendResponse(rpsRequest, rpsKey, servletRequest);
     }
 }

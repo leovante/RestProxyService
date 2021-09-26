@@ -26,21 +26,21 @@ public class RequestFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         RequestWrapper wrappedRequest = new RequestWrapper((HttpServletRequest) servletRequest);
         String uri = wrappedRequest.getRequestURI();
-        String method = wrappedRequest.getMethod();
-        String key = uri + ":" + method;
+        String requestKey = uri + ":" + wrappedRequest.getMethod();
 
-        if (uri.equals(dataPath) || !(dataByKeyMap.containsKey(key) || dataByRegexMap.keySet().stream().anyMatch(key::matches))) {
+        boolean containsDataByKey = dataByKeyMap.containsKey(requestKey);
+        String regexKey = dataByRegexMap.keySet().stream().filter(requestKey::matches).findFirst().orElse(null);
+        String key = containsDataByKey ? requestKey : (regexKey != null ? URLEncoder.encode(regexKey, StandardCharsets.UTF_8) : null);
+
+        if (uri.equals(dataPath) || key == null) {
             filterChain.doFilter(wrappedRequest, servletResponse);
             return;
         }
-        String regexKey = dataByRegexMap.keySet().stream().filter(key::matches).findFirst().orElse(null);
-        if (regexKey != null)
-            regexKey = URLEncoder.encode(regexKey, StandardCharsets.UTF_8);
 
         String queryString = wrappedRequest.getQueryString();
         String forward = queryString == null || queryString.isEmpty()
-                ? forwardPath + "?rpsKey=" + key + "&rpsRegexKey=" + regexKey
-                : forwardPath + "?rpsKey=" + key + "&rpsRegexKey=" + regexKey + "&" + queryString;
+                ? forwardPath + "?rpsRequest=" + requestKey + "&rpsKey=" + key
+                : forwardPath + "?rpsRequest=" + requestKey + "&rpsKey=" + key + "&" + queryString;
         wrappedRequest.getRequestDispatcher(forward).forward(wrappedRequest, servletResponse);
     }
 }

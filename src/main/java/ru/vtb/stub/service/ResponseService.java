@@ -8,30 +8,30 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.server.ResponseStatusException;
 import ru.vtb.stub.domain.Request;
+import ru.vtb.stub.domain.StubData;
 import ru.vtb.stub.filter.RequestWrapper;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.vtb.stub.data.DataMap.dataMap;
-import static ru.vtb.stub.data.DataMap.requestMap;
+import static ru.vtb.stub.data.DataMap.*;
 
 @Slf4j
 @Service
 public class ResponseService {
 
     @SneakyThrows
-    public ResponseEntity<Object> sendResponse(String key, RequestWrapper servletRequest) {
-        var data = dataMap.get(key);
+    public ResponseEntity<Object> sendResponse(String rpsRequest, String key, RequestWrapper servletRequest) {
+        StubData data = key.endsWith("$") ? dataByRegexMap.get(key) : dataByKeyMap.get(key);
         var history = requestMap.computeIfAbsent(key, k -> new ArrayList<>());
         var wait = data.getWait();
         var responseData = data.getResponse();
         var status = HttpStatus.valueOf(responseData.getStatus());
         var request = Request.builder()
                 .date(LocalDateTime.now())
-                .path(key.split(":")[0])
-                .method(key.split(":")[1])
+                .path(rpsRequest.split(":")[0])
+                .method(rpsRequest.split(":")[1])
                 .headers(getHeaders(servletRequest))
                 .params(getQueryParams(servletRequest.getQueryString()))
                 .body(servletRequest.getReader().lines().collect(Collectors.joining(System.lineSeparator())))
@@ -63,7 +63,7 @@ public class ResponseService {
     private Map<String, String> getQueryParams(String queryString) {
         String[] params = queryString.split("&");
         if (params.length == 0) return null;
-        return Arrays.stream(params).map(p -> p.split("=")).skip(1).collect(Collectors.toMap(p -> p[0], p -> p[1]));
+        return Arrays.stream(params).map(p -> p.split("=")).skip(2).collect(Collectors.toMap(p -> p[0], p -> p[1]));
     }
 
     private void updateHistory(List<Request> history, Request request, String key) {

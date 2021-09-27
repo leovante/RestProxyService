@@ -7,33 +7,40 @@ import org.springframework.stereotype.Component;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
-import static ru.vtb.stub.data.DataMap.dataMap;
+import static ru.vtb.stub.data.DataMap.dataByKeyMap;
+import static ru.vtb.stub.data.DataMap.dataByRegexMap;
 
 @Slf4j
 @Component
 public class RequestFilter implements Filter {
 
     @Value("${path.data}")
-    private String adminPath;
+    private String dataPath;
     @Value("${path.response}")
-    private String redirectPath;
+    private String forwardPath;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         RequestWrapper wrappedRequest = new RequestWrapper((HttpServletRequest) servletRequest);
         String uri = wrappedRequest.getRequestURI();
-        String method = wrappedRequest.getMethod();
-        String key = uri + ":" + method;
+        String requestKey = uri + ":" + wrappedRequest.getMethod();
 
-        if (uri.equals(adminPath) || !dataMap.containsKey(key)) {
+        boolean containsDataByKey = dataByKeyMap.containsKey(requestKey);
+        String regexKey = dataByRegexMap.keySet().stream().filter(requestKey::matches).findFirst().orElse(null);
+        String key = containsDataByKey ? requestKey : (regexKey != null ? URLEncoder.encode(regexKey, StandardCharsets.UTF_8) : null);
+
+        if (uri.equals(dataPath) || key == null) {
             filterChain.doFilter(wrappedRequest, servletResponse);
             return;
         }
+
         String queryString = wrappedRequest.getQueryString();
         String forward = queryString == null || queryString.isEmpty()
-                ? redirectPath + "?key=" + key
-                : redirectPath + "?key=" + key + "&" + queryString;
+                ? forwardPath + "?rpsRequest=" + requestKey + "&rpsKey=" + key
+                : forwardPath + "?rpsRequest=" + requestKey + "&rpsKey=" + key + "&" + queryString;
         wrappedRequest.getRequestDispatcher(forward).forward(wrappedRequest, servletResponse);
     }
 }

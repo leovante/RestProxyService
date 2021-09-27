@@ -44,6 +44,8 @@ public class ResponseService {
         if (status.value() >= 400) {
             log.info("Request to: {} --> Response with error: {}", key, status);
             updateHistory(history, request, key);
+            if (responseData.getBody() != null)
+                return ResponseEntity.status(status).body(responseData.getBody());
             throw new ResponseStatusException(status, "Test error message");
         }
         var response = ResponseEntity.status(status);

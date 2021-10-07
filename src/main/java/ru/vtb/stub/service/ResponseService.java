@@ -65,7 +65,7 @@ public class ResponseService {
     private Map<String, String> getQueryParams(String queryString) {
         String[] params = queryString.split("&");
         if (params.length == 0) return null;
-        return Arrays.stream(params).map(p -> p.split("=")).skip(2).collect(Collectors.toMap(p -> p[0], p -> p[1]));
+        return Arrays.stream(params).map(p -> p.split("=")).skip(2).collect(Collectors.toMap(p -> p[0], p -> p.length > 1 ? p[1] : ""));
     }
 
     private void updateHistory(List<Request> history, Request request, String key) {

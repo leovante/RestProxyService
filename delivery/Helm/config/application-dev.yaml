@@ -41,7 +41,8 @@ prefix:
   teams:
     - onb1
     - onb2
-    - onb3
+    - onb3_st
+    - onb3_dev
     - onb4
     - onb5
     - accr

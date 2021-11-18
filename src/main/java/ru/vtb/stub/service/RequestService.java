@@ -105,6 +105,6 @@ public class RequestService {
     }
 
     private String buildRegexKey(String key) {
-        return key.replaceAll(TEMPLATE, "[a-zA-Z0-9_-]+").replaceAll("/", "\\/") + "$";
+        return key.replaceAll(TEMPLATE, "[a-zA-Z0-9.@/_-]+").replaceAll("/", "\\/") + "$";
     }
 }

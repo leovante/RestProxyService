@@ -36,4 +36,7 @@ public class Request {
 
     @Schema(description = "Строка с телом запроса")
     private String body;
+
+    @Schema(description = "Строка с телом запроса xml")
+    private String stringBodyXml;
 }

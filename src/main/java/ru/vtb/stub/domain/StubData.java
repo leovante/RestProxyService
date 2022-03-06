@@ -44,6 +44,6 @@ public class StubData {
     private Response response;
 
     @Valid
-    @Schema(description = "Параметры ответа xml")
-    private String stringBodyXml;
+    @Schema(description = "Параметры ответа в формате строки")
+    private String stringBody;
 }

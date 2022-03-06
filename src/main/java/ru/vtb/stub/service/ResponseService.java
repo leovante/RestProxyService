@@ -48,8 +48,8 @@ public class ResponseService {
             updateHistory(history, request, key);
             if (responseData.getBody() != null)
                 return ResponseEntity.status(status).body(responseData.getBody());
-            if (responseData.getStringBodyXml() != null)
-                return ResponseEntity.status(status).body(responseData.getStringBodyXml().getBytes(StandardCharsets.UTF_8));
+            if (responseData.getStringBody() != null)
+                return ResponseEntity.status(status).body(responseData.getStringBody().getBytes(StandardCharsets.UTF_8));
             throw new ResponseStatusException(status, "Test error message");
         }
         ResponseEntity.BodyBuilder response = ResponseEntity.status(status);
@@ -57,9 +57,9 @@ public class ResponseService {
             responseData.getHeaders().forEach(h -> response.header(h.getName(), h.getValue()));
         log.info("Request to: {} --> {}", key, responseData);
         updateHistory(history, request, key);
-        if (responseData.getStringBodyXml() != null)
-            return responseData.getStringBodyXml() != null ?
-                    response.body(responseData.getStringBodyXml().getBytes(StandardCharsets.UTF_8)) : response.build();
+        if (responseData.getStringBody() != null)
+            return responseData.getStringBody() != null ?
+                    response.body(responseData.getStringBody().getBytes(StandardCharsets.UTF_8)) : response.build();
         return responseData.getBody() != null ? response.body(responseData.getBody()) : response.build();
     }
 

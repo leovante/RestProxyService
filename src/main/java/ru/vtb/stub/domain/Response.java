@@ -28,6 +28,6 @@ public class Response {
     @Schema(description = "Тело ответа в формате JSON")
     private JsonNode body;
 
-    @Schema(description = "Тело ответа в формате XML")
-    private String stringBodyXml;
+    @Schema(description = "Тело ответа в формате STRING")
+    private String stringBody;
 }

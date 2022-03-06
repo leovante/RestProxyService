@@ -8,9 +8,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.server.ResponseStatusException;
 import ru.vtb.stub.domain.Request;
+import ru.vtb.stub.domain.Response;
 import ru.vtb.stub.domain.StubData;
 import ru.vtb.stub.filter.RequestWrapper;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,7 +28,7 @@ public class ResponseService {
         StubData data = key.endsWith("$") ? dataByRegexMap.get(key) : dataByKeyMap.get(key);
         var history = requestMap.computeIfAbsent(key, k -> new ArrayList<>());
         var wait = data.getWait();
-        var responseData = data.getResponse();
+        Response responseData = data.getResponse();
         var status = HttpStatus.valueOf(responseData.getStatus());
         var request = Request.builder()
                 .date(LocalDateTime.now())
@@ -46,13 +48,18 @@ public class ResponseService {
             updateHistory(history, request, key);
             if (responseData.getBody() != null)
                 return ResponseEntity.status(status).body(responseData.getBody());
+            if (responseData.getStringBodyXml() != null)
+                return ResponseEntity.status(status).body(responseData.getStringBodyXml().getBytes(StandardCharsets.UTF_8));
             throw new ResponseStatusException(status, "Test error message");
         }
-        var response = ResponseEntity.status(status);
+        ResponseEntity.BodyBuilder response = ResponseEntity.status(status);
         if (!ObjectUtils.isEmpty(responseData.getHeaders()))
             responseData.getHeaders().forEach(h -> response.header(h.getName(), h.getValue()));
         log.info("Request to: {} --> {}", key, responseData);
         updateHistory(history, request, key);
+        if (responseData.getStringBodyXml() != null)
+            return responseData.getStringBodyXml() != null ?
+                    response.body(responseData.getStringBodyXml().getBytes(StandardCharsets.UTF_8)) : response.build();
         return responseData.getBody() != null ? response.body(responseData.getBody()) : response.build();
     }
 

@@ -12,6 +12,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -42,4 +43,7 @@ public class StubData {
     @Valid
     @Schema(description = "Параметры ответа")
     private Response response;
+
+    private int count;
+    private List<Response> responses;
 }

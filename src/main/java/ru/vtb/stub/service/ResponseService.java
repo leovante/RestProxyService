@@ -25,11 +25,9 @@ public class ResponseService {
 
     @SneakyThrows
     public ResponseEntity<Object> sendResponse(String rpsRequest, String key, RequestWrapper servletRequest) {
+
         StubData data = key.endsWith("$") ? dataByRegexMap.get(key) : dataByKeyMap.get(key);
-        var history = requestMap.computeIfAbsent(key, k -> new ArrayList<>());
-        var wait = data.getWait();
-        Response responseData = data.getResponse();
-        var status = HttpStatus.valueOf(responseData.getStatus());
+
         var request = Request.builder()
                 .date(LocalDateTime.now())
                 .path(rpsRequest.split(":")[0])
@@ -39,28 +37,65 @@ public class ResponseService {
                 .body(servletRequest.getReader().lines().collect(Collectors.joining(System.lineSeparator())))
                 .build();
 
+        var wait = data.getWait();
         if (wait != null) {
             log.info("Request to: {} --> Waiting {} ms...", key, wait);
             Thread.sleep(wait);
         }
+
+        var responseList = data.getResponses();
+        var responseData = data.getResponse();
+        Response actualData;
+
+        // Если заполнены поля responses и response, то приоритет у responses
+        if (!ObjectUtils.isEmpty(responseList)) {
+            int count = data.getCount();
+            // При повторном запросе будет отдан следующий элемент responseList
+            int next = count + 1;
+            data.setCount((next == responseList.size()) ? 0 : next);
+            actualData = responseList.get(count);
+        } else {
+            actualData = responseData;
+        }
+
+        var jsonBody = actualData.getBody();
+        var stringBody = actualData.getStringBody();
+        Object actualBody;
+
+        // Если заполнены поля body (json) и stringBody, приоритет у body
+        if (jsonBody != null) {
+            actualBody = jsonBody;
+        } else if (stringBody != null) {
+            actualBody = stringBody.getBytes(StandardCharsets.UTF_8);
+        } else {
+            actualBody = null;
+        }
+
+        var status = HttpStatus.valueOf(actualData.getStatus());
+        var history = requestMap.computeIfAbsent(key, k -> new ArrayList<>());
+
         if (status.value() >= 400) {
-            log.info("Request to: {} --> Response with error: {}", key, status);
             updateHistory(history, request, key);
-            if (responseData.getBody() != null)
-                return ResponseEntity.status(status).body(responseData.getBody());
-            if (responseData.getStringBody() != null)
-                return ResponseEntity.status(status).body(responseData.getStringBody().getBytes(StandardCharsets.UTF_8));
+            if (actualBody != null) {
+                log.info("Request to: {} --> Response with error: {}, body: {}", key, status, actualBody);
+                return ResponseEntity.status(status)
+                        .body(actualBody);
+            } else {
+                log.info("Request to: {} --> Response with error: {}", key, status);
+            }
             throw new ResponseStatusException(status, "Test error message");
         }
-        ResponseEntity.BodyBuilder response = ResponseEntity.status(status);
-        if (!ObjectUtils.isEmpty(responseData.getHeaders()))
-            responseData.getHeaders().forEach(h -> response.header(h.getName(), h.getValue()));
-        log.info("Request to: {} --> {}", key, responseData);
+
+        var headers = actualData.getHeaders();
+        var response = ResponseEntity.status(status);
+
+        if (!ObjectUtils.isEmpty(headers)) {
+            headers.forEach(h -> response.header(h.getName(), h.getValue()));
+        }
+
+        log.info("Request to: {} --> {}", key, actualData);
         updateHistory(history, request, key);
-        if (responseData.getStringBody() != null)
-            return responseData.getStringBody() != null ?
-                    response.body(responseData.getStringBody().getBytes(StandardCharsets.UTF_8)) : response.build();
-        return responseData.getBody() != null ? response.body(responseData.getBody()) : response.build();
+        return actualBody != null ? response.body(actualBody) : response.build();
     }
 
     private Map<String, String> getHeaders(RequestWrapper request) {

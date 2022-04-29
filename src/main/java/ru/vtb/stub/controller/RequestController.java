@@ -84,7 +84,7 @@ public class RequestController {
             @RequestParam @Path String path,
             @RequestParam @Method String method
     ) {
-        var data = service.removeData("/" + team + path + ":" + method);
+        StubData data = service.removeData("/" + team + path + ":" + method);
         return ResponseEntity.ok(data);
     }
 

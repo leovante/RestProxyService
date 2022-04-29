@@ -1,5 +1,6 @@
 package ru.vtb.stub.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -7,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.server.ResponseStatusException;
+import ru.vtb.stub.domain.Header;
 import ru.vtb.stub.domain.Request;
 import ru.vtb.stub.domain.Response;
 import ru.vtb.stub.domain.StubData;
@@ -17,6 +19,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.springframework.http.ResponseEntity.BodyBuilder;
+import static org.springframework.http.ResponseEntity.status;
 import static ru.vtb.stub.data.DataMap.*;
 
 @Slf4j
@@ -28,66 +32,44 @@ public class ResponseService {
 
         StubData data = key.endsWith("$") ? dataByRegexMap.get(key) : dataByKeyMap.get(key);
 
-        var request = Request.builder()
+        Request request = Request.builder()
                 .date(LocalDateTime.now())
                 .path(rpsRequest.split(":")[0])
                 .method(rpsRequest.split(":")[1])
                 .headers(getHeaders(servletRequest))
                 .params(getQueryParams(servletRequest.getQueryString()))
-                .body(servletRequest.getReader().lines().collect(Collectors.joining(System.lineSeparator())))
+                .body(servletRequest.getReader()
+                        .lines()
+                        .collect(Collectors.joining(System.lineSeparator())))
                 .build();
 
-        var wait = data.getWait();
+        Integer wait = data.getWait();
         if (wait != null) {
             log.info("Request to: {} --> Waiting {} ms...", key, wait);
             Thread.sleep(wait);
         }
 
-        var responseList = data.getResponses();
-        var responseData = data.getResponse();
-        Response actualData;
+        Response actualData = getActualData(data);
+        Object actualBody = getActualBody(actualData);
+        // Для проверки корректности значения статуса
+        HttpStatus status = HttpStatus.valueOf(actualData.getStatus());
+        List<Header> headers = actualData.getHeaders();
 
-        // Если заполнены поля responses и response, то приоритет у responses
-        if (!ObjectUtils.isEmpty(responseList)) {
-            int count = data.getCount();
-            // При повторном запросе будет отдан следующий элемент responseList
-            int next = count + 1;
-            data.setCount((next >= responseList.size()) ? 0 : next);
-            actualData = responseList.get(count);
-        } else {
-            actualData = responseData;
-        }
+        BodyBuilder response = status(status);
 
-        var jsonBody = actualData.getBody();
-        var stringBody = actualData.getStringBody();
-        Object actualBody;
-
-        // Если заполнены поля body (json) и stringBody, приоритет у body
-        if (jsonBody != null) {
-            actualBody = jsonBody;
-        } else if (stringBody != null) {
-            actualBody = stringBody.getBytes(StandardCharsets.UTF_8);
-        } else {
-            actualBody = null;
-        }
-
-        var status = HttpStatus.valueOf(actualData.getStatus());
-        var history = requestMap.computeIfAbsent(key, k -> new ArrayList<>());
+        List<Request> history = requestMap.computeIfAbsent(key, k -> new ArrayList<>());
 
         if (status.value() >= 400) {
             updateHistory(history, request, key);
             if (actualBody != null) {
                 log.info("Request to: {} --> Response with error: {}, body: {}", key, status, actualBody);
-                return ResponseEntity.status(status)
+                return status(status)
                         .body(actualBody);
             } else {
                 log.info("Request to: {} --> Response with error: {}", key, status);
             }
             throw new ResponseStatusException(status, "Test error message");
         }
-
-        var headers = actualData.getHeaders();
-        var response = ResponseEntity.status(status);
 
         if (!ObjectUtils.isEmpty(headers)) {
             headers.forEach(h -> response.header(h.getName(), h.getValue()));
@@ -99,15 +81,51 @@ public class ResponseService {
     }
 
     private Map<String, String> getHeaders(RequestWrapper request) {
-        var headers = request.getHeaderNames();
-        if (ObjectUtils.isEmpty(headers)) return null;
-        return Collections.list(headers).stream().collect(Collectors.toMap(h -> h, request::getHeader));
+        Enumeration<String> headers = request.getHeaderNames();
+        return ObjectUtils.isEmpty(headers)
+                ? null
+                : Collections.list(headers)
+                        .stream()
+                        .collect(Collectors.toMap(h -> h, request::getHeader));
     }
 
     private Map<String, String> getQueryParams(String queryString) {
         String[] params = queryString.split("&");
-        if (params.length == 0) return null;
-        return Arrays.stream(params).map(p -> p.split("=")).skip(2).collect(Collectors.toMap(p -> p[0], p -> p.length > 1 ? p[1] : ""));
+        return params.length == 0
+                ? null
+                : Arrays.stream(params)
+                        .map(p -> p.split("="))
+                        .skip(2)
+                        .collect(Collectors.toMap(p -> p[0], p -> p.length > 1 ? p[1] : ""));
+    }
+
+    private Response getActualData(StubData data) {
+        List<Response> responseList = data.getResponses();
+
+        // Если одновременно заполнены поля responses и response, то приоритет у responses
+        if (!ObjectUtils.isEmpty(responseList)) {
+            int count = data.getCount();
+            // При повторном запросе будет отдан следующий элемент responseList
+            int next = count + 1;
+            data.setCount((next >= responseList.size()) ? 0 : next);
+            return responseList.get(count);
+        } else {
+            return data.getResponse();
+        }
+    }
+
+    private Object getActualBody(Response actualData) {
+        JsonNode jsonBody = actualData.getBody();
+        String stringBody = actualData.getStringBody();
+
+        // Если одновременно заполнены поля body (json) и stringBody, то приоритет у body
+        if (jsonBody != null) {
+            return jsonBody;
+        } else if (stringBody != null) {
+            return stringBody.getBytes(StandardCharsets.UTF_8);
+        } else {
+            return null;
+        }
     }
 
     private void updateHistory(List<Request> history, Request request, String key) {

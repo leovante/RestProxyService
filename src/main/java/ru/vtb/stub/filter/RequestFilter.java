@@ -19,6 +19,7 @@ public class RequestFilter implements Filter {
 
     @Value("${path.data}")
     private String dataPath;
+
     @Value("${path.response}")
     private String forwardPath;
 
@@ -41,6 +42,7 @@ public class RequestFilter implements Filter {
         String forward = queryString == null || queryString.isEmpty()
                 ? forwardPath + "?rpsRequest=" + requestKey + "&rpsKey=" + key
                 : forwardPath + "?rpsRequest=" + requestKey + "&rpsKey=" + key + "&" + queryString;
+
         wrappedRequest.getRequestDispatcher(forward).forward(wrappedRequest, servletResponse);
     }
 }

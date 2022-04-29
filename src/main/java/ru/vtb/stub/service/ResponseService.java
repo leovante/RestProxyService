@@ -52,7 +52,7 @@ public class ResponseService {
             int count = data.getCount();
             // При повторном запросе будет отдан следующий элемент responseList
             int next = count + 1;
-            data.setCount((next == responseList.size()) ? 0 : next);
+            data.setCount((next >= responseList.size()) ? 0 : next);
             actualData = responseList.get(count);
         } else {
             actualData = responseData;

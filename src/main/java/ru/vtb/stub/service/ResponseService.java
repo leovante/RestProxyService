@@ -3,7 +3,6 @@ package ru.vtb.stub.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -19,6 +18,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.valueOf;
 import static org.springframework.http.ResponseEntity.BodyBuilder;
 import static org.springframework.http.ResponseEntity.status;
 import static ru.vtb.stub.data.DataMap.*;
@@ -51,24 +52,22 @@ public class ResponseService {
 
         Response actualData = getActualData(data);
         Object actualBody = getActualBody(actualData);
-        // Для проверки корректности значения статуса
-        HttpStatus status = HttpStatus.valueOf(actualData.getStatus());
+        int status = actualData.getStatus();
         List<Header> headers = actualData.getHeaders();
 
         BodyBuilder response = status(status);
 
         List<Request> history = requestMap.computeIfAbsent(key, k -> new ArrayList<>());
 
-        if (status.value() >= 400) {
+        if (status >= BAD_REQUEST.value()) {
             updateHistory(history, request, key);
             if (actualBody != null) {
                 log.info("Request to: {} --> Response with error: {}, body: {}", key, status, actualBody);
-                return status(status)
-                        .body(actualBody);
+                return status(status).body(actualBody);
             } else {
                 log.info("Request to: {} --> Response with error: {}", key, status);
             }
-            throw new ResponseStatusException(status, "Test error message");
+            throw new ResponseStatusException(valueOf(status), "Test error message");
         }
 
         if (!ObjectUtils.isEmpty(headers)) {

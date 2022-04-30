@@ -103,11 +103,11 @@ public class ResponseService {
 
         // Если одновременно заполнены поля responses и response, то приоритет у responses
         if (!ObjectUtils.isEmpty(responseList)) {
-            int count = data.getCount();
+            int index = data.getIndex();
             // При повторном запросе будет отдан следующий элемент responseList
-            int next = count + 1;
-            data.setCount((next >= responseList.size()) ? 0 : next);
-            return responseList.get(count);
+            int next = index + 1;
+            data.setIndex((next >= responseList.size()) ? 0 : next);
+            return responseList.get(index);
         } else {
             return data.getResponse();
         }

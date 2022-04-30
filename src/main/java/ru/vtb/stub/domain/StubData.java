@@ -45,7 +45,7 @@ public class StubData {
     private Response response;
 
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
-    private int count;
+    private int index;
 
     @Valid
     @Schema(description = "Список параметров ответа")

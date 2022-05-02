@@ -62,7 +62,8 @@ public class RequestController {
     @ApiResponse(
             responseCode = "200",
             description = "Данные получены",
-            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = StubData.class)))
+            content = @Content(mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = StubData.class)))
     )
     public ResponseEntity<StubData[]> getTeamData(@PathVariable @Team String team) {
         return ResponseEntity.ok(service.getTeamData(team));

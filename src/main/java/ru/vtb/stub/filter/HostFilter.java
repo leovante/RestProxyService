@@ -41,7 +41,8 @@ public class HostFilter extends ZuulFilter {
         if (body.isEmpty()) {
             log.info("Zuul host filter. {} request to {}", request.getMethod(), request.getRequestURL().toString());
         } else {
-            log.info("Zuul host filter. {} request to {} with body {}", request.getMethod(), request.getRequestURL().toString(), body);
+            log.info("Zuul host filter. {} request to {} with body {}",
+                    request.getMethod(), request.getRequestURL().toString(), body);
         }
 
         return null;

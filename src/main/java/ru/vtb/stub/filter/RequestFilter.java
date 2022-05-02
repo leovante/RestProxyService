@@ -24,14 +24,17 @@ public class RequestFilter implements Filter {
     private String forwardPath;
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
+            throws IOException, ServletException {
         RequestWrapper wrappedRequest = new RequestWrapper((HttpServletRequest) servletRequest);
         String uri = wrappedRequest.getRequestURI();
         String requestKey = uri + ":" + wrappedRequest.getMethod();
 
         boolean containsDataByKey = dataByKeyMap.containsKey(requestKey);
         String regexKey = dataByRegexMap.keySet().stream().filter(requestKey::matches).findFirst().orElse(null);
-        String key = containsDataByKey ? requestKey : (regexKey != null ? URLEncoder.encode(regexKey, StandardCharsets.UTF_8) : null);
+        String key = containsDataByKey
+                ? requestKey
+                : (regexKey != null ? URLEncoder.encode(regexKey, StandardCharsets.UTF_8) : null);
 
         if (uri.equals(dataPath) || key == null) {
             filterChain.doFilter(wrappedRequest, servletResponse);

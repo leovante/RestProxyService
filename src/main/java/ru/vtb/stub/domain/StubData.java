@@ -21,12 +21,14 @@ public class StubData {
 
     @Team
     @NotBlank
-    @Schema(description = "Уникальный префикс для одновременной работы разных команд", example = "team1", required = true)
+    @Schema(description = "Уникальный префикс для одновременной работы разных команд",
+            example = "team1", required = true)
     private String team;
 
     @Path
     @NotBlank
-    @Schema(description = "End-point для которого устанавливается ответ. С помощью \"--\" можно указать, что подходит любой path param",
+    @Schema(description = "End-point для которого устанавливается ответ." +
+            "С помощью \"--\" можно указать, что подходит любой path param",
             example = "/path/example, /path/--/example/--", required = true)
     private String path;
 

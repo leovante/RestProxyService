@@ -18,6 +18,7 @@ public class RequestWrapper extends HttpServletRequestWrapper {
         StringBuilder str = new StringBuilder();
         BufferedReader bufferedReader = request.getReader();
         String line;
+
         while ((line = bufferedReader.readLine()) != null) {
             str.append(line);
         }

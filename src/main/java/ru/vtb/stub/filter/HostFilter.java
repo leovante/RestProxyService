@@ -37,10 +37,14 @@ public class HostFilter extends ZuulFilter {
         RequestContext context = RequestContext.getCurrentContext();
         HttpServletRequest request = context.getRequest();
         String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-        if (body.isEmpty())
+
+        if (body.isEmpty()) {
             log.info("Zuul host filter. {} request to {}", request.getMethod(), request.getRequestURL().toString());
-        else
-            log.info("Zuul host filter. {} request to {} with body {}", request.getMethod(), request.getRequestURL().toString(), body);
+        } else {
+            log.info("Zuul host filter. {} request to {} with body {}",
+                    request.getMethod(), request.getRequestURL().toString(), body);
+        }
+
         return null;
     }
 }

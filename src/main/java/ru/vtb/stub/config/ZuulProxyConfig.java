@@ -21,6 +21,7 @@ import ru.vtb.stub.filter.HostFilter;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.cloud.netflix.zuul.filters.ZuulProperties.ZuulRoute;
 
@@ -50,7 +51,9 @@ public class ZuulProxyConfig {
     }
 
     @Bean
-    public RoutesRefreshedEvent routesRefreshedEvent(@Qualifier("discoveryClientRouteLocator") DiscoveryClientRouteLocator locator) {
+    public RoutesRefreshedEvent routesRefreshedEvent(
+            @Qualifier("discoveryClientRouteLocator") DiscoveryClientRouteLocator locator
+    ) {
         return new RoutesRefreshedEvent(locator);
     }
 
@@ -65,12 +68,14 @@ public class ZuulProxyConfig {
                 log.info("Zuul proxy config. No default routes");
                 return;
             }
+
             if (ObjectUtils.isEmpty(teams)) {
                 log.info("Zuul proxy config. No teams prefixes. Default routes:");
                 zuulProperties.getRoutes().forEach((k, v) -> log.info("{} --> {}", k, v));
                 return;
             }
-            var routes = new HashMap<>(zuulProperties.getRoutes());
+
+            Map<String, ZuulRoute> routes = new HashMap<>(zuulProperties.getRoutes());
             teams.forEach(p -> routes.forEach((k, r) -> {
                 ZuulRoute route = new ZuulRoute();
                 route.setId(p + "-" + k);
@@ -79,9 +84,11 @@ public class ZuulProxyConfig {
                 zuulProperties.getRoutes().put(route.getId(), route);
             }));
 
-            routes.keySet().forEach(k -> zuulProperties.getRoutes().remove(k)); // delete default routes
+            // Удаление маршрутов по-умолчанию
+            routes.keySet().forEach(k -> zuulProperties.getRoutes().remove(k));
 
             publisher.publishEvent(routesRefreshedEvent);
+
             log.info("Zuul proxy config. Teams routes:");
             zuulProperties.getRoutes().forEach((k, v) -> log.info("{} --> {}", k, v));
         };

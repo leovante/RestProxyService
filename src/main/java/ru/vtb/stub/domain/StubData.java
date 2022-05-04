@@ -12,6 +12,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -20,12 +21,14 @@ public class StubData {
 
     @Team
     @NotBlank
-    @Schema(description = "Уникальный префикс для одновременной работы разных команд", example = "team1", required = true)
+    @Schema(description = "Уникальный префикс для одновременной работы разных команд",
+            example = "team1", required = true)
     private String team;
 
     @Path
     @NotBlank
-    @Schema(description = "End-point для которого устанавливается ответ. С помощью \"--\" можно указать, что подходит любой path param",
+    @Schema(description = "End-point для которого устанавливается ответ." +
+            "С помощью \"--\" можно указать, что подходит любой path param",
             example = "/path/example, /path/--/example/--", required = true)
     private String path;
 
@@ -42,4 +45,11 @@ public class StubData {
     @Valid
     @Schema(description = "Параметры ответа")
     private Response response;
+
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
+    private int index;
+
+    @Valid
+    @Schema(description = "Список параметров ответа")
+    private List<Response> responses;
 }

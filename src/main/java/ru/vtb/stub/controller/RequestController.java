@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,7 +62,8 @@ public class RequestController {
     @ApiResponse(
             responseCode = "200",
             description = "Данные получены",
-            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = StubData.class)))
+            content = @Content(mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = StubData.class)))
     )
     public ResponseEntity<StubData[]> getTeamData(@PathVariable @Team String team) {
         return ResponseEntity.ok(service.getTeamData(team));
@@ -84,7 +84,7 @@ public class RequestController {
             @RequestParam @Path String path,
             @RequestParam @Method String method
     ) {
-        var data = service.removeData("/" + team + path + ":" + method);
+        StubData data = service.removeData("/" + team + path + ":" + method);
         return ResponseEntity.ok(data);
     }
 

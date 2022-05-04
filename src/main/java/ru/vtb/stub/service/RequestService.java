@@ -22,27 +22,33 @@ public class RequestService {
 
     public void putData(StubData data) {
         String key = "/" + data.getTeam() + data.getPath() + ":" + data.getMethod();
+
         log.debug("Put data: {} --> {}", key, data);
+
         if (key.contains(TEMPLATE)) {
             key = buildRegexKey(key);
             dataByRegexMap.put(key, data);
         }
-        else
+        else {
             dataByKeyMap.put(key, data);
-        var requests = requestMap.remove(key);
-        if (!ObjectUtils.isEmpty(requests))
+        }
+
+        List<Request> requests = requestMap.remove(key);
+        if (!ObjectUtils.isEmpty(requests)) {
             log.debug("Deleted history: {} --> {}", key, requests);
+        }
     }
 
     public StubData getData(String key) {
-        var data = key.contains(TEMPLATE) ? dataByRegexMap.get(buildRegexKey(key)) : dataByKeyMap.get(key);
+        StubData data = key.contains(TEMPLATE) ? dataByRegexMap.get(buildRegexKey(key)) : dataByKeyMap.get(key);
         log.debug("Get data: {} --> {}", key, data);
         return data;
     }
 
     public StubData[] getTeamData(String team) {
         List<StubData> data = new ArrayList<>();
-        Stream.of(getTeamValues(dataByKeyMap, team), getTeamValues(dataByRegexMap, team)).forEach(data::addAll);
+        Stream.of(getTeamValues(dataByKeyMap, team), getTeamValues(dataByRegexMap, team))
+                .forEach(data::addAll);
         log.debug("Get data: {} --> {}", team, data);
         return data.toArray(StubData[]::new);
     }
@@ -53,23 +59,31 @@ public class RequestService {
             key = buildRegexKey(key);
             data = dataByRegexMap.remove(key);
         }
-        else
+        else {
             data = dataByKeyMap.remove(key);
+        }
+
         log.debug("Deleted data: {} --> {}", key, data);
-        var requests = requestMap.remove(key);
-        if (!ObjectUtils.isEmpty(requests))
+
+        List<Request> requests = requestMap.remove(key);
+        if (!ObjectUtils.isEmpty(requests)) {
             log.debug("Deleted history: {} --> {}", key, requests);
+        }
+
         return data;
     }
 
     public void removeTeamData(String team) {
-        var keys = getTeamKeys(dataByKeyMap, team);
-        var regexKeys = getTeamKeys(dataByRegexMap, team);
-        if (!keys.isEmpty() || !regexKeys.isEmpty())
+        List<String> keys = getTeamKeys(dataByKeyMap, team);
+        List<String> regexKeys = getTeamKeys(dataByRegexMap, team);
+        if (!keys.isEmpty() || !regexKeys.isEmpty()) {
             log.debug("Start deleting team '{}' data...", team);
+        }
+
         removeTeamValues(dataByKeyMap, keys);
         removeTeamValues(dataByRegexMap, regexKeys);
-        var requests = getTeamKeys(requestMap, team);
+
+        List<String> requests = getTeamKeys(requestMap, team);
         if (!requests.isEmpty()) {
             requests.forEach(k -> requestMap.remove(k));
             log.debug("Deleted all history for: {}", team);
@@ -77,9 +91,11 @@ public class RequestService {
     }
 
     public List<Request> getHistory(String key) {
-        if (key.contains(TEMPLATE))
+        if (key.contains(TEMPLATE)) {
             key = buildRegexKey(key);
-        var requests = requestMap.get(key);
+        }
+
+        List<Request> requests = requestMap.get(key);
         log.debug("Get history: {} --> {}", key, requests);
         return ObjectUtils.isEmpty(requests) ? new ArrayList<>() : requests;
     }
@@ -99,12 +115,13 @@ public class RequestService {
 
     private void removeTeamValues(Map<String, StubData> map, List<String> keys) {
         keys.forEach(k -> {
-            var data = map.remove(k);
+            StubData data = map.remove(k);
             log.debug("Deleted data: {} --> {}", k, data);
         });
     }
 
     private String buildRegexKey(String key) {
-        return key.replaceAll(TEMPLATE, "[a-zA-Z0-9.@%/_-]+").replaceAll("/", "\\/") + "$";
+        return key.replaceAll(TEMPLATE, "[a-zA-Z0-9.@%/_-]+")
+                .replaceAll("/", "\\/") + "$";
     }
 }

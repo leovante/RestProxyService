@@ -43,6 +43,12 @@ prefix:
     - onb2
     - onb3_st
     - onb3_dev
+    - onb3_front
     - onb4
     - onb5
+    - kpk
+    - mobile
     - accr
+    - onb7_st
+    - onb7_dev
+    - onb7_front

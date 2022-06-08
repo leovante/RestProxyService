@@ -52,3 +52,4 @@ prefix:
     - onb7_st
     - onb7_dev
     - onb7_front
+    - etalon-sync

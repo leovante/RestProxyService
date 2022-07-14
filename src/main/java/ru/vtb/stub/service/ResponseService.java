@@ -60,14 +60,15 @@ public class ResponseService {
         List<Request> history = requestMap.computeIfAbsent(key, k -> new ArrayList<>());
 
         if (status >= BAD_REQUEST.value()) {
-            updateHistory(history, request, key);
             if (actualBody != null) {
                 log.info("Request to: {} --> Response with error: {}, body: {}", key, status, actualBody);
+                updateHistory(history, request, key);
                 return status(status).body(actualBody);
             } else {
                 log.info("Request to: {} --> Response with error: {}", key, status);
+                updateHistory(history, request, key);
+                throw new ResponseStatusException(valueOf(status), "Test error message");
             }
-            throw new ResponseStatusException(valueOf(status), "Test error message");
         }
 
         if (!ObjectUtils.isEmpty(headers)) {

@@ -105,7 +105,9 @@ public class RequestController {
     @ApiResponse(
             responseCode = "200",
             description = "История запросов получена",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Request.class))
+            content = @Content(mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = Request.class)))
+
     )
     public ResponseEntity<List<Request>> getHistory(
             @RequestParam @Team String team,

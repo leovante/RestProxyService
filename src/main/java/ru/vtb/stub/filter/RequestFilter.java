@@ -31,7 +31,12 @@ public class RequestFilter implements Filter {
         String requestKey = uri + ":" + wrappedRequest.getMethod();
 
         boolean containsDataByKey = dataByKeyMap.containsKey(requestKey);
-        String regexKey = dataByRegexMap.keySet().stream().filter(requestKey::matches).findFirst().orElse(null);
+
+        String regexKey = dataByRegexMap.keySet().stream()
+                .filter(requestKey::matches)
+                .findFirst()
+                .orElse(null);
+
         String key = containsDataByKey
                 ? requestKey
                 : (regexKey != null ? URLEncoder.encode(regexKey, StandardCharsets.UTF_8) : null);

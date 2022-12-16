@@ -4,10 +4,8 @@ import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.util.Objects;
 
 public class RequestWrapper extends HttpServletRequestWrapper {
 
@@ -15,13 +13,18 @@ public class RequestWrapper extends HttpServletRequestWrapper {
 
     public RequestWrapper(HttpServletRequest request) throws IOException {
         super(request);
-        StringBuilder str = new StringBuilder();
-        BufferedReader bufferedReader = request.getReader();
-        String line;
 
-        while ((line = bufferedReader.readLine()) != null) {
-            str.append(line);
+        StringBuilder str = new StringBuilder();
+        InputStream inputStream = request.getInputStream();
+
+        if (Objects.nonNull(inputStream)) {
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                str.append(line);
+            }
         }
+
         body = str.toString();
     }
 

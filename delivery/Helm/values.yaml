@@ -12,6 +12,21 @@ route:
   enabled: false
   host:
 
+  # Параметры проб для main
+  Probe:
+    port: 8080
+    enabled: true
+    livenessProbe:
+      path: "/actuator/health/liveness"
+      failureThreshold: 10
+      initialDelaySeconds: 60
+      periodSeconds: 15
+    readinessProbe:
+      path: "/actuator/health/readiness"
+      failureThreshold: 10
+      initialDelaySeconds: 90
+      periodSeconds: 10
+
 # Настройки основного приложения
 main:
   # Количество реплик подов

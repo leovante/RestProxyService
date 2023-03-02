@@ -42,10 +42,10 @@ main:
     livenessProbe:
       path: "/actuator/health/liveness"
       failureThreshold: 10
-      initialDelaySeconds: 60
+      initialDelaySeconds: 100
       periodSeconds: 15
     readinessProbe:
       path: "/actuator/health/readiness"
       failureThreshold: 10
-      initialDelaySeconds: 90
+      initialDelaySeconds: 120
       periodSeconds: 10

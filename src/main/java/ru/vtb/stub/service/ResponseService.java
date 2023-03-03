@@ -89,14 +89,17 @@ public class ResponseService {
                         .collect(Collectors.toMap(h -> h, request::getHeader));
     }
 
-    private Map<String, String> getQueryParams(String queryString) {
+    private Map<String, List<String>> getQueryParams(String queryString) {
         String[] params = queryString.split("&");
         return params.length == 0
                 ? null
                 : Arrays.stream(params)
                         .map(p -> p.split("="))
                         .skip(2)
-                        .collect(Collectors.toMap(p -> p[0], p -> p.length > 1 ? p[1] : ""));
+                        .collect(Collectors.groupingBy(
+                                p -> p[0],
+                                Collectors.mapping(p -> p.length > 1 ? p[1] : "", Collectors.toList())
+                        ));
     }
 
     private Response getActualData(StubData data) {

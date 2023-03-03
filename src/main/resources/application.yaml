@@ -54,3 +54,4 @@ prefix:
     - onb7_dev
     - onb7_front
     - etalon-sync
+    - credential

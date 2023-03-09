@@ -55,3 +55,4 @@ prefix:
     - etalon-sync
     - scheduler
     - credential
+    - accr-open-dev

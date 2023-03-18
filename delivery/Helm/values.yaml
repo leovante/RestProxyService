@@ -11,7 +11,6 @@ global:
 route:
   enabled: false
   host:
-
 # Настройки основного приложения
 main:
   # Количество реплик подов
@@ -36,3 +35,17 @@ main:
     limits:
       cpu: 100m
       memory: 200Mi
+  # Параметры проб для main
+  Probe:
+    port: 8080
+    enabled: true
+    livenessProbe:
+      path: "/actuator/health/liveness"
+      failureThreshold: 10
+      initialDelaySeconds: 100
+      periodSeconds: 15
+    readinessProbe:
+      path: "/actuator/health/readiness"
+      failureThreshold: 10
+      initialDelaySeconds: 120
+      periodSeconds: 10

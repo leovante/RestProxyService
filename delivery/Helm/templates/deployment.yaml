@@ -33,6 +33,24 @@ spec:
             - name: {{ .Release.Name }}-application-config
               mountPath: /opt/app/application-{{ .Values.main.env.springProfile }}.yaml
               subPath: application-{{ .Values.main.env.springProfile }}.yaml
+        {{- if .Values.main.Probe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.main.Probe.livenessProbe.path }}
+              port: {{ .Values.main.Probe.port }}
+              scheme: HTTP
+            failureThreshold: {{ .Values.main.Probe.livenessProbe.failureThreshold }}
+            initialDelaySeconds: {{ .Values.main.Probe.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.main.Probe.livenessProbe.periodSeconds }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.main.Probe.readinessProbe.path }}
+              port: {{ .Values.main.Probe.port }}
+              scheme: HTTP
+            failureThreshold: {{ .Values.main.Probe.readinessProbe.failureThreshold }}
+            initialDelaySeconds: {{ .Values.main.Probe.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.main.Probe.readinessProbe.periodSeconds }}
+        {{- end }}
           ports:
             - containerPort: {{ .Values.main.port }}
               protocol: TCP

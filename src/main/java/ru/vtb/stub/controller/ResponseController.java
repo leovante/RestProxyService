@@ -21,7 +21,7 @@ public class ResponseController {
 
     @Operation(hidden = true)
     @RequestMapping(path = "${path.response}", method = {GET, POST, PUT, PATCH, DELETE},
-            produces = {APPLICATION_JSON_VALUE,  TEXT_PLAIN_VALUE})
+            produces = {APPLICATION_JSON_VALUE,  TEXT_PLAIN_VALUE, "application/*"})
     public ResponseEntity<Object> response(
             @RequestParam String rpsRequest,
             @RequestParam String rpsKey,

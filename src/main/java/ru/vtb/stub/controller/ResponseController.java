@@ -30,7 +30,7 @@ public class ResponseController {
 
     @Operation(hidden = true)
     @RequestMapping(path = "${path.response}", method = {GET, POST, PUT, PATCH, DELETE},
-            produces = {APPLICATION_JSON_VALUE,  TEXT_PLAIN_VALUE, "application/*"})
+            produces = {APPLICATION_JSON_VALUE,  TEXT_PLAIN_VALUE, "application/vnd.schemaregistry.v1+json"})
     public ResponseEntity<Object> response(
             @RequestParam String rpsRequest,
             @RequestParam String rpsKey,
@@ -41,9 +41,10 @@ public class ResponseController {
 
     @ResponseBody
     @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
-    public void handleHttpMediaTypeNotAcceptableException(HttpMediaTypeNotAcceptableException e,
+    public ResponseEntity<Object> handleHttpMediaTypeNotAcceptableException(HttpMediaTypeNotAcceptableException e,
                                                             HttpServletRequest request) {
         log.error("No acceptable representation found for [{}] | supported {}", request.getHeader("Accept"),
                 e.getSupportedMediaTypes());
+        return ResponseEntity.badRequest().build();
     }
 }

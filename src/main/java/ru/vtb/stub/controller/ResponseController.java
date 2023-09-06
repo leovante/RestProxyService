@@ -40,12 +40,12 @@ public class ResponseController {
         return service.sendResponse(rpsRequest, rpsKey, servletRequest);
     }
 
-    @ResponseBody
-    @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
-    public ResponseEntity<Object> handleHttpMediaTypeNotAcceptableException(HttpMediaTypeNotAcceptableException e,
-                                                            HttpServletRequest request) {
-        log.error("No acceptable representation found for [{}] | supported {}", request.getHeader("Accept"),
-                e.getSupportedMediaTypes());
-        return ResponseEntity.badRequest().build();
-    }
+//    @ResponseBody
+//    @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
+//    public ResponseEntity<Object> handleHttpMediaTypeNotAcceptableException(HttpMediaTypeNotAcceptableException e,
+//                                                            HttpServletRequest request) {
+//        log.error("No acceptable representation found for [{}] | supported {}", request.getHeader("Accept"),
+//                e.getSupportedMediaTypes());
+//        return ResponseEntity.badRequest().build();
+//    }
 }

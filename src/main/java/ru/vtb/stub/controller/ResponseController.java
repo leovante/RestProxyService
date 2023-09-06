@@ -17,6 +17,7 @@ import ru.vtb.stub.service.ResponseService;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static org.springframework.http.MediaType.ALL_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -30,7 +31,7 @@ public class ResponseController {
 
     @Operation(hidden = true)
     @RequestMapping(path = "${path.response}", method = {GET, POST, PUT, PATCH, DELETE},
-            produces = {APPLICATION_JSON_VALUE,  TEXT_PLAIN_VALUE, "application/vnd.schemaregistry.v1+json"})
+            produces = {ALL_VALUE})
     public ResponseEntity<Object> response(
             @RequestParam String rpsRequest,
             @RequestParam String rpsKey,

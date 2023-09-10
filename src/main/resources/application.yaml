@@ -16,9 +16,11 @@ path:
   data: /stub/data
   response: /stub/response
 
-ribbon:
-  eureka:
-    enabled: false
+db:
+  platform: postgresql
+  url: jdbc:postgresql://localhost:5432/rest_proxy_stub
+  user: rest_proxy
+  password: 123
 
 zuul:
   routes:
@@ -37,6 +39,10 @@ zuul:
     egr:
       url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/cbext/fns/egr/info
       path: /cbext/fns/egr/info/**
+
+ribbon:
+  eureka:
+    enabled: false
 
 prefix:
   teams:

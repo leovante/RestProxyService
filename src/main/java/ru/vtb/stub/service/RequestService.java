@@ -1,14 +1,21 @@
 package ru.vtb.stub.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import ru.vtb.stub.domain.Request;
 import ru.vtb.stub.domain.StubData;
+import ru.vtb.stub.entity.Endpoint;
+import ru.vtb.stub.entity.Header;
+import ru.vtb.stub.entity.Response;
+import ru.vtb.stub.entity.Team;
+import ru.vtb.stub.repository.EndpointRepository;
+import ru.vtb.stub.repository.HeaderRepository;
+import ru.vtb.stub.repository.ResponseRepository;
+import ru.vtb.stub.repository.TeamRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -17,6 +24,15 @@ import static ru.vtb.stub.data.DataMap.*;
 @Slf4j
 @Service
 public class RequestService {
+
+    @Autowired
+    private TeamRepository teamRepository;
+    @Autowired
+    private EndpointRepository endpointRepository;
+    @Autowired
+    private ResponseRepository responseRepository;
+    @Autowired
+    private HeaderRepository headerRepository;
 
     private static final String TEMPLATE = "--";
 
@@ -37,6 +53,34 @@ public class RequestService {
         if (!ObjectUtils.isEmpty(requests)) {
             log.debug("Deleted history: {} --> {}", key, requests);
         }
+
+
+
+
+        Team team = new Team();
+        team.setCode(data.getTeam());
+        teamRepository.save(team);
+
+        Endpoint endpoint = new Endpoint();
+        endpoint.setPath(data.getPath());
+        endpoint.setMethod(data.getMethod());
+        endpoint.setWait(data.getWait());
+        endpoint.setTeam(team);
+        endpointRepository.save(endpoint);
+
+        Response response = new Response();
+        response.setStatus(data.getResponse().getStatus());
+        response.setBodyJson(data.getResponse().getBody().asText());
+        response.setEndpoint(endpoint);
+        responseRepository.save(response);
+
+        Set<Header> headers = new HashSet<>();
+        if (Objects.nonNull(data.getResponse().getHeaders())) {
+            headers = data.getResponse().getHeaders().stream()
+                    .map(h -> addHeaderEntity(h, response))
+                    .collect(Collectors.toSet());
+        }
+        headerRepository.saveAll(headers);
     }
 
     public StubData getData(String key) {
@@ -123,5 +167,14 @@ public class RequestService {
     private String buildRegexKey(String key) {
         return key.replaceAll(TEMPLATE, "[a-zA-Z0-9.@%/_-]+")
                 .replaceAll("/", "\\/") + "$";
+    }
+
+    // For JPA
+    private Header addHeaderEntity(ru.vtb.stub.domain.Header headerDto, Response response) {
+        Header headerEntity = new Header();
+        headerEntity.setName(headerDto.getName());
+        headerEntity.setValue(headerDto.getValue());
+        headerEntity.setResponse(response);
+        return headerEntity;
     }
 }

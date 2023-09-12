@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -16,7 +18,7 @@ import java.util.Set;
 @ToString
 @RequiredArgsConstructor
 @Table(name = "response")
-public class Response {
+public class ResponseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,21 +39,22 @@ public class Response {
     @Column(name = "current_number")
     private Integer currentNumber;
 
-    @OneToMany(mappedBy = "response", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "response", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
-    private Set<Header> headers;
+    private Set<HeaderEntity> headers;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "endpoint_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @ToString.Exclude
-    private Endpoint endpoint;
+    private EndpointEntity endpoint;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Response response = (Response) o;
-        return id != null && Objects.equals(id, response.id);
+        ResponseEntity responseEntity = (ResponseEntity) o;
+        return id != null && Objects.equals(id, responseEntity.id);
     }
 
     @Override

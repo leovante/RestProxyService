@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -15,7 +17,7 @@ import java.util.Objects;
 @ToString
 @RequiredArgsConstructor
 @Table(name = "header")
-public class Header {
+public class HeaderEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,15 +31,16 @@ public class Header {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "response_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @ToString.Exclude
-    private Response response;
+    private ResponseEntity response;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Header header = (Header) o;
-        return id != null && Objects.equals(id, header.id);
+        HeaderEntity headerEntity = (HeaderEntity) o;
+        return id != null && Objects.equals(id, headerEntity.id);
     }
 
     @Override

@@ -1,15 +1,16 @@
 package ru.vtb.stub.service;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import ru.vtb.stub.domain.Request;
 import ru.vtb.stub.domain.StubData;
-import ru.vtb.stub.entity.Endpoint;
-import ru.vtb.stub.entity.Header;
-import ru.vtb.stub.entity.Response;
-import ru.vtb.stub.entity.Team;
+import ru.vtb.stub.entity.EndpointEntity;
+import ru.vtb.stub.entity.HeaderEntity;
+import ru.vtb.stub.entity.ResponseEntity;
+import ru.vtb.stub.entity.TeamEntity;
 import ru.vtb.stub.repository.EndpointRepository;
 import ru.vtb.stub.repository.HeaderRepository;
 import ru.vtb.stub.repository.ResponseRepository;
@@ -19,6 +20,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static ru.vtb.stub.config.TeamsConfig.getCodes;
 import static ru.vtb.stub.data.DataMap.*;
 
 @Slf4j
@@ -37,50 +39,56 @@ public class RequestService {
     private static final String TEMPLATE = "--";
 
     public void putData(StubData data) {
-        String key = "/" + data.getTeam() + data.getPath() + ":" + data.getMethod();
+        String team = data.getTeam();
 
+        checkTeam(team);
+
+        String path = data.getPath();
+        String method = data.getMethod();
+        String teamPrefix = "/" + team;
+
+        String key = teamPrefix + path + ":" + method;
         log.debug("Put data: {} --> {}", key, data);
 
-        if (key.contains(TEMPLATE)) {
-            key = buildRegexKey(key);
-            dataByRegexMap.put(key, data);
-        }
-        else {
-            dataByKeyMap.put(key, data);
-        }
+        // Если path содержит "--", то "--" заменяются на regex
+        String actualPath = path.contains(TEMPLATE)
+                ? teamPrefix + buildRegexKey(path)
+                : teamPrefix + path;
 
-        List<Request> requests = requestMap.remove(key);
-        if (!ObjectUtils.isEmpty(requests)) {
-            log.debug("Deleted history: {} --> {}", key, requests);
+        // Если для этого ключа (path+method) уже есть запись - она удаляется
+        EndpointEntity existEndpoint = endpointRepository.findByPathAndMethod(actualPath, method);
+        if(Objects.nonNull(existEndpoint)) {
+            endpointRepository.delete(existEndpoint);
         }
 
+        TeamEntity teamEntity = teamRepository.findByCode(team);
 
+        EndpointEntity endpointEntity = new EndpointEntity();
+        endpointEntity.setPath(actualPath);
+        endpointEntity.setMethod(method);
+        endpointEntity.setWait(data.getWait());
+        endpointEntity.setTeam(teamEntity);
+        endpointRepository.save(endpointEntity);
 
+        ResponseEntity responseEntity = new ResponseEntity();
+        responseEntity.setStatus(data.getResponse().getStatus());
+        responseEntity.setBodyJson(data.getResponse().getBody().toString());
+        responseEntity.setEndpoint(endpointEntity);
+        responseRepository.save(responseEntity);
 
-        Team team = new Team();
-        team.setCode(data.getTeam());
-        teamRepository.save(team);
-
-        Endpoint endpoint = new Endpoint();
-        endpoint.setPath(data.getPath());
-        endpoint.setMethod(data.getMethod());
-        endpoint.setWait(data.getWait());
-        endpoint.setTeam(team);
-        endpointRepository.save(endpoint);
-
-        Response response = new Response();
-        response.setStatus(data.getResponse().getStatus());
-        response.setBodyJson(data.getResponse().getBody().asText());
-        response.setEndpoint(endpoint);
-        responseRepository.save(response);
-
-        Set<Header> headers = new HashSet<>();
+        Set<HeaderEntity> headerEntities = new HashSet<>();
         if (Objects.nonNull(data.getResponse().getHeaders())) {
-            headers = data.getResponse().getHeaders().stream()
-                    .map(h -> addHeaderEntity(h, response))
+            headerEntities = data.getResponse().getHeaders().stream()
+                    .map(h -> addHeaderEntity(h, responseEntity))
                     .collect(Collectors.toSet());
         }
-        headerRepository.saveAll(headers);
+        headerRepository.saveAll(headerEntities);
+
+        // TODO - delete history
+//        List<Request> requests = requestMap.remove(key);
+//        if (!ObjectUtils.isEmpty(requests)) {
+//            log.debug("Deleted history: {} --> {}", key, requests);
+//        }
     }
 
     public StubData getData(String key) {
@@ -169,12 +177,18 @@ public class RequestService {
                 .replaceAll("/", "\\/") + "$";
     }
 
-    // For JPA
-    private Header addHeaderEntity(ru.vtb.stub.domain.Header headerDto, Response response) {
-        Header headerEntity = new Header();
+    @SneakyThrows
+    private void checkTeam(String team) {
+        if (!getCodes().contains(team)) {
+            throw new Exception("Team codes not contains: " + team);
+        }
+    }
+
+    private HeaderEntity addHeaderEntity(ru.vtb.stub.domain.Header headerDto, ResponseEntity responseEntity) {
+        HeaderEntity headerEntity = new HeaderEntity();
         headerEntity.setName(headerDto.getName());
         headerEntity.setValue(headerDto.getValue());
-        headerEntity.setResponse(response);
+        headerEntity.setResponse(responseEntity);
         return headerEntity;
     }
 }

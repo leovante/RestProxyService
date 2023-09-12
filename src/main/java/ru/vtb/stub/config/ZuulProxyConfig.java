@@ -1,12 +1,10 @@
 package ru.vtb.stub.config;
 
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.cloud.netflix.zuul.RoutesRefreshedEvent;
@@ -20,18 +18,14 @@ import org.springframework.util.ObjectUtils;
 import ru.vtb.stub.filter.HostFilter;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.springframework.cloud.netflix.zuul.filters.ZuulProperties.ZuulRoute;
+import static ru.vtb.stub.config.TeamsConfig.getCodes;
 
 @Slf4j
-@Setter
 @Configuration
-@ConfigurationProperties(prefix = "prefix")
 public class ZuulProxyConfig {
-
-    private List<String> teams;
 
     @Bean
     public HostFilter simpleFilter() {
@@ -69,14 +63,14 @@ public class ZuulProxyConfig {
                 return;
             }
 
-            if (ObjectUtils.isEmpty(teams)) {
+            if (ObjectUtils.isEmpty(getCodes())) {
                 log.info("Zuul proxy config. No teams prefixes. Default routes:");
                 zuulProperties.getRoutes().forEach((k, v) -> log.info("{} --> {}", k, v));
                 return;
             }
 
             Map<String, ZuulRoute> routes = new HashMap<>(zuulProperties.getRoutes());
-            teams.forEach(p -> routes.forEach((k, r) -> {
+            getCodes().forEach(p -> routes.forEach((k, r) -> {
                 ZuulRoute route = new ZuulRoute();
                 route.setId(p + "-" + k);
                 route.setPath("/" + p + r.getPath());

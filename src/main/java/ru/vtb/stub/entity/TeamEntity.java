@@ -15,8 +15,8 @@ import java.util.Set;
 @Setter
 @ToString
 @RequiredArgsConstructor
-@Table(name = "team", uniqueConstraints = @UniqueConstraint(name = "index1", columnNames = "code"))
-public class Team {
+@Table(name = "team", uniqueConstraints = @UniqueConstraint(name = "team_code", columnNames = "code"))
+public class TeamEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,16 +25,16 @@ public class Team {
     @Column(name = "code", nullable = false)
     private String code;
 
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
-    private Set<Endpoint> endpoints;
+    private Set<EndpointEntity> endpoints;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Team team = (Team) o;
-        return id != null && Objects.equals(id, team.id);
+        TeamEntity teamEntity = (TeamEntity) o;
+        return id != null && Objects.equals(id, teamEntity.id);
     }
 
     @Override

@@ -15,9 +15,7 @@ import ru.vtb.stub.service.ResponseService;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static org.springframework.http.MediaType.ALL_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
+import static org.springframework.http.MediaType.*;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @Slf4j
@@ -29,7 +27,8 @@ public class ResponseController {
 
     @Operation(hidden = true)
     @RequestMapping(path = "${path.response}", method = {GET, POST, PUT, PATCH, DELETE},
-            produces = {APPLICATION_JSON_VALUE,  TEXT_PLAIN_VALUE, "application/vnd.schemaregistry.v1+json"})
+            produces = {APPLICATION_JSON_VALUE, TEXT_PLAIN_VALUE, "application/vnd.schemaregistry.v1+json",
+                    APPLICATION_OCTET_STREAM_VALUE, MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<Object> response(
             @RequestParam String rpsRequest,
             @RequestParam String rpsKey,
@@ -41,7 +40,7 @@ public class ResponseController {
     @ResponseBody
     @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
     public ResponseEntity<Object> handleHttpMediaTypeNotAcceptableException(HttpMediaTypeNotAcceptableException e,
-                                                            HttpServletRequest request) {
+                                                                            HttpServletRequest request) {
         log.error("No acceptable representation found for [{}] | supported {}", request.getHeader("Accept"),
                 e.getSupportedMediaTypes());
         return ResponseEntity.badRequest().build();

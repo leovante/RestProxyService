@@ -117,15 +117,14 @@ public class ResponseService {
     private Object getActualBody(Response actualData) {
         JsonNode jsonBody = actualData.getBody();
         String stringBody = actualData.getStringBody();
+        byte[] byteArrayBody = actualData.getBodyAsByteArray();
 
         // Если одновременно заполнены поля body (json) и stringBody, то приоритет у body
         if (jsonBody != null) {
             return jsonBody;
         } else if (stringBody != null) {
             return stringBody.getBytes(StandardCharsets.UTF_8);
-        } else {
-            return null;
-        }
+        } else return byteArrayBody;
     }
 
     private void updateHistory(List<Request> history, Request request, String key) {

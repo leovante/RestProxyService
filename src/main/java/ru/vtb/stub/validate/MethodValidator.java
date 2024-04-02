@@ -1,10 +1,9 @@
 package ru.vtb.stub.validate;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
-
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 
 @Slf4j
 public class MethodValidator implements ConstraintValidator<Method, String> {

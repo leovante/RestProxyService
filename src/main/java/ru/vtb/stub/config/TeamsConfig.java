@@ -1,17 +1,19 @@
 package ru.vtb.stub.config;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
-import ru.vtb.stub.entity.TeamEntity;
-import ru.vtb.stub.repository.TeamRepository;
+import ru.vtb.stub.db.entity.TeamEntity;
+import ru.vtb.stub.db.repository.TeamRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
 @ConfigurationProperties(prefix = "team")
+@ConditionalOnProperty(value = "false", havingValue = "false")
 public class TeamsConfig implements ApplicationListener<ApplicationReadyEvent> {
 
     private static List<String> codes;

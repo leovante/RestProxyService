@@ -1,9 +1,9 @@
-package ru.vtb.stub.repository;
+package ru.vtb.stub.db.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import ru.vtb.stub.entity.EndpointEntity;
-import ru.vtb.stub.entity.ResponseEntity;
+import ru.vtb.stub.db.entity.EndpointEntity;
+import ru.vtb.stub.db.entity.ResponseEntity;
 
 import java.util.List;
 

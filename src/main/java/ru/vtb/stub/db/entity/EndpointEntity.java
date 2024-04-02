@@ -1,26 +1,28 @@
-package ru.vtb.stub.entity;
+package ru.vtb.stub.db.entity;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-@Entity
 @Getter
 @Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @ToString
-@RequiredArgsConstructor
 @Table(name = "endpoint", uniqueConstraints = @UniqueConstraint(name = "path_method", columnNames = {"path", "method"}))
 public class EndpointEntity {
 
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -35,9 +37,9 @@ public class EndpointEntity {
 
     @OneToMany(mappedBy = "endpoint", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
-    private Set<ResponseEntity> responses;
+    private List<ResponseEntity> responses;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "team_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ToString.Exclude

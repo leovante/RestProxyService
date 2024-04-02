@@ -1,8 +1,9 @@
 package ru.vtb.stub.validate;
 
-import javax.validation.Constraint;
-import javax.validation.Payload;
-import javax.validation.constraints.Pattern;
+import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
+import jakarta.validation.constraints.Pattern;
+
 import java.lang.annotation.*;
 
 @Pattern(regexp = "^[a-zA-Z0-9.@%/_-]+$")

@@ -1,14 +1,11 @@
-package ru.vtb.stub.repository;
+package ru.vtb.stub.db.repository;
 
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
-import ru.vtb.stub.entity.TeamEntity;
+import ru.vtb.stub.db.entity.TeamEntity;
 
-import javax.transaction.Transactional;
-
-@Repository
 public interface TeamRepository extends JpaRepository<TeamEntity, Long> {
 
     TeamEntity findByCode(String code);
@@ -17,4 +14,5 @@ public interface TeamRepository extends JpaRepository<TeamEntity, Long> {
     @Transactional
     @Query("DELETE FROM TeamEntity t WHERE t.code=?1")
     void deleteByCode(String code);
+
 }

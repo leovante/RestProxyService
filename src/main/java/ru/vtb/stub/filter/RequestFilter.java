@@ -1,15 +1,15 @@
 package ru.vtb.stub.filter;
 
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
-import ru.vtb.stub.entity.EndpointEntity;
-import ru.vtb.stub.repository.EndpointRepository;
+import ru.vtb.stub.db.entity.EndpointEntity;
+import ru.vtb.stub.db.repository.EndpointRepository;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Set;

@@ -1,25 +1,26 @@
-package ru.vtb.stub.entity;
+package ru.vtb.stub.db.entity;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import javax.persistence.*;
 import java.util.Objects;
 
-@Entity
 @Getter
 @Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @ToString
-@RequiredArgsConstructor
 @Table(name = "header")
 public class HeaderEntity {
 
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

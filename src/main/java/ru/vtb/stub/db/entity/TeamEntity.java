@@ -1,24 +1,26 @@
-package ru.vtb.stub.entity;
+package ru.vtb.stub.db.entity;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.Hibernate;
 
-import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-@Entity
 @Getter
 @Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @ToString
-@RequiredArgsConstructor
 @Table(name = "team", uniqueConstraints = @UniqueConstraint(name = "team_code", columnNames = "code"))
 public class TeamEntity {
 
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -27,7 +29,7 @@ public class TeamEntity {
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
-    private Set<EndpointEntity> endpoints;
+    private List<EndpointEntity> endpoints;
 
     @Override
     public boolean equals(Object o) {

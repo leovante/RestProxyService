@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.serviceregistry.Registration;
@@ -25,6 +26,7 @@ import static ru.vtb.stub.config.TeamsConfig.getCodes;
 
 @Slf4j
 @Configuration
+@ConditionalOnProperty(value = "false", havingValue = "false")
 public class ZuulProxyConfig {
 
     @Bean

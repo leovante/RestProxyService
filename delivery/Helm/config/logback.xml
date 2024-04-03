@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <conversionRule conversionWord="esIndexLevelSuffix"
+                    converterClass="ru.vtb.logging.logback.plugin.EventLevelClassicConverter"/>
+
+    <!-- Правила синтаксического разбора конструкции <masker> в logback.xml. -->
+    <newRule pattern="*/masker" actionClass="ru.vtb.onb.log.masker.MaskerAction"/>
+    <newRule pattern="*/masker/rule/replace" actionClass="ru.vtb.onb.log.masker.ReplaceAction"/>
+
+    <!-- Правила маскирования, которые будут использоваться в вызове функции %mask(...). -->
+    <masker class="ru.vtb.onb.log.masker.RegexMasker">
+        <rule> <!-- *** -->
+            <replace regex=".+" with="***"/>
+            <name>access_token</name>
+            <name>address</name>
+            <name>addressFull</name>
+            <name>addressFullEn</name>
+            <name>apartmentNumber</name>
+            <name>Authorization</name>
+            <name>bic</name>
+            <name>bik</name>
+            <name>BIK</name>
+            <name>birthDate</name>
+            <name>birthDateTime</name>
+            <name>birthPlace</name>
+            <name>building</name>
+            <name>changeDateFullName</name>
+            <name>childrenNumber</name>
+            <name>client_id</name>
+            <name>client_secret</name>
+            <name>comment</name>
+            <name>country</name>
+            <name>deathDate</name>
+            <name>deathDateTime</name>
+            <name>dependentFlag</name>
+            <name>dependentNumber</name>
+            <name>educationDegree</name>
+            <name>educationType</name>
+            <name>employerOrganizationName</name>
+            <name>employmentContractType</name>
+            <name>employmentType</name>
+            <name>endOfRightToStay</name>
+            <name>expirationDate</name>
+            <name>fullAddress</name>
+            <name>fullAddressFctr</name>
+            <name>house</name>
+            <name>householderNumber</name>
+            <name>housing</name>
+            <name>institutionName</name>
+            <name>issueCode</name>
+            <name>issueCountryCode</name>
+            <name>issueDate</name>
+            <name>issueName</name>
+            <name>issuer</name>
+            <name>issuerPlace</name>
+            <name>issuingAuthority</name>
+            <name>jobTitle</name>
+            <name>jwt</name>
+            <name>kip</name>
+            <name>kladr</name>
+            <name>kLADR</name>
+            <name>kpp</name>
+            <name>KPP</name>
+            <name>largeKpp</name>
+            <name>maritalStatusCode</name>
+            <name>nationalityCountryCode</name>
+            <name>notFormAddrName</name>
+            <name>ogrn</name>
+            <name>OGRN</name>
+            <name>okato</name>
+            <name>oKATO</name>
+            <name>okfs</name>
+            <name>okogu</name>
+            <name>okopf</name>
+            <name>okpo</name>
+            <name>oktmo</name>
+            <name>okved</name>
+            <name>providerName</name>
+            <name>pubOfficialStatus</name>
+            <name>registrationAddress</name>
+            <name>registrationNumber</name>
+            <name>relationDegree</name>
+            <name>rowIdUnic</name>
+            <name>speciality</name>
+            <name>startDate</name>
+            <name>startDateofRegistration</name>
+            <name>startOfRightToStay</name>
+            <name>state</name>
+            <name>street</name>
+            <name>streetType</name>
+            <name>swift</name>
+            <name>SWIFT</name>
+            <name>taxPayerIdentificationNumber</name>
+            <name>taxRezident</name>
+            <name>value</name>
+            <name>X-TYK-API-KEY</name>
+            <name>zipCode</name>
+        </rule>
+        <rule> <!-- ***@gmail.com -->
+            <replace regex=".+?(@.+)" with="***$1"/>
+            <name>email</name>
+            <name>uri</name>
+            <name>uRI</name>
+            <name>url</name>
+        </rule>
+        <rule>
+            <replace regex="^.$" with="***"/> <!-- И → *** -->
+            <replace regex="^(.).{1,6}$" with="$1***"/> <!-- Ли → Л*** -->
+            <replace regex="^(.).{5,}(..)$" with="$1***$2"/> <!-- Барсуков → Б***ов -->
+            <name>chiefFullname</name>
+            <name>corpNameLatin</name>
+            <name>employeeFullname</name>
+            <name>fio</name>
+            <name>fIO</name>
+            <name>firstName</name>
+            <name>firstNameEn</name>
+            <name>firstNameLat</name>
+            <name>firstNameLatin</name>
+            <name>fullName</name>
+            <name>fullNameEn</name>
+            <name>fullNameAblative</name>
+            <name>fullNameDative</name>
+            <name>fullNameGenitive</name>
+            <name>lastName</name>
+            <name>lastNameEn</name>
+            <name>lastNameLat</name>
+            <name>lastNameLatin</name>
+            <name>middleName</name>
+            <name>middleNameEn</name>
+            <name>name</name>
+            <name>nameEn</name>
+            <name>nameLatin</name>
+            <name>patronymic</name>
+            <name>previousFirstName</name>
+            <name>previousLastName</name>
+            <name>previousMiddleName</name>
+        </rule>
+        <rule> <!-- Abc*** -->
+            <replace regex="(...).+" with="$1***"/>
+            <name>accountNumber</name>
+            <name>registryNumber</name>
+        </rule>
+        <rule> <!-- Abc*** ** ** -->
+            <replace regex="(?&lt;=.{3})\S" with="*"/>
+            <name>message</name>
+            <name>text</name>
+        </rule>
+        <rule> <!-- 1234567890 → 1*******90 -->
+            <replace regex="(?&lt;=.).(?=..)" with="*"/>
+            <name>inn</name>
+            <name>Inn</name>
+            <name>INN</name>
+            <name>tin</name>
+            <name>tIN</name>
+        </rule>
+        <rule> <!-- ***1 -->
+            <replace regex=".+([\d\s]{1})" with="***$1"/>
+            <name>docSeries</name>
+            <name>series</name>
+        </rule>
+        <rule> <!-- ***123 -->
+            <replace regex=".+([\d\s]{3})" with="***$1"/>
+            <name>docNumber</name>
+        </rule>
+        <rule> <!-- +7 999 123-45-67 → +7 *** ***-*5-67 -->
+            <replace regex="^(\D*\d)" with="$1"/>
+            <replace regex="\d(?=(?:\D*\d){3})" with="*"/>
+            <name>completeNumber</name>
+            <name>notFormFullPhone</name>
+            <name>number</name>
+            <name>OTP</name>
+            <name>pensionAccount</name>
+            <name>phone</name>
+            <name>phoneNormal</name>
+            <name>phoneNumber</name>
+            <name>phoneValue</name>
+        </rule>
+        <rule> <!-- По данным МВД паспорт *** является недействительным -->
+            <replace regex="(По данным МВД паспорт) [\d\w\s]+? (является недействительным)" with="$1 *** $2"/>
+            <name>mvdText</name>
+        </rule>
+        <rule>
+            <replace regex="(Feign client request to URL 'http[s]?://.+\?).+(')" with="$1***$2"/>
+            <name>MRCLOG</name>
+        </rule>
+        <rule> <!-- *** — если не "500 INTERNAL_SERVER_ERROR..." и не "Validation failed..." -->
+            <replace regex="^(?![45]\d\d\s|Validation\sfailed).*" with="***"/>
+            <name>description</name>
+        </rule>
+    </masker>
+
+    <!-- Добавляет функцию %mask(...), которую можно использовать в секции <pattern>. -->
+    <conversionRule conversionWord="mask" converterClass="ru.vtb.onb.log.masker.MaskConverter"/>
+    <!--
+      <conversionRule conversionWord="traceId" converterClass="ru.vtb.logging.logback.plugin.JaegerTraceIdConverter" />
+      <conversionRule conversionWord="spanId" converterClass="ru.vtb.logging.logback.plugin.JaegerSpanIdConverter" />
+      <conversionRule conversionWord="agrType" converterClass="ru.vtb.logging.logback.plugin.JaegerAgrTypeConverter" />
+    -->
+
+
+    <conversionRule conversionWord="esIndexLevelSuffix"
+                    converterClass="ru.vtb.logging.logback.plugin.EventLevelClassicConverter"/>
+
+    <appender name="TCP" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>127.0.0.1:5170</destination>
+        <includeCallerData>true</includeCallerData>
+        <reconnectionDelay>5000</reconnectionDelay>
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <pattern>
+                    <omitEmptyFields>true</omitEmptyFields>
+                    <!--
+                      использование полей callerClass, callerLine и callerMethod может негативно влиять на производительность
+                      поле encProvider может быть при необходимости добавлено в pattern
+                    -->
+                    <pattern>
+                        {
+                        "appType": "JAVA",
+                        "risCode": "1357",
+                        "projectCode": "ONB",
+                        "appName": "{{ .Release.Name }}",
+                        "threadName": "%thread",
+                        "loggerName": "%logger",
+                        "text": "mask(%message)",
+                        "level": "%level",
+                        "extEventId": "%X{extEventId}",
+                        "agrType": "%X{agrType:-TRACING}",
+                        "traceId": "%X{traceId}",
+                        "serviceName": "%X{serviceName}",
+                        "spanId": "%X{spanId}",
+                        "parentSpanId": "%X{parentSpanId}",
+                        "userId": "%X{userId}",
+                        "logicTime": "%X{logicTime}",
+                        "esIndexLevelSuffix": "%esIndexLevelSuffix",
+                        "request.method": "%X{request.method}",
+                        "request.contentLength": "%X{request.contentLength}",
+                        "response.statusCode": "%X{response.statusCode}",
+                        "response.contentLength": "%X{response.contentLength}",
+                        "response.time": "%X{response.time}"
+                        }
+                    </pattern>
+                </pattern>
+                <uuid>
+                    <fieldName>eventId</fieldName>
+                </uuid>
+                <timestamp>
+                    <pattern>yyyy-MM-dd'T'HH:mm:ss.SSS</pattern>
+                    <fieldName>localTime</fieldName>
+                    <timeZone>UTC</timeZone>
+                </timestamp>
+                <logLevelValue>
+                    <fieldName>levelInt</fieldName>
+                </logLevelValue>
+                <arguments>
+                    <includeNonStructuredArguments>false</includeNonStructuredArguments>
+                </arguments>
+                <stackTrace>
+                    <fieldName>stack</fieldName>
+                </stackTrace>
+                <mdc>
+                    <fieldName>mdc</fieldName>
+                    <excludeMdcKeyName>extEventId</excludeMdcKeyName>
+                    <excludeMdcKeyName>agrType</excludeMdcKeyName>
+                    <excludeMdcKeyName>traceId</excludeMdcKeyName>
+                    <excludeMdcKeyName>spanId</excludeMdcKeyName>
+                    <excludeMdcKeyName>parentSpanId</excludeMdcKeyName>
+                    <excludeMdcKeyName>sampled</excludeMdcKeyName>
+                    <excludeMdcKeyName>userId</excludeMdcKeyName>
+                    <excludeMdcKeyName>logicTime</excludeMdcKeyName>
+                    <excludeMdcKeyName>request.method</excludeMdcKeyName>
+                    <excludeMdcKeyName>request.contentLength</excludeMdcKeyName>
+                    <excludeMdcKeyName>response.statusCode</excludeMdcKeyName>
+                    <excludeMdcKeyName>response.contentLength</excludeMdcKeyName>
+                    <excludeMdcKeyName>response.time</excludeMdcKeyName>
+                </mdc>
+            </providers>
+        </encoder>
+    </appender>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss}[%thread]%-5level %logger{36} traceId=%X{traceId} - %.-2048mask(%msg){}%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="TCP"/>
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

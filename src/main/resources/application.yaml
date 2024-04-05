@@ -3,7 +3,7 @@ spring:
     name: rest-proxy-stub
 
 server:
-  port: 8888
+  port: ${APP_PORT}
   error:
     include-message: always
 
@@ -23,20 +23,20 @@ ribbon:
 zuul:
   routes:
     session:
-      url: http://session-stub-stubs-ds1-genr01-onbc-onb-development.apps.ds1-genr01.corp.dev.vtb/session
-      path: /session/**
+      url: ${ZUUL_ROUTES_SESSION_URL} http://session-stub-stubs-ds1-genr01-onbc-onb-development.apps.ds1-genr01.corp.dev.vtb/session
+      path: ${ZUUL_ROUTES_SESSION_PATH} /session/**
     session-onb:
-      url: http://session-stub-stubs-ds1-genr01-onbc-onb-development.apps.ds1-genr01.corp.dev.vtb/onb/session
-      path: /onb/session/**
+      url: ${ZUUL_ROUTES_SESSION_ONB_URL}http://session-stub-stubs-ds1-genr01-onbc-onb-development.apps.ds1-genr01.corp.dev.vtb/onb/session
+      path: ${ZUUL_ROUTES_SESSION_ONB_PATH}/onb/session/**
     card-ul:
-      url: http://card-ul-stub-stubs-ds1-genr01-onbc-onb-development.apps.ds1-genr01.corp.dev.vtb/onb/api/v1/etalons/get
-      path: /onb/api/v1/etalons/get/**
+      url: ${ZUUL_ROUTES_CARD_UL_URL}http://card-ul-stub-stubs-ds1-genr01-onbc-onb-development.apps.ds1-genr01.corp.dev.vtb/onb/api/v1/etalons/get
+      path: ${ZUUL_ROUTES_CARD_UL_PATH}/onb/api/v1/etalons/get/**
     card-fl:
-      url: http://card-fl-stub-stubs-ds1-genr01-onbc-onb-development.apps.ds1-genr01.corp.dev.vtb/person/get
-      path: /person/get/**
+      url: ${ZUUL_ROUTES_CARD_FL_URL}http://card-fl-stub-stubs-ds1-genr01-onbc-onb-development.apps.ds1-genr01.corp.dev.vtb/person/get
+      path: ${ZUUL_ROUTES_CARD_FL_PATH}/person/get/**
     egr:
-      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/cbext/fns/egr/info
-      path: /cbext/fns/egr/info/**
+      url: ${ZUUL_ROUTES_EGR_URL}http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/cbext/fns/egr/info
+      path: ${ZUUL_ROUTES_EGR_PATH}/cbext/fns/egr/info/**
 
 prefix:
   teams:

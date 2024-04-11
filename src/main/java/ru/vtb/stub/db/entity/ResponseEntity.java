@@ -3,9 +3,11 @@ package ru.vtb.stub.db.entity;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.Hibernate;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -14,7 +16,6 @@ import ru.vtb.stub.db.entity.convert.RawMessageConverter;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 @Setter
@@ -24,7 +25,8 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@Table(name = "response")
+@Table(name = "response", uniqueConstraints = @UniqueConstraint(
+        name = "path_method_team", columnNames = {"endpoint_path", "endpoint_method", "endpoint_team"}))
 @EntityListeners(AuditingEntityListener.class)
 public class ResponseEntity {
 
@@ -40,6 +42,7 @@ public class ResponseEntity {
     @Convert(converter = RawMessageConverter.class)
     private JsonNode body;
 
+    @Length(max = 8000)
     @Column(name = "string_body")
     private String stringBody;
 
@@ -59,30 +62,25 @@ public class ResponseEntity {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant updatedAt;
 
-    @Column(name = "expired_at")
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private Instant expiredAt;
-
-    @OneToMany(mappedBy = "response", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(
+            name = "response_header",
+            joinColumns = @JoinColumn(name = "response_id", referencedColumnName = "id"),
+            inverseJoinColumns = {
+                    @JoinColumn(name = "header_name", referencedColumnName = "name"),
+                    @JoinColumn(name = "header_value", referencedColumnName = "value")})
     @ToString.Exclude
     private List<HeaderEntity> headers;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "endpoint_id")
+    @ManyToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.MERGE)
+    @NotFound(action = NotFoundAction.IGNORE)
+    @JoinColumns({
+            @JoinColumn(name = "endpoint_path", referencedColumnName = "path"),
+            @JoinColumn(name = "endpoint_method", referencedColumnName = "method"),
+            @JoinColumn(name = "endpoint_team", referencedColumnName = "team")
+    })
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ToString.Exclude
     private EndpointEntity endpoint;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        ResponseEntity responseEntity = (ResponseEntity) o;
-        return id != null && Objects.equals(id, responseEntity.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

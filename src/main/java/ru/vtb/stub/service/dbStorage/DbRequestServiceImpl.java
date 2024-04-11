@@ -1,4 +1,4 @@
-package ru.vtb.stub.service.remoteStorage;
+package ru.vtb.stub.service.dbStorage;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

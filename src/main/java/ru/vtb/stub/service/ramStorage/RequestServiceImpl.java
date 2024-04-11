@@ -1,4 +1,4 @@
-package ru.vtb.stub.service.inMemoryStorage;
+package ru.vtb.stub.service.ramStorage;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -6,16 +6,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
-import ru.vtb.stub.domain.Request;
-import ru.vtb.stub.domain.StubData;
-import ru.vtb.stub.db.entity.EndpointEntity;
-import ru.vtb.stub.db.entity.HeaderEntity;
-import ru.vtb.stub.db.entity.ResponseEntity;
-import ru.vtb.stub.db.entity.TeamEntity;
+import org.springframework.web.bind.annotation.RequestMethod;
+import ru.vtb.stub.db.entity.*;
 import ru.vtb.stub.db.repository.EndpointRepository;
 import ru.vtb.stub.db.repository.HeaderRepository;
 import ru.vtb.stub.db.repository.ResponseRepository;
 import ru.vtb.stub.db.repository.TeamRepository;
+import ru.vtb.stub.domain.Request;
+import ru.vtb.stub.domain.StubData;
 import ru.vtb.stub.service.RequestService;
 
 import java.util.*;
@@ -45,7 +43,7 @@ public class RequestServiceImpl implements RequestService {
         checkTeam(team);
 
         String path = data.getPath();
-        String method = data.getMethod();
+        RequestMethod method = data.getMethod();
         String teamPrefix = "/" + team;
 
         String key = teamPrefix + path + ":" + method;
@@ -57,18 +55,20 @@ public class RequestServiceImpl implements RequestService {
                 : teamPrefix + path;
 
         // Если для этого ключа (path+method) уже есть запись - она удаляется
-        EndpointEntity existEndpoint = endpointRepository.findByPathAndMethod(actualPath, method);
-        if(Objects.nonNull(existEndpoint)) {
-            endpointRepository.delete(existEndpoint);
-        }
+        var req = new EndpointPathMethodTeamPk();
+        req.setTeam(team);
+        req.setPath(actualPath);
+        req.setMethod(method);
+        endpointRepository.findByPrimaryKey(req)
+                .stream().peek(endpointRepository::delete);
 
-        TeamEntity teamEntity = teamRepository.findByCode(team);
+        TeamEntity teamEntity = teamRepository.findByCode(team).get();
 
         EndpointEntity endpointEntity = new EndpointEntity();
-        endpointEntity.setPath(actualPath);
-        endpointEntity.setMethod(method);
+        endpointEntity.getPrimaryKey().setPath(actualPath);
+        endpointEntity.getPrimaryKey().setMethod(method);
+        endpointEntity.getPrimaryKey().setTeam(teamEntity.getCode());
         endpointEntity.setWait(data.getWait());
-        endpointEntity.setTeam(teamEntity);
         endpointRepository.save(endpointEntity);
 
         ResponseEntity responseEntity = new ResponseEntity();
@@ -114,8 +114,7 @@ public class RequestServiceImpl implements RequestService {
         if (key.contains(TEMPLATE)) {
             key = buildRegexKey(key);
             data = dataByRegexMap.remove(key);
-        }
-        else {
+        } else {
             data = dataByKeyMap.remove(key);
         }
 
@@ -192,9 +191,9 @@ public class RequestServiceImpl implements RequestService {
 
     private HeaderEntity addHeaderEntity(ru.vtb.stub.domain.Header headerDto, ResponseEntity responseEntity) {
         HeaderEntity headerEntity = new HeaderEntity();
-        headerEntity.setName(headerDto.getName());
-        headerEntity.setValue(headerDto.getValue());
-        headerEntity.setResponse(responseEntity);
+        headerEntity.getPrimaryKey().setName(headerDto.getName());
+        headerEntity.getPrimaryKey().setValue(headerDto.getValue());
+        headerEntity.setResponse(List.of(responseEntity));
         return headerEntity;
     }
 }

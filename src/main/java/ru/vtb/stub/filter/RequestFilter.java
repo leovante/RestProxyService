@@ -65,6 +65,6 @@ public class RequestFilter implements Filter {
     }
 
     private String mapToKey (EndpointEntity endpoint) {
-        return endpoint.getPath() + ":" + endpoint.getMethod();
+        return endpoint.getPrimaryKey().getPath() + ":" + endpoint.getPrimaryKey().getMethod();
     }
 }

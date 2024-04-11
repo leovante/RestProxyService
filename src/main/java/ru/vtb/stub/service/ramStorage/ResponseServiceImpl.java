@@ -1,19 +1,20 @@
-package ru.vtb.stub.service.inMemoryStorage;
+package ru.vtb.stub.service.ramStorage;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
-import ru.vtb.stub.db.entity.ResponseEntity;
-import ru.vtb.stub.domain.Response;
-import ru.vtb.stub.domain.StubData;
+import org.springframework.web.bind.annotation.RequestMethod;
 import ru.vtb.stub.db.entity.EndpointEntity;
-import ru.vtb.stub.filter.RequestWrapper;
+import ru.vtb.stub.db.entity.EndpointPathMethodTeamPk;
+import ru.vtb.stub.db.entity.ResponseEntity;
 import ru.vtb.stub.db.repository.EndpointRepository;
 import ru.vtb.stub.db.repository.ResponseRepository;
+import ru.vtb.stub.domain.Response;
+import ru.vtb.stub.domain.StubData;
+import ru.vtb.stub.filter.RequestWrapper;
 import ru.vtb.stub.service.ResponseService;
 
 import java.nio.charset.StandardCharsets;
@@ -37,8 +38,14 @@ public class ResponseServiceImpl implements ResponseService {
 
         String path = rpsRequest.split(":")[0];
         String method = rpsRequest.split(":")[1];
+        RequestMethod method2 = RequestMethod.valueOf(method);
 
-        EndpointEntity endpointEntity = endpointRepository.findByPathAndMethod(path, method);
+        var req = new EndpointPathMethodTeamPk();
+        req.setTeam(null);
+        req.setMethod(method2);
+        req.setPath(path);
+
+        EndpointEntity endpointEntity = endpointRepository.findByPrimaryKey(req).get();
 
         List<ResponseEntity> responseEntity = responseRepository.findByEndpoint(endpointEntity);
 

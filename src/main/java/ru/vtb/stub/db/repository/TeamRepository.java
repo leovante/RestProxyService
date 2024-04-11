@@ -6,9 +6,11 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import ru.vtb.stub.db.entity.TeamEntity;
 
+import java.util.Optional;
+
 public interface TeamRepository extends JpaRepository<TeamEntity, Long> {
 
-    TeamEntity findByCode(String code);
+    Optional<TeamEntity> findByCode(String code);
 
     @Modifying
     @Transactional

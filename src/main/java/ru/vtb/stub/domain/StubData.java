@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.bind.annotation.RequestMethod;
 import ru.vtb.stub.validate.Method;
 import ru.vtb.stub.validate.Path;
 import ru.vtb.stub.validate.Team;
@@ -35,7 +36,7 @@ public class StubData {
     @Method
     @NotBlank
     @Schema(description = "HTTP метод для которого устанавливается ответ", example = "GET", required = true)
-    private String method;
+    private RequestMethod method;
 
     @Min(100)
     @Max(60_000)

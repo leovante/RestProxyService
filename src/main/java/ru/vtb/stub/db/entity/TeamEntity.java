@@ -27,20 +27,4 @@ public class TeamEntity {
     @Column(name = "code", nullable = false)
     private String code;
 
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude
-    private List<EndpointEntity> endpoints;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        TeamEntity teamEntity = (TeamEntity) o;
-        return id != null && Objects.equals(id, teamEntity.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

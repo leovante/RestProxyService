@@ -2,13 +2,10 @@ package ru.vtb.stub.db.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -18,43 +15,31 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@Table(name = "endpoint", uniqueConstraints = @UniqueConstraint(name = "path_method", columnNames = {"path", "method"}))
+@Table(name = "endpoint", uniqueConstraints = @UniqueConstraint(name = "path_method_team", columnNames = {"path", "method", "team"}))
 public class EndpointEntity {
 
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", insertable = false, updatable = false, columnDefinition = "serial")
     private Long id;
 
-    @Column(name = "path", nullable = false)
-    private String path;
-
-    @Column(name = "method", nullable = false)
-    private String method;
+    @EmbeddedId
+    private EndpointPathMethodTeamPk primaryKey;
 
     @Column(name = "wait")
     private Integer wait;
 
-    @OneToMany(mappedBy = "endpoint", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "endpoint", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @ToString.Exclude
     private List<ResponseEntity> responses;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "team_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @ToString.Exclude
-    private TeamEntity team;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        EndpointEntity endpointEntity = (EndpointEntity) o;
-        return id != null && Objects.equals(id, endpointEntity.id);
+    public void setPrimaryKey(EndpointPathMethodTeamPk primaryKey) {
+        this.primaryKey = primaryKey;
+        if (this.getPrimaryKey() == null) {
+            this.setPrimaryKey(new EndpointPathMethodTeamPk());
+        }
+        this.getPrimaryKey().setPath(primaryKey.getPath());
+        this.getPrimaryKey().setMethod(primaryKey.getMethod());
+        this.getPrimaryKey().setTeam(primaryKey.getTeam());
     }
 
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

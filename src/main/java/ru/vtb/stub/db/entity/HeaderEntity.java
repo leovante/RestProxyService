@@ -2,11 +2,10 @@ package ru.vtb.stub.db.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.util.Objects;
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,36 +15,18 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@Table(name = "header")
+@Table(name = "header", uniqueConstraints = @UniqueConstraint(name = "team_code", columnNames = {"name", "value"}))
 public class HeaderEntity {
 
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", insertable = false, updatable = false, columnDefinition = "serial")
     private Long id;
 
-    @Column(name = "name")
-    private String name;
+    @EmbeddedId
+    private HeaderResponsePk primaryKey;
 
-    @Column(name = "value")
-    private String value;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "response_id")
+    @ManyToMany(mappedBy = "headers")
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ToString.Exclude
-    private ResponseEntity response;
+    private List<ResponseEntity> response;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        HeaderEntity headerEntity = (HeaderEntity) o;
-        return id != null && Objects.equals(id, headerEntity.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

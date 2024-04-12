@@ -6,7 +6,8 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -23,16 +24,16 @@ import java.util.List;
 @RestController
 @Validated
 @RequestMapping("${path.data}")
-@RequiredArgsConstructor
 public class RequestController {
 
-    private final RequestService service;
+    @Autowired
+    private RequestService service;
 
     @PostMapping
     @Operation(summary = "Установка данных для team, path и method")
     @ApiResponse(responseCode = "201", description = "Данные установлены")
     @ApiResponse(responseCode = "400", description = "Ошибка в формате данных")
-    public ResponseEntity<Void> putData(@RequestBody StubData data) {
+    public ResponseEntity<Void> putData(@Valid @RequestBody StubData data) {
         service.putData(data);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

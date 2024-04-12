@@ -1,13 +1,14 @@
 package ru.vtb.stub.domain;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -31,8 +32,8 @@ public class Request {
     @Schema(description = "Map<String, String> заголовков запроса")
     private Map<String, String> headers;
 
-    @Schema(description = "Map<String, String> параметров строки запроса")
-    private Map<String, String> params;
+    @Schema(description = "Map<String, List<String>> параметров строки запроса")
+    private Map<String, List<String>> params;
 
     @Schema(description = "Строка с телом запроса")
     private String body;

@@ -2,13 +2,13 @@ package ru.vtb.stub.domain;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.vtb.stub.validate.Status;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
@@ -27,6 +27,9 @@ public class Response {
 
     @Schema(description = "Тело ответа в формате JSON")
     private JsonNode body;
+
+    @Schema(description = "Тело ответа в формате byte array")
+    private byte[] bodyAsByteArray;
 
     @Schema(description = "Тело ответа в формате STRING")
     private String stringBody;

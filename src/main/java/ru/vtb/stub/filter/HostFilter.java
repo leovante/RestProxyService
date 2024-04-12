@@ -9,6 +9,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
 import org.springframework.stereotype.Component;
 
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Component
 @ConditionalOnProperty(value = "false", havingValue = "false")
@@ -35,8 +38,8 @@ public class HostFilter extends ZuulFilter {
     @Override
     @SneakyThrows
     public Object run() {
-        RequestContext context = RequestContext.getCurrentContext();
-        /*HttpServletRequest request = context.getRequest();
+        /*RequestContext context = RequestContext.getCurrentContext();
+        HttpServletRequest request = context.getRequest();
         String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
 
         if (body.isEmpty()) {

@@ -1,19 +1,17 @@
 package ru.vtb.stub.filter;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ObjectUtils;
-import ru.vtb.stub.db.entity.EndpointEntity;
-import ru.vtb.stub.db.repository.EndpointRepository;
 
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
+import static ru.vtb.stub.data.DataMap.dataByKeyMap;
+import static ru.vtb.stub.data.DataMap.dataByRegexMap;
 
 @Slf4j
 @Component
@@ -25,46 +23,34 @@ public class RequestFilter implements Filter {
     @Value("${path.response}")
     private String forwardPath;
 
-    @Autowired
-    private EndpointRepository endpointRepository;
-
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
-
         RequestWrapper wrappedRequest = new RequestWrapper((HttpServletRequest) servletRequest);
+        String uri = wrappedRequest.getRequestURI();
+        String requestKey = uri + ":" + wrappedRequest.getMethod();
 
-        if (wrappedRequest.getRequestURI().equals(dataPath)) {
-            filterChain.doFilter(wrappedRequest, servletResponse);
-            return;
-        }
+        boolean containsDataByKey = dataByKeyMap.containsKey(requestKey);
 
-        String requestKey = wrappedRequest.getRequestURI() + ":" + wrappedRequest.getMethod();
+        String regexKey = dataByRegexMap.keySet().stream()
+                .filter(requestKey::matches)
+                .findFirst()
+                .orElse(null);
 
-        Set<String> dbKeys = endpointRepository.findAll().stream()
-                .map(this::mapToKey)
-                .collect(Collectors.toSet());
-
-        String dataKey = dbKeys.contains(requestKey)
+        String key = containsDataByKey
                 ? requestKey
-                : dbKeys.stream()
-                    .filter(requestKey::matches)
-                    .findFirst()
-                    .orElse(null);
+                : (regexKey != null ? URLEncoder.encode(regexKey, StandardCharsets.UTF_8) : null);
 
-        if (Objects.isNull(dataKey)) {
+        if (uri.equals(dataPath) || key == null) {
             filterChain.doFilter(wrappedRequest, servletResponse);
             return;
         }
 
-        String forward = ObjectUtils.isEmpty(wrappedRequest.getQueryString())
-                ? forwardPath + "?rpsRequest=" + requestKey + "&rpsKey=" + dataKey
-                : forwardPath + "?rpsRequest=" + requestKey + "&rpsKey=" + dataKey + "&" + wrappedRequest.getQueryString();
+        String queryString = wrappedRequest.getQueryString();
+        String forward = queryString == null || queryString.isEmpty()
+                ? forwardPath + "?rpsRequest=" + requestKey + "&rpsKey=" + key
+                : forwardPath + "?rpsRequest=" + requestKey + "&rpsKey=" + key + "&" + queryString;
 
         wrappedRequest.getRequestDispatcher(forward).forward(wrappedRequest, servletResponse);
-    }
-
-    private String mapToKey (EndpointEntity endpoint) {
-        return endpoint.getPrimaryKey().getPath() + ":" + endpoint.getPrimaryKey().getMethod();
     }
 }

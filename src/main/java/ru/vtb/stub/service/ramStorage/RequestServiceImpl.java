@@ -1,105 +1,53 @@
 package ru.vtb.stub.service.ramStorage;
 
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.bind.annotation.RequestMethod;
-import ru.vtb.stub.db.entity.*;
-import ru.vtb.stub.db.repository.EndpointRepository;
-import ru.vtb.stub.db.repository.HeaderRepository;
-import ru.vtb.stub.db.repository.ResponseRepository;
-import ru.vtb.stub.db.repository.TeamRepository;
 import ru.vtb.stub.domain.Request;
 import ru.vtb.stub.domain.StubData;
 import ru.vtb.stub.service.RequestService;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static ru.vtb.stub.config.TeamsConfig.getCodes;
 import static ru.vtb.stub.data.DataMap.*;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 @ConditionalOnProperty(name = "rest-proxy-stub.storage-mode", havingValue = "ram")
 public class RequestServiceImpl implements RequestService {
 
-    private final TeamRepository teamRepository;
-    private final EndpointRepository endpointRepository;
-    private final ResponseRepository responseRepository;
-    private final HeaderRepository headerRepository;
-
     private static final String TEMPLATE = "--";
 
-    @Override
     public void putData(StubData data) {
-        String team = data.getTeam();
+        String key = "/" + data.getTeam() + data.getPath() + ":" + data.getMethod();
 
-        checkTeam(team);
-
-        String path = data.getPath();
-        RequestMethod method = data.getMethod();
-        String teamPrefix = "/" + team;
-
-        String key = teamPrefix + path + ":" + method;
         log.debug("Put data: {} --> {}", key, data);
 
-        // Если path содержит "--", то "--" заменяются на regex
-        String actualPath = path.contains(TEMPLATE)
-                ? teamPrefix + buildRegexKey(path)
-                : teamPrefix + path;
-
-        // Если для этого ключа (path+method) уже есть запись - она удаляется
-        var req = new EndpointPathMethodTeamPk();
-        req.setTeam(team);
-        req.setPath(actualPath);
-        req.setMethod(method);
-        endpointRepository.findByPrimaryKey(req)
-                .stream().peek(endpointRepository::delete);
-
-        TeamEntity teamEntity = teamRepository.findByCode(team).get();
-
-        EndpointEntity endpointEntity = new EndpointEntity();
-        endpointEntity.getPrimaryKey().setPath(actualPath);
-        endpointEntity.getPrimaryKey().setMethod(method);
-        endpointEntity.getPrimaryKey().setTeam(teamEntity.getCode());
-        endpointEntity.setWait(data.getWait());
-        endpointRepository.save(endpointEntity);
-
-        ResponseEntity responseEntity = new ResponseEntity();
-        responseEntity.setStatus(data.getResponse().getStatus());
-        responseEntity.setBody(data.getResponse().getBody());
-        responseEntity.setEndpoint(endpointEntity);
-        responseRepository.save(responseEntity);
-
-        Set<HeaderEntity> headerEntities = new HashSet<>();
-        if (Objects.nonNull(data.getResponse().getHeaders())) {
-            headerEntities = data.getResponse().getHeaders().stream()
-                    .map(h -> addHeaderEntity(h, responseEntity))
-                    .collect(Collectors.toSet());
+        if (key.contains(TEMPLATE)) {
+            key = buildRegexKey(key);
+            dataByRegexMap.put(key, data);
         }
-        headerRepository.saveAll(headerEntities);
+        else {
+            dataByKeyMap.put(key, data);
+        }
 
-        // TODO - delete history
-//        List<Request> requests = requestMap.remove(key);
-//        if (!ObjectUtils.isEmpty(requests)) {
-//            log.debug("Deleted history: {} --> {}", key, requests);
-//        }
+        List<Request> requests = requestMap.remove(key);
+        if (!ObjectUtils.isEmpty(requests)) {
+            log.debug("Deleted history: {} --> {}", key, requests);
+        }
     }
 
-    @Override
     public StubData getData(String key) {
         StubData data = key.contains(TEMPLATE) ? dataByRegexMap.get(buildRegexKey(key)) : dataByKeyMap.get(key);
         log.debug("Get data: {} --> {}", key, data);
         return data;
     }
 
-    @Override
     public StubData[] getTeamData(String team) {
         List<StubData> data = new ArrayList<>();
         Stream.of(getTeamValues(dataByKeyMap, team), getTeamValues(dataByRegexMap, team))
@@ -108,13 +56,13 @@ public class RequestServiceImpl implements RequestService {
         return data.toArray(StubData[]::new);
     }
 
-    @Override
     public StubData removeData(String key) {
         StubData data;
         if (key.contains(TEMPLATE)) {
             key = buildRegexKey(key);
             data = dataByRegexMap.remove(key);
-        } else {
+        }
+        else {
             data = dataByKeyMap.remove(key);
         }
 
@@ -128,7 +76,6 @@ public class RequestServiceImpl implements RequestService {
         return data;
     }
 
-    @Override
     public void removeTeamData(String team) {
         List<String> keys = getTeamKeys(dataByKeyMap, team);
         List<String> regexKeys = getTeamKeys(dataByRegexMap, team);
@@ -146,7 +93,6 @@ public class RequestServiceImpl implements RequestService {
         }
     }
 
-    @Override
     public List<Request> getHistory(String key) {
         if (key.contains(TEMPLATE)) {
             key = buildRegexKey(key);
@@ -182,18 +128,4 @@ public class RequestServiceImpl implements RequestService {
                 .replaceAll("/", "\\/") + "$";
     }
 
-    @SneakyThrows
-    private void checkTeam(String team) {
-        if (!getCodes().contains(team)) {
-            throw new Exception("Team codes not contains: " + team);
-        }
-    }
-
-    private HeaderEntity addHeaderEntity(ru.vtb.stub.domain.Header headerDto, ResponseEntity responseEntity) {
-        HeaderEntity headerEntity = new HeaderEntity();
-        headerEntity.getPrimaryKey().setName(headerDto.getName());
-        headerEntity.getPrimaryKey().setValue(headerDto.getValue());
-        headerEntity.setResponse(List.of(responseEntity));
-        return headerEntity;
-    }
 }

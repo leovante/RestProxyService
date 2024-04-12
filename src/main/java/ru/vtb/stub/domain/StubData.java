@@ -1,10 +1,6 @@
 package ru.vtb.stub.domain;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +9,10 @@ import ru.vtb.stub.validate.Method;
 import ru.vtb.stub.validate.Path;
 import ru.vtb.stub.validate.Team;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 
 @Data
@@ -53,5 +53,4 @@ public class StubData {
     @Valid
     @Schema(description = "Список параметров ответа")
     private List<Response> responses;
-
 }

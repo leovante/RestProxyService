@@ -16,14 +16,14 @@ spring:
     open-in-view: false
     show-sql: ${SHOW_SQL:false}
 server:
-  port: 8888
+  port: ${APP_PORT}
   error:
     include-message: always
 
 logging:
   level:
-    ru:
-      vtb: DEBUG
+    ru.vtb.stub: ${LOGGING_LEVEL}
+    org.springframework.web: INFO
     root: DEBUG
     feign.Logger: DEBUG
     org.hibernate.SQL: DEBUG
@@ -34,24 +34,6 @@ logging:
 path:
   data: /stub/data
   response: /stub/response
-
-zuul:
-  routes:
-    session:
-      url: http://session-stub-stubs-ds1-genr01-onbc-onb-development.apps.ds1-genr01.corp.dev.vtb/session
-      path: /session/**
-    session-onb:
-      url: http://session-stub-stubs-ds1-genr01-onbc-onb-development.apps.ds1-genr01.corp.dev.vtb/onb/session
-      path: /onb/session/**
-    card-ul:
-      url: http://card-ul-stub-stubs-ds1-genr01-onbc-onb-development.apps.ds1-genr01.corp.dev.vtb/onb/api/v1/etalons/get
-      path: /onb/api/v1/etalons/get/**
-    card-fl:
-      url: http://card-fl-stub-stubs-ds1-genr01-onbc-onb-development.apps.ds1-genr01.corp.dev.vtb/person/get
-      path: /person/get/**
-    egr:
-      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/cbext/fns/egr/info
-      path: /cbext/fns/egr/info/**
 
 ribbon:
   eureka:
@@ -64,3 +46,41 @@ team:
 
 rest-proxy-stub:
   storage-mode: ${STORAGE_MODE}
+
+zuul:
+  routes:
+    session:
+      url: ${ZUUL_ROUTES_SESSION_URL}
+      path: ${ZUUL_ROUTES_SESSION_PATH}
+    session-onb:
+      url: ${ZUUL_ROUTES_SESSION_ONB_URL}
+      path: ${ZUUL_ROUTES_SESSION_ONB_PATH}
+    card-ul:
+      url: ${ZUUL_ROUTES_CARD_UL_URL}
+      path: ${ZUUL_ROUTES_CARD_UL_PATH}
+    card-fl:
+      url: ${ZUUL_ROUTES_CARD_FL_URL}
+      path: ${ZUUL_ROUTES_CARD_FL_PATH}
+    egr:
+      url: ${ZUUL_ROUTES_EGR_URL}
+      path: ${ZUUL_ROUTES_EGR_PATH}
+
+prefix:
+  teams:
+    - onb1
+    - onb2
+    - onb3_st
+    - onb3_dev
+    - onb3_front
+    - onb4
+    - onb5
+    - kpk
+    - mobile
+    - accr
+    - onb7_st
+    - onb7_dev
+    - onb7_front
+    - etalon-sync
+    - credential
+    - accr-open-dev
+    - cole-company-info

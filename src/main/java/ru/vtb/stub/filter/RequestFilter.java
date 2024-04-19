@@ -2,6 +2,7 @@ package ru.vtb.stub.filter;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import jakarta.servlet.*;
@@ -15,6 +16,7 @@ import static ru.vtb.stub.data.DataMap.dataByRegexMap;
 
 @Slf4j
 @Component
+@ConditionalOnProperty(value = "false", havingValue = "false")
 public class RequestFilter implements Filter {
 
     @Value("${path.data}")
@@ -30,6 +32,11 @@ public class RequestFilter implements Filter {
         String uri = wrappedRequest.getRequestURI();
         String requestKey = uri + ":" + wrappedRequest.getMethod();
 
+        if (uri.equals(dataPath)) {
+            filterChain.doFilter(wrappedRequest, servletResponse);
+            return;
+        }
+
         boolean containsDataByKey = dataByKeyMap.containsKey(requestKey);
 
         String regexKey = dataByRegexMap.keySet().stream()
@@ -41,7 +48,7 @@ public class RequestFilter implements Filter {
                 ? requestKey
                 : (regexKey != null ? URLEncoder.encode(regexKey, StandardCharsets.UTF_8) : null);
 
-        if (uri.equals(dataPath) || key == null) {
+        if (key == null) {
             filterChain.doFilter(wrappedRequest, servletResponse);
             return;
         }

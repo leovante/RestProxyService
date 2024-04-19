@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.vtb.stub.domain.Request;
 import ru.vtb.stub.domain.StubData;
+import ru.vtb.stub.dto.GetDataBaseRequest;
 import ru.vtb.stub.service.RequestService;
 import ru.vtb.stub.validate.Method;
 import ru.vtb.stub.validate.Path;
@@ -40,20 +42,15 @@ public class RequestController {
 
     @GetMapping
     @Operation(summary = "Получение данных, установленных для team, path и method")
-    @Parameter(name = "team", example = "team1")
-    @Parameter(name = "path", example = "/path/example")
-    @Parameter(name = "method", example = "GET")
     @ApiResponse(
             responseCode = "200",
             description = "Данные получены",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = StubData.class))
     )
     public ResponseEntity<StubData> getData(
-            @RequestParam @Team String team,
-            @RequestParam @Path String path,
-            @RequestParam @Method String method
+            @Valid @ParameterObject GetDataBaseRequest getDataBaseRequest
     ) {
-        return ResponseEntity.ok(service.getData("/" + team + path + ":" + method));
+        return ResponseEntity.ok(service.getData(getDataBaseRequest));
     }
 
     @GetMapping("/{team}")
@@ -71,21 +68,16 @@ public class RequestController {
 
     @DeleteMapping
     @Operation(summary = "Удаление данных, установленных для team, path и method")
-    @Parameter(name = "team", example = "team1")
-    @Parameter(name = "path", example = "/path/example")
-    @Parameter(name = "method", example = "GET")
     @ApiResponse(
             responseCode = "200",
             description = "Данные удалены",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = StubData.class))
     )
-    public ResponseEntity<StubData> removeData(
-            @RequestParam @Team String team,
-            @RequestParam @Path String path,
-            @RequestParam @Method String method
+    public ResponseEntity<Void> removeData(
+            @Valid @ParameterObject GetDataBaseRequest getDataBaseRequest
     ) {
-        StubData data = service.removeData("/" + team + path + ":" + method);
-        return ResponseEntity.ok(data);
+        service.removeData(getDataBaseRequest);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{team}")
@@ -99,21 +91,15 @@ public class RequestController {
 
     @GetMapping("/history")
     @Operation(summary = "Получение истории запросов для team, path и method")
-    @Parameter(name = "team", example = "team1")
-    @Parameter(name = "path", example = "/path/example")
-    @Parameter(name = "method", example = "GET")
     @ApiResponse(
             responseCode = "200",
             description = "История запросов получена",
             content = @Content(mediaType = "application/json",
                     array = @ArraySchema(schema = @Schema(implementation = Request.class)))
-
     )
     public ResponseEntity<List<Request>> getHistory(
-            @RequestParam @Team String team,
-            @RequestParam @Path String path,
-            @RequestParam @Method String method
+            @Valid @ParameterObject GetDataBaseRequest getDataBaseRequest
     ) {
-        return ResponseEntity.ok(service.getHistory("/" + team + path + ":" + method));
+        return ResponseEntity.ok(service.getHistory(getDataBaseRequest));
     }
 }

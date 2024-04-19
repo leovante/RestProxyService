@@ -1,4 +1,4 @@
-package ru.vtb.stub.service.ramStorage;
+package ru.vtb.stub.service.local;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import ru.vtb.stub.domain.Request;
 import ru.vtb.stub.domain.StubData;
+import ru.vtb.stub.dto.GetDataBaseRequest;
 import ru.vtb.stub.service.RequestService;
 
 import java.util.ArrayList;
@@ -42,7 +43,9 @@ public class RequestServiceImpl implements RequestService {
         }
     }
 
-    public StubData getData(String key) {
+    public StubData getData(GetDataBaseRequest req) {
+        String key = "/" + req.getTeam() + req.getPath() + ":" + req.getMethod();
+
         StubData data = key.contains(TEMPLATE) ? dataByRegexMap.get(buildRegexKey(key)) : dataByKeyMap.get(key);
         log.debug("Get data: {} --> {}", key, data);
         return data;
@@ -56,7 +59,9 @@ public class RequestServiceImpl implements RequestService {
         return data.toArray(StubData[]::new);
     }
 
-    public StubData removeData(String key) {
+    public void removeData(GetDataBaseRequest req) {
+        String key = "/" + req.getTeam() + req.getPath() + ":" + req.getMethod();
+
         StubData data;
         if (key.contains(TEMPLATE)) {
             key = buildRegexKey(key);
@@ -72,8 +77,6 @@ public class RequestServiceImpl implements RequestService {
         if (!ObjectUtils.isEmpty(requests)) {
             log.debug("Deleted history: {} --> {}", key, requests);
         }
-
-        return data;
     }
 
     public void removeTeamData(String team) {
@@ -93,7 +96,9 @@ public class RequestServiceImpl implements RequestService {
         }
     }
 
-    public List<Request> getHistory(String key) {
+    public List<Request> getHistory(GetDataBaseRequest req) {
+        String key = "/" + req.getTeam() + req.getPath() + ":" + req.getMethod();
+
         if (key.contains(TEMPLATE)) {
             key = buildRegexKey(key);
         }

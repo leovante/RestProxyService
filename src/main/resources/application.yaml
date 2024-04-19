@@ -23,7 +23,7 @@ server:
 logging:
   level:
     ru.vtb.stub: ${LOGGING_LEVEL}
-    org.springframework.web: INFO
+    org.springframework.web: DEBUG
     root: DEBUG
     feign.Logger: DEBUG
     org.hibernate.SQL: DEBUG

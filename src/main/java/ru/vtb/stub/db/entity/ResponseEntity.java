@@ -30,16 +30,16 @@ import java.util.List;
 @EntityListeners(AuditingEntityListener.class)
 public class ResponseEntity {
 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "status", nullable = false)
     private Integer status;
 
-    @Column(name = "json_body")
     @Convert(converter = RawMessageConverter.class)
+    @Column(name = "json_body")
     private JsonNode body;
 
     @Length(max = 8000)

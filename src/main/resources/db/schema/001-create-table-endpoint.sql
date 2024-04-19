@@ -1,5 +1,5 @@
 --liquibase formatted sql
---changeset temnikov_do:001-create-table-team-endpoint
+--changeset temnikov_do:001-create-table-endpoint
 
 create sequence endpoint_ordinal_number_seq
     start with 1

@@ -10,5 +10,6 @@
     <include file="schema/002-create-table-response.sql" relativeToChangelogFile="true"/>
     <include file="schema/003-create-table-header.sql" relativeToChangelogFile="true"/>
     <include file="schema/004-create-table-response-header.sql" relativeToChangelogFile="true"/>
+    <include file="schema/005-create-table-request-history.sql" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

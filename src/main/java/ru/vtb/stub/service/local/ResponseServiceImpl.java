@@ -1,8 +1,9 @@
-package ru.vtb.stub.service.ramStorage;
+package ru.vtb.stub.service.local;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -21,12 +22,12 @@ import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.valueOf;
-import static org.springframework.http.ResponseEntity.BodyBuilder;
 import static org.springframework.http.ResponseEntity.status;
 import static ru.vtb.stub.data.DataMap.*;
 
 @Slf4j
 @Service
+@ConditionalOnProperty(name = "rest-proxy-stub.storage-mode", havingValue = "local")
 public class ResponseServiceImpl implements ResponseService {
 
     @SneakyThrows

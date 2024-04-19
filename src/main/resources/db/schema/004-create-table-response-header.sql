@@ -1,5 +1,5 @@
 --liquibase formatted sql
---changeset temnikov_do:002-create-table-header
+--changeset temnikov_do:004-create-table-response-header
 
 create table response_header
 (

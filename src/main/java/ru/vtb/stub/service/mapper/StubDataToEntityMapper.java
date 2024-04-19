@@ -8,6 +8,7 @@ import ru.vtb.stub.db.entity.HeaderEntity;
 import ru.vtb.stub.db.entity.ResponseEntity;
 import ru.vtb.stub.domain.Header;
 import ru.vtb.stub.domain.StubData;
+import ru.vtb.stub.dto.GetDataBaseRequest;
 
 @Mapper(config = SpringMapperConfig.class)
 public interface StubDataToEntityMapper {
@@ -41,4 +42,8 @@ public interface StubDataToEntityMapper {
     @Mapping(target = "team", source = "team")
     EndpointPathMethodTeamPk mapStubDataToEndpointPk(StubData data);
 
+    @Mapping(target = "path", source = "path")
+    @Mapping(target = "method", source = "method")
+    @Mapping(target = "team", source = "team")
+    EndpointPathMethodTeamPk mapBaseRequestToEndpointPathMethodTeamPk(GetDataBaseRequest key);
 }

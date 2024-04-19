@@ -11,4 +11,5 @@ import java.util.List;
 public interface ResponseRepository extends JpaRepository<ResponseEntity, Long> {
 
     List<ResponseEntity> findByEndpoint(EndpointEntity endpointEntity);
+
 }

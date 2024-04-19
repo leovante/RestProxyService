@@ -1,5 +1,5 @@
 --liquibase formatted sql
---changeset temnikov_do:002-create-table-header
+--changeset temnikov_do:003-create-table-header
 
 create sequence header_ordinal_number_seq
     start with 1

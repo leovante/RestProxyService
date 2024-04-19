@@ -32,6 +32,11 @@ public class EndpointEntity {
     @ToString.Exclude
     private List<ResponseEntity> responses;
 
+    @OneToMany(mappedBy = "endpoint", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ToString.Exclude
+    private List<RequestHistoryEntity> requestHistory;
+
     public void setPrimaryKey(EndpointPathMethodTeamPk primaryKey) {
         this.primaryKey = primaryKey;
         if (this.getPrimaryKey() == null) {

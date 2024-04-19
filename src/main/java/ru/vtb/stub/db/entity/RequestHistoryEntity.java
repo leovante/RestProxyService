@@ -2,9 +2,13 @@ package ru.vtb.stub.db.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.util.Objects;
+import ru.vtb.stub.db.entity.convert.RequestHistoryConverter;
+import ru.vtb.stub.domain.Request;
 
 @Getter
 @Setter
@@ -21,23 +25,22 @@ public class RequestHistoryEntity {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "id", nullable = false)
+    @Column(name = "id")
     private Long id;
 
-    @Basic
-    @Column(name = "request", nullable = true, length = 8000)
-    private String request;
+    @Convert(converter = RequestHistoryConverter.class)
+    @Column(name = "request")
+    private Request request;
 
-    @Basic
-    @Column(name = "endpoint_path", nullable = false, length = 255)
-    private String endpointPath;
-
-    @Basic
-    @Column(name = "endpoint_method", nullable = false, length = 255)
-    private String endpointMethod;
-
-    @Basic
-    @Column(name = "endpoint_team", nullable = false, length = 255)
-    private String endpointTeam;
+    @ManyToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.MERGE)
+    @NotFound(action = NotFoundAction.IGNORE)
+    @JoinColumns({
+            @JoinColumn(name = "endpoint_path", referencedColumnName = "path"),
+            @JoinColumn(name = "endpoint_method", referencedColumnName = "method"),
+            @JoinColumn(name = "endpoint_team", referencedColumnName = "team")
+    })
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ToString.Exclude
+    private EndpointEntity endpoint;
 
 }

@@ -1,29 +1,28 @@
 package ru.vtb.stub.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.vtb.stub.filter.RequestWrapper;
+import ru.vtb.stub.service.RequestHistoryService;
 import ru.vtb.stub.service.ResponseService;
-
-import jakarta.servlet.http.HttpServletRequest;
+import ru.vtb.stub.service.transaction.HistoryBypassService;
 
 import static org.springframework.http.MediaType.*;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @Slf4j
+@RequiredArgsConstructor
 @RestController
 public class ResponseController {
 
-    @Autowired
-    private ResponseService service;
+    private final ResponseService responseService;
+    private final RequestHistoryService requestHistoryService;
+    private final HistoryBypassService historyBypassService;
 
     @Operation(hidden = true)
     @RequestMapping(path = "${path.response}", method = {GET, POST, PUT, PATCH, DELETE},
@@ -34,7 +33,10 @@ public class ResponseController {
             @RequestParam String rpsKey,
             RequestWrapper servletRequest
     ) {
-        return service.sendResponse(rpsRequest, rpsKey, servletRequest);
+        return historyBypassService.executeWithHistory(
+                () -> requestHistoryService.saveRequest(rpsRequest, rpsKey, servletRequest),
+                () -> responseService.sendResponse(rpsRequest, rpsKey, servletRequest)
+        );
     }
 
     @ResponseBody

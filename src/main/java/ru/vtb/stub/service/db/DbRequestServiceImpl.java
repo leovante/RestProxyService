@@ -3,12 +3,14 @@ package ru.vtb.stub.service.db;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.vtb.stub.db.dao.EndpointDao;
 import ru.vtb.stub.db.dao.ResponseDao;
 import ru.vtb.stub.domain.Request;
 import ru.vtb.stub.domain.StubData;
 import ru.vtb.stub.dto.GetDataBaseRequest;
 import ru.vtb.stub.service.RequestService;
+import ru.vtb.stub.service.mapper.EntityToDtoMapper;
 
 import java.util.List;
 
@@ -19,6 +21,7 @@ public class DbRequestServiceImpl implements RequestService {
 
     private final ResponseDao responseDao;
     private final EndpointDao endpointDao;
+    private final EntityToDtoMapper entityToDtoMapper;
 
     @Override
     public void putData(StubData data) {
@@ -26,8 +29,11 @@ public class DbRequestServiceImpl implements RequestService {
     }
 
     @Override
+    @Transactional
     public StubData getData(GetDataBaseRequest key) {
-        return endpointDao.getDataByPk(key);
+        return endpointDao.getDataByPk(key)
+                .map(entityToDtoMapper::mapEntityToStubData)
+                .orElse(null);
     }
 
     @Override
@@ -48,8 +54,7 @@ public class DbRequestServiceImpl implements RequestService {
 
     @Override
     public List<Request> getHistory(GetDataBaseRequest key) {
-//        return endpointDao.getHistory();
-        return null;
+        return endpointDao.getHistoryDataByPk(key);
     }
 
 }

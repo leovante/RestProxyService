@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vtb.stub.db.entity.EndpointEntity;
+import ru.vtb.stub.db.entity.RequestHistoryEntity;
 import ru.vtb.stub.db.repository.EndpointRepository;
+import ru.vtb.stub.domain.Request;
 import ru.vtb.stub.domain.StubData;
 import ru.vtb.stub.dto.GetDataBaseRequest;
 import ru.vtb.stub.service.mapper.EntityToDtoMapper;
@@ -24,12 +26,18 @@ public class EndpointDao {
     private final EntityToDtoMapper entityToDtoMapper;
 
     @Transactional
-    public StubData getDataByPk(GetDataBaseRequest key) {
+    public Optional<EndpointEntity> getDataByPk(GetDataBaseRequest key) {
         var pk = stubDataToEntityMapper.mapBaseRequestToEndpointPathMethodTeamPk(key);
+        return endpointRepository.findByPrimaryKey(pk);
+    }
 
+    @Transactional
+    public List<Request> getHistoryDataByPk(GetDataBaseRequest key) {
+        var pk = stubDataToEntityMapper.mapBaseRequestToEndpointPathMethodTeamPk(key);
         return endpointRepository.findByPrimaryKey(pk)
-                .map(entityToDtoMapper::mapEntityToStubData)
-                .orElse(null);
+                .map(EndpointEntity::getRequestHistory)
+                .map(it -> it.stream().map(RequestHistoryEntity::getRequest).collect(Collectors.toList()))
+                .orElse(Collections.emptyList());
     }
 
     @Transactional
@@ -53,7 +61,7 @@ public class EndpointDao {
     }
 
     @Transactional
-    public Optional<EndpointEntity> getOneByTeam(String team){
+    public Optional<EndpointEntity> getOneByTeam(String team) {
         return endpointRepository.findTop1ByTeam(team);
     }
 

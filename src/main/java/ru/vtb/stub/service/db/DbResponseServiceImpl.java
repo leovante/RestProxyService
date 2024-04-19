@@ -7,38 +7,35 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
-import ru.vtb.stub.db.dao.EndpointDao;
 import ru.vtb.stub.domain.Header;
 import ru.vtb.stub.domain.Response;
 import ru.vtb.stub.domain.StubData;
 import ru.vtb.stub.dto.GetDataBaseRequest;
 import ru.vtb.stub.filter.RequestWrapper;
+import ru.vtb.stub.service.RequestService;
 import ru.vtb.stub.service.ResponseService;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class DbResponseServiceImpl implements ResponseService {
 
-    private final EndpointDao endpointDao;
+    private final RequestService requestService;
 
     @SneakyThrows
-    public ResponseEntity<Object> sendResponse(String rpsRequest, String key, RequestWrapper servletRequest) {
+    public ResponseEntity<Object> sendResponse(String rpsRequest, String team, RequestWrapper servletRequest) {
         var path = rpsRequest.split(":")[0];
         var method = rpsRequest.split(":")[1];
-        var team = getTeam(path);
-        var pathNormal = getPath(path);
+        var pathNormal = getPath(path, team);
 
         var pk = new GetDataBaseRequest();
         pk.setPath(pathNormal);
         pk.setMethod(method);
         pk.setTeam(team);
-        StubData data = endpointDao.getDataByPk(pk);
+        StubData data = requestService.getData(pk);
 
         if (data == null) {
             return ResponseEntity.noContent().build();
@@ -46,7 +43,7 @@ public class DbResponseServiceImpl implements ResponseService {
 
         Integer wait = data.getWait();
         if (wait != null) {
-            log.info("Request to: {} --> Waiting {} ms...", key, wait);
+            log.info("Request to: {} --> Waiting {} ms...", path, wait);
             Thread.sleep(wait);
         }
 
@@ -79,13 +76,8 @@ public class DbResponseServiceImpl implements ResponseService {
         } else return byteArrayBody;
     }
 
-    private String getPath(String uri) {
-        var pathArr = uri.split("/");
-        return "/" + Arrays.stream(pathArr).skip(2).collect(Collectors.joining("/"));
-    }
-
-    private String getTeam(String path) {
-        return path.split("/")[1];
+    private String getPath(String path, String team) {
+        return path.replace("/" + team + "/", "/");
     }
 
 }

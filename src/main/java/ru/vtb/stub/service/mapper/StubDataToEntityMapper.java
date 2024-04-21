@@ -35,6 +35,7 @@ public interface StubDataToEntityMapper {
     @Mapping(target = "primaryKey", expression = "java(mapStubDataToEndpointPk(data))")
     @Mapping(target = "wait", source = "wait")
     @Mapping(target = "responses", ignore = true)
+    @Mapping(target = "requestHistory", ignore = true)
     EndpointEntity mapStubDataToEndpoint(StubData data);
 
     @Mapping(target = "path", source = "path")

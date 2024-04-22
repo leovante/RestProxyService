@@ -22,6 +22,15 @@ create table response
 create index response_created_at_idx
     on response (created_at);
 
+create index response_path_idx
+    on response (endpoint_path);
+
+create index response_method_idx
+    on response (endpoint_method);
+
+create index response_team_idx
+    on response (endpoint_team);
+
 comment on table response is 'response';
 comment on column response.id is 'идентификатор response';
 comment on column response.status is 'status response';

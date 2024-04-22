@@ -9,10 +9,7 @@ import ru.vtb.stub.domain.Header;
 import ru.vtb.stub.domain.Response;
 import ru.vtb.stub.domain.StubData;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Mapper(config = SpringMapperConfig.class)
 public interface EntityToDtoMapper {
@@ -26,13 +23,7 @@ public interface EntityToDtoMapper {
     @Mapping(target = "responses", expression = "java(mapResponsesEntityToDto(data.getResponses()))")
     StubData mapEntityToStubData(EndpointEntity data);
 
-    default List<Response> mapResponsesEntityToDto(List<ResponseEntity> res) {
-        return Optional.ofNullable(res)
-                .map(it -> it.stream()
-                        .map(this::mapResponseEntityToDto)
-                        .collect(Collectors.toList()))
-                .orElse(Collections.emptyList());
-    }
+    List<Response> mapResponsesEntityToDto(List<ResponseEntity> data);
 
     @Mapping(target = "status", source = "status")
     @Mapping(target = "headers", expression = "java(mapHeadersEntityToDto(res.getHeaders()))")
@@ -41,13 +32,7 @@ public interface EntityToDtoMapper {
     @Mapping(target = "stringBody", source = "stringBody")
     Response mapResponseEntityToDto(ResponseEntity res);
 
-    default List<Header> mapHeadersEntityToDto(List<HeaderEntity> res) {
-        return Optional.ofNullable(res)
-                .map(it -> it.stream()
-                        .map(this::mapHeaderEntityToDto)
-                        .collect(Collectors.toList()))
-                .orElse(Collections.emptyList());
-    }
+    List<Header> mapHeadersEntityToDto(List<HeaderEntity> res);
 
     @Mapping(target = "name", source = "primaryKey.name")
     @Mapping(target = "value", source = "primaryKey.value")

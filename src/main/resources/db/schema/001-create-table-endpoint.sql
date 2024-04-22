@@ -8,16 +8,29 @@ create sequence endpoint_ordinal_number_seq
 
 create table endpoint
 (
-    id     SERIAL       not null,
-    path   varchar(255) not null,
-    method varchar(255) not null,
-    team   varchar(255) not null,
-    wait   bigint,
+    id       SERIAL       not null,
+    path     varchar(255) not null,
+    method   varchar(255) not null,
+    team     varchar(255) not null,
+    wait     bigint,
+    is_regex bool,
     constraint path_method_team_pk primary key (path, method, team)
 );
 
 alter sequence endpoint_ordinal_number_seq
     owned by endpoint.id;
+
+create index endpoint_path_idx
+    on endpoint (path);
+
+create index endpoint_method_idx
+    on endpoint (method);
+
+create index endpoint_team_idx
+    on endpoint (team);
+
+create index endpoint_is_regex_idx
+    on endpoint (is_regex);
 
 comment on table endpoint is 'endpoint';
 comment on column endpoint.path is 'путь endpoint';

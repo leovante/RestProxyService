@@ -27,6 +27,9 @@ public class EndpointEntity {
     @Column(name = "wait")
     private Integer wait;
 
+    @Column(name = "is_regex")
+    private Boolean isRegex;
+
     @OneToMany(mappedBy = "endpoint", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ToString.Exclude

@@ -12,6 +12,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.RequestMethod;
 import ru.vtb.stub.db.entity.convert.RawMessageConverter;
 
 import java.time.Instant;
@@ -62,6 +63,16 @@ public class ResponseEntity {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant updatedAt;
 
+    @Column(name = "endpoint_path", insertable = false, updatable = false)
+    private String path;
+
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "endpoint_method", insertable = false, updatable = false)
+    private RequestMethod method;
+
+    @Column(name = "endpoint_team", insertable = false, updatable = false)
+    private String team;
+
     @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(
             name = "response_header",
@@ -72,7 +83,7 @@ public class ResponseEntity {
     @ToString.Exclude
     private List<HeaderEntity> headers;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.MERGE)
     @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumns({
             @JoinColumn(name = "endpoint_path", referencedColumnName = "path"),

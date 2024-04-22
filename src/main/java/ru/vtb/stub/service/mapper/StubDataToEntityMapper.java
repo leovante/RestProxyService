@@ -7,23 +7,42 @@ import ru.vtb.stub.db.entity.EndpointPathMethodTeamPk;
 import ru.vtb.stub.db.entity.HeaderEntity;
 import ru.vtb.stub.db.entity.ResponseEntity;
 import ru.vtb.stub.domain.Header;
+import ru.vtb.stub.domain.Response;
 import ru.vtb.stub.domain.StubData;
 import ru.vtb.stub.dto.GetDataBaseRequest;
 
-@Mapper(config = SpringMapperConfig.class)
+import java.util.List;
+
+@Mapper(config = SpringMapperConfig.class, uses = {MapperUtils.class})
 public interface StubDataToEntityMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "status", source = "response.status")
-    @Mapping(target = "headers", source = "response.headers")
-    @Mapping(target = "body", source = "response.body")
-    @Mapping(target = "stringBody", source = "response.stringBody")
+    @Mapping(target = "primaryKey", expression = "java(mapStubDataToEndpointPk(data))")
+    @Mapping(target = "wait", source = "wait")
+    @Mapping(target = "responses", expression = "java(mapResponseDtoToEntity(data.getResponses()))")
+    @Mapping(target = "requestHistory", ignore = true)
+    @Mapping(target = "isRegex", expression = "java(MapperUtils.isRegex(data.getPath()))")
+    EndpointEntity mapStubDataToEndpoint(StubData data);
+
+    @Mapping(target = "path", expression = "java(MapperUtils.buildRegexKey(data))")
+    @Mapping(target = "method", source = "method")
+    @Mapping(target = "team", expression = "java(MapperUtils.buildTeam(data))")
+    EndpointPathMethodTeamPk mapStubDataToEndpointPk(StubData data);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "status", source = "status")
+    @Mapping(target = "headers", source = "headers")
+    @Mapping(target = "body", source = "body")
+    @Mapping(target = "stringBody", source = "stringBody")
     @Mapping(target = "index", ignore = true)
     @Mapping(target = "currentIndex", ignore = true)
-    @Mapping(target = "endpoint", expression = "java(mapStubDataToEndpoint(data))")
+    @Mapping(target = "path", ignore = true)
+    @Mapping(target = "method", ignore = true)
+    @Mapping(target = "team", ignore = true)
+    @Mapping(target = "endpoint", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    ResponseEntity mapStubDataToEntity(StubData data);
+    ResponseEntity mapStubDataToEntity(Response data);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "primaryKey.name", source = "name")
@@ -31,20 +50,11 @@ public interface StubDataToEntityMapper {
     @Mapping(target = "response", ignore = true)
     HeaderEntity mapHeaderToEntity(Header header);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "primaryKey", expression = "java(mapStubDataToEndpointPk(data))")
-    @Mapping(target = "wait", source = "wait")
-    @Mapping(target = "responses", ignore = true)
-    @Mapping(target = "requestHistory", ignore = true)
-    EndpointEntity mapStubDataToEndpoint(StubData data);
-
     @Mapping(target = "path", source = "path")
     @Mapping(target = "method", source = "method")
     @Mapping(target = "team", source = "team")
-    EndpointPathMethodTeamPk mapStubDataToEndpointPk(StubData data);
+    EndpointPathMethodTeamPk mapBaseRequestToEndpointPathMethodTeamPk(GetDataBaseRequest data);
 
-    @Mapping(target = "path", source = "path")
-    @Mapping(target = "method", source = "method")
-    @Mapping(target = "team", source = "team")
-    EndpointPathMethodTeamPk mapBaseRequestToEndpointPathMethodTeamPk(GetDataBaseRequest key);
+    List<ResponseEntity> mapResponseDtoToEntity(List<Response> response);
+
 }

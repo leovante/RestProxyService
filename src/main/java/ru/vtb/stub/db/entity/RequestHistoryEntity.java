@@ -32,7 +32,7 @@ public class RequestHistoryEntity {
     @Column(name = "request")
     private Request request;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = {CascadeType.MERGE, CascadeType.REMOVE})
     @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumns({
             @JoinColumn(name = "endpoint_path", referencedColumnName = "path"),

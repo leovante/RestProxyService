@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestMethod;
 import ru.vtb.stub.db.dao.EndpointDao;
 import ru.vtb.stub.db.dao.ResponseDao;
 import ru.vtb.stub.domain.Request;
@@ -13,6 +14,7 @@ import ru.vtb.stub.service.RequestService;
 import ru.vtb.stub.service.mapper.EntityToDtoMapper;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,14 +27,23 @@ public class DbRequestServiceImpl implements RequestService {
 
     @Override
     public void putData(StubData data) {
-        responseDao.saveSingle(data);
+        endpointDao.saveSingle(data);
     }
 
     @Override
     @Transactional
     public StubData getData(GetDataBaseRequest key) {
-        return endpointDao.getDataByPk(key)
-                .map(entityToDtoMapper::mapEntityToStubData)
+        return Optional.ofNullable(responseDao.getDataByEndpointPk(key))
+                .map(entityToDtoMapper::mapResponsesEntityToDto)
+                .map(it -> new StubData(
+                        key.getTeam(),
+                        key.getPath(),
+                        RequestMethod.valueOf(key.getMethod()),
+                        0,
+                        null,
+                        0,
+                        it)
+                )
                 .orElse(null);
     }
 

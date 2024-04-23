@@ -7,6 +7,7 @@ import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.web.bind.annotation.RequestMethod;
 import ru.vtb.stub.db.entity.convert.RequestHistoryConverter;
 import ru.vtb.stub.domain.Request;
 
@@ -31,6 +32,16 @@ public class RequestHistoryEntity {
     @Convert(converter = RequestHistoryConverter.class)
     @Column(name = "request")
     private Request request;
+
+    @Column(name = "endpoint_path", insertable = false, updatable = false)
+    private String path;
+
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "endpoint_method", insertable = false, updatable = false)
+    private RequestMethod method;
+
+    @Column(name = "endpoint_team", insertable = false, updatable = false)
+    private String team;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = {CascadeType.MERGE, CascadeType.REMOVE})
     @NotFound(action = NotFoundAction.IGNORE)

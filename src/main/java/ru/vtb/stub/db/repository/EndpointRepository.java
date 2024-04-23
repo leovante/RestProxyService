@@ -15,17 +15,13 @@ import java.util.Optional;
 @Repository
 public interface EndpointRepository extends JpaRepository<EndpointEntity, EndpointPathMethodTeamPk> {
 
-    Optional<EndpointEntity> findByPrimaryKey(EndpointPathMethodTeamPk endpointPathMethodTeamPk);
-
     @Query(value = "select e.* "
             + "from endpoint e "
-            + "where regexp_match(:path, e.path) is not null "
-            + "  and team = :team "
-            + "  and method = :#{#method.name()} "
-            + "  and is_regex = true", nativeQuery = true)
-    Optional<EndpointEntity> findRegexByTeamAndPathAndMethod(@Param("team") String team,
-                                                             @Param("path") String path,
-                                                             @Param("method") RequestMethod method);
+            + "where (regexp_match(:#{#pk.path}, e.path) is not null "
+            + "  or regexp_match(e.path, :#{#pk.path}) is not null) "
+            + "  and e.team = :#{#pk.team} "
+            + "  and e.method = :#{#pk.method.name()} ", nativeQuery = true)
+    Optional<EndpointEntity> findByPrimaryKey(EndpointPathMethodTeamPk pk);
 
     @Query("select endpoint from EndpointEntity endpoint where endpoint.primaryKey.team = :team")
     Optional<List<EndpointEntity>> findTop30ByTeam(@Param("team") String team);
@@ -34,7 +30,12 @@ public interface EndpointRepository extends JpaRepository<EndpointEntity, Endpoi
     Optional<EndpointEntity> findTop1ByTeam(@Param("team") String team);
 
     @Modifying
-    void removeAllByPrimaryKey(EndpointPathMethodTeamPk endpointPathMethodTeamPk);
+    @Query(value = "delete from endpoint e "
+            + "where (regexp_match(:#{#pk.path}, e.path) is not null  "
+            + "  or regexp_match(e.path, :#{#pk.path}) is not null) "
+            + "  and e.team = :#{#pk.team} "
+            + "  and e.method = :#{#pk.method.name()} ", nativeQuery = true)
+    void removeByPrimaryKey(EndpointPathMethodTeamPk pk);
 
     @Modifying
     @Query("delete from EndpointEntity endpoint where endpoint.primaryKey.team = :team")

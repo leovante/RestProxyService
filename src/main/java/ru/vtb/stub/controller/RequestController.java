@@ -77,7 +77,7 @@ public class RequestController {
             @Valid @ParameterObject GetDataBaseRequest getDataBaseRequest
     ) {
         service.removeData(getDataBaseRequest);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{team}")

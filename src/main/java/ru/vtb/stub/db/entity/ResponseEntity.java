@@ -43,7 +43,7 @@ public class ResponseEntity {
     @Column(name = "json_body")
     private JsonNode body;
 
-    @Length(max = 8000)
+    @Length(max = 50000)
     @Column(name = "string_body")
     private String stringBody;
 

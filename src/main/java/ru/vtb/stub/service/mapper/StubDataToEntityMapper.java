@@ -11,7 +11,9 @@ import ru.vtb.stub.domain.Response;
 import ru.vtb.stub.domain.StubData;
 import ru.vtb.stub.dto.GetDataBaseRequest;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Mapper(config = SpringMapperConfig.class, uses = {MapperUtils.class})
 public interface StubDataToEntityMapper {
@@ -19,12 +21,12 @@ public interface StubDataToEntityMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "primaryKey", expression = "java(mapStubDataToEndpointPk(data))")
     @Mapping(target = "wait", source = "wait")
-    @Mapping(target = "responses", expression = "java(mapResponseDtoToEntity(data.getResponses()))")
+    @Mapping(target = "responses", expression = "java(mapResponseDtoToEntity(data))")
     @Mapping(target = "requestHistory", ignore = true)
     @Mapping(target = "isRegex", expression = "java(MapperUtils.isRegex(data.getPath()))")
     EndpointEntity mapStubDataToEndpoint(StubData data);
 
-    @Mapping(target = "path", expression = "java(MapperUtils.buildRegexKey(data))")
+    @Mapping(target = "path", source = "path")
     @Mapping(target = "method", source = "method")
     @Mapping(target = "team", expression = "java(MapperUtils.buildTeam(data))")
     EndpointPathMethodTeamPk mapStubDataToEndpointPk(StubData data);
@@ -55,6 +57,13 @@ public interface StubDataToEntityMapper {
     @Mapping(target = "team", source = "team")
     EndpointPathMethodTeamPk mapBaseRequestToEndpointPathMethodTeamPk(GetDataBaseRequest data);
 
-    List<ResponseEntity> mapResponseDtoToEntity(List<Response> response);
+    default List<ResponseEntity> mapResponseDtoToEntity(StubData data) {
+        if (data.getResponses() != null && !data.getResponses().isEmpty()) {
+            return data.getResponses().stream().map(this::mapStubDataToEntity).collect(Collectors.toList());
+        } else if (data.getResponse() != null) {
+            return List.of(mapStubDataToEntity(data.getResponse()));
+        }
+        return Collections.emptyList();
+    }
 
 }

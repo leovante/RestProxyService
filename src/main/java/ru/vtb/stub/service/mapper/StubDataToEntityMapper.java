@@ -1,5 +1,6 @@
 package ru.vtb.stub.service.mapper;
 
+import com.fasterxml.jackson.databind.node.NullNode;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.vtb.stub.db.entity.EndpointEntity;
@@ -59,7 +60,14 @@ public interface StubDataToEntityMapper {
 
     default List<ResponseEntity> mapResponseDtoToEntity(StubData data) {
         if (data.getResponses() != null && !data.getResponses().isEmpty()) {
-            return data.getResponses().stream().map(this::mapStubDataToEntity).collect(Collectors.toList());
+            return data.getResponses().stream()
+                    .map(this::mapStubDataToEntity)
+                    .peek(it -> {
+                        if (it.getBody() instanceof NullNode) {
+                            it.setBody(null);
+                        }
+                    })
+                    .collect(Collectors.toList());
         } else if (data.getResponse() != null) {
             return List.of(mapStubDataToEntity(data.getResponse()));
         }

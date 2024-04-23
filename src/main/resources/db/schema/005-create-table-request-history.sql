@@ -5,7 +5,7 @@ create table request_history
 (
     id              SERIAL       not null
         constraint request_history_pkey primary key,
-    request         varchar(50000),
+    request         varchar(100000),
     endpoint_path   varchar(255) not null,
     endpoint_method varchar(255) not null,
     endpoint_team   varchar(255) not null,

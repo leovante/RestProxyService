@@ -6,8 +6,8 @@ create table response
     id              SERIAL                      not null
         constraint response_pkey primary key,
     status          varchar(255)                not null,
-    json_body       varchar(50000),
-    string_body     varchar(50000),
+    json_body       varchar(100000),
+    string_body     varchar(100000),
     index           bigint,
     current_index   bigint,
     created_at      timestamp without time zone not null,

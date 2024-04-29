@@ -21,6 +21,7 @@ server:
     include-message: always
 
 logging:
+  config: classpath:log4j2.xml
   level:
     ru.vtb.stub: ${LOGGING_LEVEL}
     org.springframework.web: DEBUG

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="debug">
+
+    <Properties>
+        <Property name="LOG_PATTERN">%d{yyyy-MM-dd'T'HH:mm:ss} %-5level %logger{36} %location %.-5000msg%n</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${LOG_PATTERN}" disableAnsi="false"/>
+        </Console>
+<!--        <Async name="ASYNC">-->
+<!--            <AppenderRef ref="console"/>-->
+<!--            <DisruptorBlockingQueue/>-->
+<!--        </Async>-->
+    </Appenders>
+
+    <Loggers>
+        <AsyncLogger name="Async-Console" includeLocation="true" blocking="false" bufferSize="10" errorRef="console">
+            <AppenderRef ref="LogAppender"/>
+        </AsyncLogger>
+<!--        <Root level="debug">-->
+<!--            <AppenderRef ref="ASYNC"/>-->
+<!--        </Root>-->
+    </Loggers>
+
+</Configuration>

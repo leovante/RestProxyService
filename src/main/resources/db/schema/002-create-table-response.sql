@@ -6,8 +6,7 @@ create table response
     id              SERIAL                      not null
         constraint response_pkey primary key,
     status          varchar(255)                not null,
-    json_body       varchar(100000),
-    string_body     varchar(100000),
+    body            varchar(100000),
     index           bigint,
     current_index   bigint,
     created_at      timestamp without time zone not null,
@@ -34,8 +33,7 @@ create index response_team_idx
 comment on table response is 'response';
 comment on column response.id is 'идентификатор response';
 comment on column response.status is 'status response';
-comment on column response.json_body is 'body_json response';
-comment on column response.string_body is 'body_string response';
+comment on column response.body is 'body response';
 comment on column response.index is 'index для body response';
 comment on column response.current_index is 'current_index для body response';
 comment on column response.created_at is 'дата создания';

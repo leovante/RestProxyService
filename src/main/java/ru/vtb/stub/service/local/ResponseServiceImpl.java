@@ -1,6 +1,5 @@
 package ru.vtb.stub.service.local;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -15,7 +14,6 @@ import ru.vtb.stub.domain.StubData;
 import ru.vtb.stub.filter.RequestWrapper;
 import ru.vtb.stub.service.ResponseService;
 
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -120,15 +118,12 @@ public class ResponseServiceImpl implements ResponseService {
     }
 
     private Object getActualBody(Response actualData) {
-        JsonNode jsonBody = actualData.getBody();
-        String stringBody = actualData.getStringBody();
+        String jsonBody = actualData.getBody();
         byte[] byteArrayBody = actualData.getBodyAsByteArray();
 
         // Если одновременно заполнены поля body (json) и stringBody, то приоритет у body
-        if (jsonBody != null) {
+        if (jsonBody != null && !jsonBody.equals("null")) {
             return jsonBody;
-        } else if (stringBody != null) {
-            return stringBody.getBytes(StandardCharsets.UTF_8);
         } else return byteArrayBody;
     }
 

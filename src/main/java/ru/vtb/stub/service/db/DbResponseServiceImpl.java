@@ -1,6 +1,5 @@
 package ru.vtb.stub.service.db;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +14,6 @@ import ru.vtb.stub.filter.RequestWrapper;
 import ru.vtb.stub.service.RequestService;
 import ru.vtb.stub.service.ResponseService;
 
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Slf4j
@@ -64,15 +62,12 @@ public class DbResponseServiceImpl implements ResponseService {
     }
 
     private Object getActualBody(Response actualData) {
-        JsonNode jsonBody = actualData.getBody();
-        String stringBody = actualData.getStringBody();
+        String jsonBody = actualData.getBody();
         byte[] byteArrayBody = actualData.getBodyAsByteArray();
 
         // Если одновременно заполнены поля body (json) и stringBody, то приоритет у body
         if (jsonBody != null) {
             return jsonBody;
-        } else if (stringBody != null) {
-            return stringBody.getBytes(StandardCharsets.UTF_8);
         } else return byteArrayBody;
     }
 

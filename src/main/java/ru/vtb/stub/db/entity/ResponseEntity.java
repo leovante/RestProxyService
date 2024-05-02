@@ -39,13 +39,9 @@ public class ResponseEntity {
     @Column(name = "status", nullable = false)
     private Integer status;
 
-    @Convert(converter = RawMessageConverter.class)
-    @Column(name = "json_body")
-    private JsonNode body;
-
     @Length(max = 100000)
-    @Column(name = "string_body")
-    private String stringBody;
+    @Column(name = "body")
+    private String body;
 
     @Column(name = "index")
     private Integer index;

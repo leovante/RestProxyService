@@ -1,6 +1,5 @@
 package ru.vtb.stub.service.mapper;
 
-import com.fasterxml.jackson.databind.node.NullNode;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.vtb.stub.db.entity.EndpointEntity;
@@ -36,7 +35,6 @@ public interface StubDataToEntityMapper {
     @Mapping(target = "status", source = "status")
     @Mapping(target = "headers", source = "headers")
     @Mapping(target = "body", source = "body")
-    @Mapping(target = "stringBody", source = "stringBody")
     @Mapping(target = "index", ignore = true)
     @Mapping(target = "currentIndex", ignore = true)
     @Mapping(target = "path", ignore = true)
@@ -63,7 +61,7 @@ public interface StubDataToEntityMapper {
             return data.getResponses().stream()
                     .map(this::mapStubDataToEntity)
                     .peek(it -> {
-                        if (it.getBody() instanceof NullNode) {
+                        if (it.getBody() != null && it.getBody().equals("null")) {
                             it.setBody(null);
                         }
                     })

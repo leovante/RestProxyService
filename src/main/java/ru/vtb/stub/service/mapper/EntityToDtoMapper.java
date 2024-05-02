@@ -29,7 +29,6 @@ public interface EntityToDtoMapper {
     @Mapping(target = "headers", expression = "java(mapHeadersEntityToDto(res.getHeaders()))")
     @Mapping(target = "body", source = "body")
     @Mapping(target = "bodyAsByteArray", ignore = true)
-    @Mapping(target = "stringBody", source = "stringBody")
     Response mapResponseEntityToDto(ResponseEntity res);
 
     List<Header> mapHeadersEntityToDto(List<HeaderEntity> res);

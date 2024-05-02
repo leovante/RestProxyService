@@ -22,4 +22,10 @@ confluence: https://wiki.corp.dev.vtb/display/RKOSMB/REST-proxy-stub
 ### docker-compose
 - что бы создаль локально БД нужно открыть терминал в root папке этого проекта и ввести команду: docker compose up
 
+### запуск jar файла 
+- ввести в терминале команду: java -jar rest-proxy-stub-1.0.jar
+
+### запуск тестов производительности с помощью maven
+- mvn jmh:benchmark -Djmh.benchmarks=DaoBenchmark -Djmh.wi=3 -Djmh.i=3 -Djmh.r=1 -Djmh.f=1 -Djmh.perfasm.saveLog=true
+
 [*] Значения для стрима Онбординг. Заменить на свои

@@ -2,8 +2,9 @@ package ru.vtb.stub;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.openjdk.jmh.annotations.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.vtb.stub.controller.RequestController;
@@ -18,11 +19,22 @@ import java.util.concurrent.TimeUnit;
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @Profile("jmh")
 public class DaoBenchmark extends AbstractBenchmark {
+
     private static RequestController requestController;
 
-    @Autowired
-    public void setActorDAO(RequestController requestController) {
-        DaoBenchmark.requestController = requestController;
+    private ConfigurableApplicationContext context;
+
+    @Setup
+    public void init() {
+        context = SpringApplication.run(SpringBootApp.class);
+        context.registerShutdownHook();
+
+        requestController = context.getBean(RequestController.class);
+    }
+
+    @TearDown
+    public void closeContext(){
+        context.close();
     }
 
     @Benchmark

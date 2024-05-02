@@ -1,19 +1,20 @@
-package ru.vtb.stub;
+package benchmark;
 
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.openjdk.jmh.annotations.*;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Profile;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.bind.annotation.RequestMethod;
+import ru.vtb.stub.SpringBootApp;
 import ru.vtb.stub.controller.RequestController;
+import ru.vtb.stub.domain.Header;
+import ru.vtb.stub.domain.Response;
+import ru.vtb.stub.domain.StubData;
 import ru.vtb.stub.dto.GetDataBaseRequest;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@SpringBootTest
-@ExtendWith(SpringExtension.class)
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -33,13 +34,20 @@ public class DaoBenchmark extends AbstractBenchmark {
     }
 
     @TearDown
-    public void closeContext(){
+    public void closeContext() {
         context.close();
     }
 
     @Benchmark
     public void benchmarkFindAll() {
         DaoBenchmark.requestController.getData(new GetDataBaseRequest("local", "/passport/oauth2/token", "POST"));
+    }
+
+    @Benchmark
+    public void benchmarkSave() {
+        var headers = new Header("name", "value");
+        var resp = new Response(200, List.of(headers), "body", null);
+        DaoBenchmark.requestController.putData(new StubData("team", "path", RequestMethod.GET, 100, resp, 0, List.of(resp)));
     }
 
 }

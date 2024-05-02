@@ -1,6 +1,5 @@
-package ru.vtb.stub;
+package benchmark;
 
-import org.junit.jupiter.api.Test;
 import org.openjdk.jmh.results.format.ResultFormatType;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
@@ -10,17 +9,16 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.util.concurrent.TimeUnit;
 
-public abstract class AbstractBenchmark {
+public class AbstractBenchmark {
     private final static Integer MEASUREMENT_ITERATIONS = 10;
     private final static Integer WARMUP_ITERATIONS = 3;
     @Value("${jmh.result.path:/}")
     private String path;
 
-    @Test
-    public void executeJmhRunner() throws RunnerException {
+    public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
                 // set the class name regex for benchmarks to search for to the current class
-                .include("\\." + this.getClass().getSimpleName() + "\\.")
+                .include("\\.*" + DaoBenchmark.class.getSimpleName() + "\\.*")
                 .warmupIterations(WARMUP_ITERATIONS)
                 .measurementIterations(MEASUREMENT_ITERATIONS)
                 .timeUnit(TimeUnit.MILLISECONDS)

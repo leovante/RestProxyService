@@ -32,4 +32,7 @@ public class Response {
     @Schema(description = "Тело ответа в формате byte array")
     private byte[] bodyAsByteArray;
 
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
+    private Boolean isUsed;
+
 }

@@ -35,8 +35,7 @@ public interface StubDataToEntityMapper {
     @Mapping(target = "status", source = "status")
     @Mapping(target = "headers", source = "headers")
     @Mapping(target = "body", source = "body")
-    @Mapping(target = "index", ignore = true)
-    @Mapping(target = "currentIndex", ignore = true)
+    @Mapping(target = "isUsed", expression = "java(setIsUsed(data.getIsUsed()))")
     @Mapping(target = "path", ignore = true)
     @Mapping(target = "method", ignore = true)
     @Mapping(target = "team", ignore = true)
@@ -70,6 +69,10 @@ public interface StubDataToEntityMapper {
             return List.of(mapStubDataToEntity(data.getResponse()));
         }
         return Collections.emptyList();
+    }
+
+    default Boolean setIsUsed(Boolean isUsed){
+        return isUsed != null && isUsed;
     }
 
 }

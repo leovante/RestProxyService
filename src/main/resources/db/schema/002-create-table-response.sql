@@ -7,8 +7,7 @@ create table response
         constraint response_pkey primary key,
     status          varchar(255)                not null,
     body            varchar(100000),
-    index           bigint,
-    current_index   bigint,
+    is_used         bool                        not null,
     created_at      timestamp without time zone not null,
     updated_at      timestamp without time zone not null,
     endpoint_path   varchar(255)                not null,
@@ -34,8 +33,7 @@ comment on table response is 'response';
 comment on column response.id is 'идентификатор response';
 comment on column response.status is 'status response';
 comment on column response.body is 'body response';
-comment on column response.index is 'index для body response';
-comment on column response.current_index is 'current_index для body response';
+comment on column response.is_used is 'is_used флаг что ответ был использован';
 comment on column response.created_at is 'дата создания';
 comment on column response.updated_at is 'дата обновления';
 comment on column response.endpoint_path is 'путь endpoint';

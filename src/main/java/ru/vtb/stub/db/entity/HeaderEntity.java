@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode
 @Entity
 @Builder
 @NoArgsConstructor
@@ -27,6 +27,7 @@ public class HeaderEntity {
     @ManyToMany(mappedBy = "headers")
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<ResponseEntity> response;
 
 }

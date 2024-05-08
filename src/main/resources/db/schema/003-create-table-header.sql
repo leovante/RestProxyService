@@ -8,7 +8,7 @@ create sequence header_ordinal_number_seq
 
 create table header
 (
-    id   SERIAL       not null,
+    id    SERIAL       not null,
     name  varchar(255) not null,
     value varchar(255) not null,
     constraint name_value_pk primary key (name, value)

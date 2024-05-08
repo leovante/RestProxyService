@@ -2,11 +2,11 @@ package ru.vtb.stub.db.entity;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.*;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -20,7 +20,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode
 @Entity
 @Builder
 @NoArgsConstructor
@@ -43,11 +43,8 @@ public class ResponseEntity {
     @Column(name = "body")
     private String body;
 
-    @Column(name = "index")
-    private Integer index;
-
-    @Column(name = "current_index")
-    private Integer currentIndex;
+    @Column(name = "is_used")
+    private Boolean isUsed;
 
     @Column(name = "created_at")
     @CreatedDate
@@ -69,14 +66,16 @@ public class ResponseEntity {
     @Column(name = "endpoint_team", insertable = false, updatable = false)
     private String team;
 
-    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "response_header",
-            joinColumns = @JoinColumn(name = "response_id", referencedColumnName = "id"),
+            joinColumns = @JoinColumn(name = "response_id", referencedColumnName = "id", nullable = false),
             inverseJoinColumns = {
                     @JoinColumn(name = "header_name", referencedColumnName = "name"),
                     @JoinColumn(name = "header_value", referencedColumnName = "value")})
+    @NotFound(action = NotFoundAction.IGNORE)
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<HeaderEntity> headers;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.MERGE)
@@ -88,6 +87,7 @@ public class ResponseEntity {
     })
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private EndpointEntity endpoint;
 
 }

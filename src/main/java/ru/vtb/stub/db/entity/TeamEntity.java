@@ -2,15 +2,10 @@ package ru.vtb.stub.db.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.Hibernate;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 
 @Getter
 @Setter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode
 @Entity
 @Builder
 @NoArgsConstructor

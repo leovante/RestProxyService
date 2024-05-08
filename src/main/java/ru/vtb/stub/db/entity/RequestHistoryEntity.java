@@ -13,7 +13,7 @@ import ru.vtb.stub.domain.Request;
 
 @Getter
 @Setter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode
 @Entity
 @Builder
 @NoArgsConstructor
@@ -52,6 +52,7 @@ public class RequestHistoryEntity {
     })
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private EndpointEntity endpoint;
 
 }

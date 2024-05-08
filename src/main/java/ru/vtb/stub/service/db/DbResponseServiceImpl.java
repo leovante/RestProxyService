@@ -49,8 +49,10 @@ public class DbResponseServiceImpl implements ResponseService {
     }
 
     private ResponseEntity<Object> createResponse(StubData data) {
-        log.info("Request to: {} --> {}", data.getPath(), data.getResponses().toString());
-        Response actualData = data.getResponses().stream().findFirst().get();
+        log.info("Request to path: {}", data.getPath());
+        Response actualData = data.getResponses() == null
+                ? data.getResponse()
+                : data.getResponses().stream().filter(Response::getIsUsed).reduce((x, y) -> y).get();
         Object actualBody = getActualBody(actualData);
         int status = actualData.getStatus();
         ResponseEntity.BodyBuilder response = ResponseEntity.status(status);

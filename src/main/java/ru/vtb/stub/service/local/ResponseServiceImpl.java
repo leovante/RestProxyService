@@ -106,7 +106,7 @@ public class ResponseServiceImpl implements ResponseService {
         List<Response> responseList = data.getResponses();
 
         // Если одновременно заполнены поля responses и response, то приоритет у responses
-        if (!ObjectUtils.isEmpty(responseList)) {
+        /*if (!ObjectUtils.isEmpty(responseList)) {
             int index = data.getIndex();
             // При повторном запросе будет отдан следующий элемент responseList
             int next = index + 1;
@@ -114,7 +114,13 @@ public class ResponseServiceImpl implements ResponseService {
             return responseList.get(index);
         } else {
             return data.getResponse();
-        }
+        }*/
+        return Optional.of(responseList)
+                .map(it -> it.stream()
+                        .filter(it2 -> !it2.getIsUsed())
+                        .peek(it3 -> it3.setIsUsed(true))
+                        .findFirst().get())
+                .orElse(data.getResponse());
     }
 
     private Object getActualBody(Response actualData) {

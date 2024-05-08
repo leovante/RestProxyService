@@ -1,6 +1,5 @@
 package ru.vtb.stub.service;
 
-import org.apache.commons.collections4.Get;
 import ru.vtb.stub.domain.Request;
 import ru.vtb.stub.domain.StubData;
 import ru.vtb.stub.dto.GetDataBaseRequest;
@@ -12,6 +11,8 @@ public interface RequestService {
     void putData(StubData data);
 
     StubData getData(GetDataBaseRequest key);
+
+    StubData getDataByPkAndMarkUsed(GetDataBaseRequest key);
 
     StubData[] getTeamData(String team);
 

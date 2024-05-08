@@ -33,7 +33,7 @@ public class DbResponseServiceImpl implements ResponseService {
         pk.setPath(pathNormal);
         pk.setMethod(method);
         pk.setTeam(team);
-        StubData data = requestService.getData(pk);
+        StubData data = requestService.getDataByPkAndMarkUsed(pk);
 
         if (data == null) {
             return ResponseEntity.noContent().build();

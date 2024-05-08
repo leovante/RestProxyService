@@ -47,6 +47,7 @@ team:
 
 rest-proxy-stub:
   storage-mode: ${STORAGE_MODE}
+  is-save-history: true
 
 zuul:
   routes:

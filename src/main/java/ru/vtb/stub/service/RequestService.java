@@ -28,8 +28,7 @@ public class RequestService {
         if (key.contains(TEMPLATE)) {
             key = buildRegexKey(key);
             dataByRegexMap.put(key, data);
-        }
-        else {
+        } else {
             dataByKeyMap.put(key, data);
         }
 
@@ -58,8 +57,7 @@ public class RequestService {
         if (key.contains(TEMPLATE)) {
             key = buildRegexKey(key);
             data = dataByRegexMap.remove(key);
-        }
-        else {
+        } else {
             data = dataByKeyMap.remove(key);
         }
 

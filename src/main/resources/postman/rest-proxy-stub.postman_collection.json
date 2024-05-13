@@ -1,622 +1,622 @@
 {
-	"info": {
-		"_postman_id": "f306de45-e6a6-4a5c-9186-7092eaf82a9f",
-		"name": "rest-proxy-stub",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"item": [
-		{
-			"name": "Установка данных в заглушку",
-			"item": [
-				{
-					"name": "Set correct data json",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 201\", function () {\r",
-									"    pm.response.to.have.status(201);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"team\": \"{{team}}\",\r\n    \"path\": \"{{example1_path}}\",\r\n    \"method\": \"GET\",\r\n    \"response\": {\r\n        \"status\": 200,\r\n        \"headers\": [\r\n            {\r\n                \"name\": \"header\",\r\n                \"value\": \"value\"\r\n            }\r\n        ],\r\n        \"body\": {\r\n            \"data\": \"data\"\r\n        }\r\n    }\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{stub_host}}{{stub_data}}",
-							"host": [
-								"{{stub_host}}{{stub_data}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Set correct data string",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 201\", function () {\r",
-									"    pm.response.to.have.status(201);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"team\": \"{{team}}\",\r\n    \"path\": \"{{example1_path}}\",\r\n    \"method\": \"GET\",\r\n    \"response\": {\r\n        \"status\": 200,\r\n        \"headers\": [\r\n            {\r\n                \"name\": \"header\",\r\n                \"value\": \"value\"\r\n            }\r\n        ],\r\n        \"stringBody\": \"body string\"\r\n    }\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{stub_host}}{{stub_data}}",
-							"host": [
-								"{{stub_host}}{{stub_data}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Set correct data list",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 201\", function () {\r",
-									"    pm.response.to.have.status(201);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"team\": \"{{team}}\",\r\n    \"path\": \"{{example1_path}}\",\r\n    \"method\": \"GET\",\r\n    \"responses\": [\r\n        {\r\n            \"status\": 200,\r\n            \"headers\": [\r\n                {\r\n                    \"name\": \"header1\",\r\n                    \"value\": \"value1\"\r\n                }\r\n            ],\r\n            \"body\": {\r\n                \"data\": \"json data1\"\r\n            }\r\n        },\r\n        {\r\n            \"status\": 201,\r\n            \"headers\": [\r\n                {\r\n                    \"name\": \"header2\",\r\n                    \"value\": \"value2\"\r\n                }\r\n            ],\r\n            \"stringBody\": \"string data2\"\r\n        },\r\n        {\r\n            \"status\": 500\r\n        }\r\n    ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{stub_host}}{{stub_data}}",
-							"host": [
-								"{{stub_host}}{{stub_data}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Set error",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 201\", function () {\r",
-									"    pm.response.to.have.status(201);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"team\": \"{{team}}\",\r\n    \"path\": \"{{example1_path}}\",\r\n    \"method\": \"GET\",\r\n    \"response\": {\r\n        \"status\": 401\r\n    }\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{stub_host}}{{stub_data}}",
-							"host": [
-								"{{stub_host}}{{stub_data}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Set error with body",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 201\", function () {\r",
-									"    pm.response.to.have.status(201);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"team\": \"{{team}}\",\r\n    \"path\": \"{{example1_path}}\",\r\n    \"method\": \"GET\",\r\n    \"response\": {\r\n        \"status\": 500,\r\n        \"body\": {\r\n            \"param1\": \"param1\",\r\n            \"param2\": \"param2\"\r\n        }\r\n    }\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{stub_host}}{{stub_data}}",
-							"host": [
-								"{{stub_host}}{{stub_data}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Set correct data [regex]",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 201\", function () {\r",
-									"    pm.response.to.have.status(201);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"team\": \"{{team}}\",\r\n    \"path\": \"{{example2_path}}\",\r\n    \"method\": \"GET\",\r\n    \"response\": {\r\n        \"status\": 200,\r\n        \"body\": {\r\n            \"data\": \"data2\"\r\n        }\r\n    }\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{stub_host}}{{stub_data}}",
-							"host": [
-								"{{stub_host}}{{stub_data}}"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Запрос установленных данных",
-			"item": [
-				{
-					"name": "GET data",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{stub_host}}/{{team}}{{example1_path}}",
-							"host": [
-								"{{stub_host}}"
-							],
-							"path": [
-								"{{team}}{{example1_path}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "GET data regex1",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{stub_host}}/{{team}}/example/222/path",
-							"host": [
-								"{{stub_host}}"
-							],
-							"path": [
-								"{{team}}",
-								"example",
-								"222",
-								"path"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "GET data regex2",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{stub_host}}/{{team}}/example/111/path",
-							"host": [
-								"{{stub_host}}"
-							],
-							"path": [
-								"{{team}}",
-								"example",
-								"111",
-								"path"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Просмотр/удаление данных заглушки",
-			"item": [
-				{
-					"name": "View data",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{stub_host}}{{stub_data}}?team={{team}}&path={{example1_path}}&method=GET",
-							"host": [
-								"{{stub_host}}{{stub_data}}"
-							],
-							"query": [
-								{
-									"key": "team",
-									"value": "{{team}}"
-								},
-								{
-									"key": "path",
-									"value": "{{example1_path}}"
-								},
-								{
-									"key": "method",
-									"value": "GET"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "View data [regex]",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{stub_host}}{{stub_data}}?team={{team}}&path={{example2_path}}&method=GET",
-							"host": [
-								"{{stub_host}}{{stub_data}}"
-							],
-							"query": [
-								{
-									"key": "team",
-									"value": "{{team}}"
-								},
-								{
-									"key": "path",
-									"value": "{{example2_path}}"
-								},
-								{
-									"key": "method",
-									"value": "GET"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "View all team data",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{stub_host}}{{stub_data}}/{{team}}",
-							"host": [
-								"{{stub_host}}{{stub_data}}"
-							],
-							"path": [
-								"{{team}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete data",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{stub_host}}/{{stub_data}}?team={{team}}&path={{example1_path}}&method=GET",
-							"host": [
-								"{{stub_host}}"
-							],
-							"path": [
-								"{{stub_data}}"
-							],
-							"query": [
-								{
-									"key": "team",
-									"value": "{{team}}"
-								},
-								{
-									"key": "path",
-									"value": "{{example1_path}}"
-								},
-								{
-									"key": "method",
-									"value": "GET"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete data [regex]",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{stub_host}}/{{stub_data}}?team={{team}}&path={{example2_path}}&method=GET",
-							"host": [
-								"{{stub_host}}"
-							],
-							"path": [
-								"{{stub_data}}"
-							],
-							"query": [
-								{
-									"key": "team",
-									"value": "{{team}}"
-								},
-								{
-									"key": "path",
-									"value": "{{example2_path}}"
-								},
-								{
-									"key": "method",
-									"value": "GET"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete all team data",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{stub_host}}{{stub_data}}/{{team}}",
-							"host": [
-								"{{stub_host}}{{stub_data}}"
-							],
-							"path": [
-								"{{team}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "History data",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{stub_host}}/{{stub_history}}?team={{team}}&path={{example1_path}}&method=GET",
-							"host": [
-								"{{stub_host}}"
-							],
-							"path": [
-								"{{stub_history}}"
-							],
-							"query": [
-								{
-									"key": "team",
-									"value": "{{team}}"
-								},
-								{
-									"key": "path",
-									"value": "{{example1_path}}"
-								},
-								{
-									"key": "method",
-									"value": "GET"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "History data [regex]",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{stub_host}}/{{stub_history}}?team={{team}}&path={{example2_path}}&method=GET",
-							"host": [
-								"{{stub_host}}"
-							],
-							"path": [
-								"{{stub_history}}"
-							],
-							"query": [
-								{
-									"key": "team",
-									"value": "{{team}}"
-								},
-								{
-									"key": "path",
-									"value": "{{example2_path}}"
-								},
-								{
-									"key": "method",
-									"value": "GET"
-								}
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		}
-	]
+  "info": {
+    "_postman_id": "f306de45-e6a6-4a5c-9186-7092eaf82a9f",
+    "name": "rest-proxy-stub",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Установка данных в заглушку",
+      "item": [
+        {
+          "name": "Set correct data json",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {\r",
+                  "    pm.response.to.have.status(201);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"team\": \"{{team}}\",\r\n    \"path\": \"{{example1_path}}\",\r\n    \"method\": \"GET\",\r\n    \"response\": {\r\n        \"status\": 200,\r\n        \"headers\": [\r\n            {\r\n                \"name\": \"header\",\r\n                \"value\": \"value\"\r\n            }\r\n        ],\r\n        \"body\": {\r\n            \"data\": \"data\"\r\n        }\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{stub_host}}{{stub_data}}",
+              "host": [
+                "{{stub_host}}{{stub_data}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Set correct data string",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {\r",
+                  "    pm.response.to.have.status(201);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"team\": \"{{team}}\",\r\n    \"path\": \"{{example1_path}}\",\r\n    \"method\": \"GET\",\r\n    \"response\": {\r\n        \"status\": 200,\r\n        \"headers\": [\r\n            {\r\n                \"name\": \"header\",\r\n                \"value\": \"value\"\r\n            }\r\n        ],\r\n        \"stringBody\": \"body string\"\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{stub_host}}{{stub_data}}",
+              "host": [
+                "{{stub_host}}{{stub_data}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Set correct data list",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {\r",
+                  "    pm.response.to.have.status(201);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"team\": \"{{team}}\",\r\n    \"path\": \"{{example1_path}}\",\r\n    \"method\": \"GET\",\r\n    \"responses\": [\r\n        {\r\n            \"status\": 200,\r\n            \"headers\": [\r\n                {\r\n                    \"name\": \"header1\",\r\n                    \"value\": \"value1\"\r\n                }\r\n            ],\r\n            \"body\": {\r\n                \"data\": \"json data1\"\r\n            }\r\n        },\r\n        {\r\n            \"status\": 201,\r\n            \"headers\": [\r\n                {\r\n                    \"name\": \"header2\",\r\n                    \"value\": \"value2\"\r\n                }\r\n            ],\r\n            \"stringBody\": \"string data2\"\r\n        },\r\n        {\r\n            \"status\": 500\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{stub_host}}{{stub_data}}",
+              "host": [
+                "{{stub_host}}{{stub_data}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Set error",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {\r",
+                  "    pm.response.to.have.status(201);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"team\": \"{{team}}\",\r\n    \"path\": \"{{example1_path}}\",\r\n    \"method\": \"GET\",\r\n    \"response\": {\r\n        \"status\": 401\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{stub_host}}{{stub_data}}",
+              "host": [
+                "{{stub_host}}{{stub_data}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Set error with body",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {\r",
+                  "    pm.response.to.have.status(201);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"team\": \"{{team}}\",\r\n    \"path\": \"{{example1_path}}\",\r\n    \"method\": \"GET\",\r\n    \"response\": {\r\n        \"status\": 500,\r\n        \"body\": {\r\n            \"param1\": \"param1\",\r\n            \"param2\": \"param2\"\r\n        }\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{stub_host}}{{stub_data}}",
+              "host": [
+                "{{stub_host}}{{stub_data}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Set correct data [regex]",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {\r",
+                  "    pm.response.to.have.status(201);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"team\": \"{{team}}\",\r\n    \"path\": \"{{example2_path}}\",\r\n    \"method\": \"GET\",\r\n    \"response\": {\r\n        \"status\": 200,\r\n        \"body\": {\r\n            \"data\": \"data2\"\r\n        }\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{stub_host}}{{stub_data}}",
+              "host": [
+                "{{stub_host}}{{stub_data}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Запрос установленных данных",
+      "item": [
+        {
+          "name": "GET data",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{stub_host}}/{{team}}{{example1_path}}",
+              "host": [
+                "{{stub_host}}"
+              ],
+              "path": [
+                "{{team}}{{example1_path}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET data regex1",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{stub_host}}/{{team}}/example/222/path",
+              "host": [
+                "{{stub_host}}"
+              ],
+              "path": [
+                "{{team}}",
+                "example",
+                "222",
+                "path"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET data regex2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{stub_host}}/{{team}}/example/111/path",
+              "host": [
+                "{{stub_host}}"
+              ],
+              "path": [
+                "{{team}}",
+                "example",
+                "111",
+                "path"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Просмотр/удаление данных заглушки",
+      "item": [
+        {
+          "name": "View data",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{stub_host}}{{stub_data}}?team={{team}}&path={{example1_path}}&method=GET",
+              "host": [
+                "{{stub_host}}{{stub_data}}"
+              ],
+              "query": [
+                {
+                  "key": "team",
+                  "value": "{{team}}"
+                },
+                {
+                  "key": "path",
+                  "value": "{{example1_path}}"
+                },
+                {
+                  "key": "method",
+                  "value": "GET"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "View data [regex]",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{stub_host}}{{stub_data}}?team={{team}}&path={{example2_path}}&method=GET",
+              "host": [
+                "{{stub_host}}{{stub_data}}"
+              ],
+              "query": [
+                {
+                  "key": "team",
+                  "value": "{{team}}"
+                },
+                {
+                  "key": "path",
+                  "value": "{{example2_path}}"
+                },
+                {
+                  "key": "method",
+                  "value": "GET"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "View all team data",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{stub_host}}{{stub_data}}/{{team}}",
+              "host": [
+                "{{stub_host}}{{stub_data}}"
+              ],
+              "path": [
+                "{{team}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete data",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{stub_host}}/{{stub_data}}?team={{team}}&path={{example1_path}}&method=GET",
+              "host": [
+                "{{stub_host}}"
+              ],
+              "path": [
+                "{{stub_data}}"
+              ],
+              "query": [
+                {
+                  "key": "team",
+                  "value": "{{team}}"
+                },
+                {
+                  "key": "path",
+                  "value": "{{example1_path}}"
+                },
+                {
+                  "key": "method",
+                  "value": "GET"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete data [regex]",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{stub_host}}/{{stub_data}}?team={{team}}&path={{example2_path}}&method=GET",
+              "host": [
+                "{{stub_host}}"
+              ],
+              "path": [
+                "{{stub_data}}"
+              ],
+              "query": [
+                {
+                  "key": "team",
+                  "value": "{{team}}"
+                },
+                {
+                  "key": "path",
+                  "value": "{{example2_path}}"
+                },
+                {
+                  "key": "method",
+                  "value": "GET"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete all team data",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{stub_host}}{{stub_data}}/{{team}}",
+              "host": [
+                "{{stub_host}}{{stub_data}}"
+              ],
+              "path": [
+                "{{team}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "History data",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{stub_host}}/{{stub_history}}?team={{team}}&path={{example1_path}}&method=GET",
+              "host": [
+                "{{stub_host}}"
+              ],
+              "path": [
+                "{{stub_history}}"
+              ],
+              "query": [
+                {
+                  "key": "team",
+                  "value": "{{team}}"
+                },
+                {
+                  "key": "path",
+                  "value": "{{example1_path}}"
+                },
+                {
+                  "key": "method",
+                  "value": "GET"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "History data [regex]",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{stub_host}}/{{stub_history}}?team={{team}}&path={{example2_path}}&method=GET",
+              "host": [
+                "{{stub_host}}"
+              ],
+              "path": [
+                "{{stub_history}}"
+              ],
+              "query": [
+                {
+                  "key": "team",
+                  "value": "{{team}}"
+                },
+                {
+                  "key": "path",
+                  "value": "{{example2_path}}"
+                },
+                {
+                  "key": "method",
+                  "value": "GET"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
 }

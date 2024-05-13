@@ -33,4 +33,7 @@ public class Response {
 
     @Schema(description = "Тело ответа в формате STRING")
     private String stringBody;
+
+    @Schema(description = "Темплейт Velocity")
+    private String template;
 }

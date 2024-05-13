@@ -1,8 +1,11 @@
 package ru.vtb.stub.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -12,7 +15,11 @@ import ru.vtb.stub.domain.Request;
 import ru.vtb.stub.domain.Response;
 import ru.vtb.stub.domain.StubData;
 import ru.vtb.stub.filter.RequestWrapper;
+import ru.vtb.stub.velocity.TemplateInitializer;
+import ru.vtb.stub.velocity.TemplateProcessor;
+import ru.vtb.stub.velocity.impl.JsonContextInitializer;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -26,7 +33,13 @@ import static ru.vtb.stub.data.DataMap.*;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@ConfigurationProperties(prefix = "generate")
 public class ResponseService {
+
+    private final TemplateProcessor templateProcessor;
+    private final TemplateInitializer templateInitializer;
+    private final JsonContextInitializer jsonContextInitializer;
 
     @SneakyThrows
     public ResponseEntity<Object> sendResponse(String rpsRequest, String key, RequestWrapper servletRequest) {
@@ -51,7 +64,7 @@ public class ResponseService {
         }
 
         Response actualData = getActualData(data);
-        Object actualBody = getActualBody(actualData);
+        Object actualBody = getActualBody(actualData, request.getBody());
         int status = actualData.getStatus();
         List<Header> headers = actualData.getHeaders();
 
@@ -85,8 +98,8 @@ public class ResponseService {
         return ObjectUtils.isEmpty(headers)
                 ? null
                 : Collections.list(headers)
-                        .stream()
-                        .collect(Collectors.toMap(h -> h, request::getHeader));
+                .stream()
+                .collect(Collectors.toMap(h -> h, request::getHeader));
     }
 
     private Map<String, List<String>> getQueryParams(String queryString) {
@@ -94,12 +107,12 @@ public class ResponseService {
         return params.length == 0
                 ? null
                 : Arrays.stream(params)
-                        .map(p -> p.split("="))
-                        .skip(2)
-                        .collect(Collectors.groupingBy(
-                                p -> p[0],
-                                Collectors.mapping(p -> p.length > 1 ? p[1] : "", Collectors.toList())
-                        ));
+                .map(p -> p.split("="))
+                .skip(2)
+                .collect(Collectors.groupingBy(
+                        p -> p[0],
+                        Collectors.mapping(p -> p.length > 1 ? p[1] : "", Collectors.toList())
+                ));
     }
 
     private Response getActualData(StubData data) {
@@ -117,9 +130,10 @@ public class ResponseService {
         }
     }
 
-    private Object getActualBody(Response actualData) {
+    private Object getActualBody(Response actualData, String request) throws IOException {
         JsonNode jsonBody = actualData.getBody();
         String stringBody = actualData.getStringBody();
+        String template = actualData.getTemplate();
         byte[] byteArrayBody = actualData.getBodyAsByteArray();
 
         // Если одновременно заполнены поля body (json) и stringBody, то приоритет у body
@@ -127,7 +141,17 @@ public class ResponseService {
             return jsonBody;
         } else if (stringBody != null) {
             return stringBody.getBytes(StandardCharsets.UTF_8);
-        } else return byteArrayBody;
+        }
+        if (byteArrayBody != null) {
+            return byteArrayBody;
+        } else if (template != null) {
+            template = template.replaceAll("\\+", "");
+            return templateProcessor.process(templateInitializer.init(template), () -> {
+                return jsonContextInitializer.init(request);
+            });
+        } else {
+            return null;
+        }
     }
 
     private void updateHistory(List<Request> history, Request request, String key) {

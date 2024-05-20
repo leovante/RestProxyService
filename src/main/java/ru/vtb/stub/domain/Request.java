@@ -1,5 +1,7 @@
 package ru.vtb.stub.domain;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +21,7 @@ public class Request {
 
     @NotBlank
     @Schema(description = "Время, когда поступил запрос. Заполняется автоматически", required = true)
+    @JsonSerialize(using = ToStringSerializer.class)
     private LocalDateTime date;
 
     @NotBlank

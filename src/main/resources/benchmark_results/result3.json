@@ -1,0 +1,61 @@
+[
+    {
+        "jmhVersion" : "1.37",
+        "benchmark" : "ru.vtb.stub.DaoBenchmark.benchmarkFindAll",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 0,
+        "jvm" : "C:\\Users\\dotemnikov\\.jdks\\azul-17.0.10\\bin\\java.exe",
+        "jvmArgs" : [
+            "-server"
+        ],
+        "jdkVersion" : "17.0.10",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.10+7-LTS",
+        "warmupIterations" : 3,
+        "warmupTime" : "10 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 10,
+        "measurementTime" : "10 s",
+        "measurementBatchSize" : 1,
+        "primaryMetric" : {
+            "score" : 6.747246518778492,
+            "scoreError" : 1.1261664543782157,
+            "scoreConfidence" : [
+                5.621080064400276,
+                7.873412973156707
+            ],
+            "scorePercentiles" : {
+                "0.0" : 5.811424404416037,
+                "50.0" : 6.66541312830924,
+                "90.0" : 8.050460639062692,
+                "95.0" : 8.102514817813764,
+                "99.0" : 8.102514817813764,
+                "99.9" : 8.102514817813764,
+                "99.99" : 8.102514817813764,
+                "99.999" : 8.102514817813764,
+                "99.9999" : 8.102514817813764,
+                "100.0" : 8.102514817813764
+            },
+            "scoreUnit" : "ms/op",
+            "rawData" : [
+                [
+                    8.102514817813764,
+                    6.491980597014925,
+                    6.195991826625387,
+                    5.8949028285209195,
+                    7.58197303030303,
+                    6.838845659603554,
+                    5.811424404416037,
+                    6.309476529968454,
+                    7.063534675141243,
+                    7.181820818377602
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    }
+]
+
+

@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: temnikov_do
+      comment: create_collection_comment
+      changes:
+        - createCollection:
+            collectionName: request_history

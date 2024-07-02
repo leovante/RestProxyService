@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: temnikov_do
+      comment: create_collection_comment
+      changes:
+        - createCollection:
+            collectionName: endpoint
+        - createIndex:
+            collectionName: endpoint
+            keys: '{_id: 1, type: 1}'
+            options: '{unique: true, name: "endpoint_id_unique"}'
+        - createIndex:
+            collectionName: endpoint
+            keys: "{\"second_id.team\": 1, type: 1}"
+            options: '{unique: false, name: "endpoint_second_id_team_idx"}'
+        - createIndex:
+            collectionName: endpoint
+            keys: "{\"second_id.path\": 1, type: \"text\"}"
+            options: '{unique: false, name: "endpoint_second_id_path_idx"}'
+        - createIndex:
+            collectionName: endpoint
+            keys: "{\"second_id.method\": 1, type: 1}"
+            options: '{unique: false, name: "endpoint_second_id_method_idx"}'
+        - createIndex:
+            collectionName: endpoint
+            keys: '{wait: 1, type: 1}'
+            options: '{unique: false, name: "endpoint_wait_idx"}'

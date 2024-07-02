@@ -1,0 +1,59 @@
+spring:
+  application:
+    name: rest-proxy-stub
+
+server:
+  error:
+    include-message: always
+
+logging:
+  level:
+    ru.vtb.stub: DEBUG
+    org.springframework.web: INFO
+
+path:
+  data: /stub/data
+  response: /stub/response
+
+ribbon:
+  eureka:
+    enabled: false
+
+zuul:
+  routes:
+    session:
+      url: http://session-stub-stubs-ds1-genr01-onbc-onb-development.apps.ds1-genr01.corp.dev.vtb/session
+      path: /session/**
+    session-onb:
+      url: http://session-stub-stubs-ds1-genr01-onbc-onb-development.apps.ds1-genr01.corp.dev.vtb/onb/session
+      path: /onb/session/**
+    card-ul:
+      url: http://card-ul-stub-stubs-ds1-genr01-onbc-onb-development.apps.ds1-genr01.corp.dev.vtb/onb/api/v1/etalons/get
+      path: /onb/api/v1/etalons/get/**
+    card-fl:
+      url: http://card-fl-stub-stubs-ds1-genr01-onbc-onb-development.apps.ds1-genr01.corp.dev.vtb/person/get
+      path: /person/get/**
+    egr:
+      url: http://stubs-dso-smeonboard.apps.d0-oscp.corp.dev.vtb/cbext/fns/egr/info
+      path: /cbext/fns/egr/info/**
+
+prefix:
+  teams:
+    - onb1
+    - onb2
+    - onb3_st
+    - onb3_dev
+    - onb3_front
+    - onb4
+    - onb5
+    - kpk
+    - mobile
+    - accr
+    - onb7_st
+    - onb7_dev
+    - onb7_front
+    - etalon-sync
+    - scheduler
+    - credential
+    - accr-open-dev
+    - cole-company-info

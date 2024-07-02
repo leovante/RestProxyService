@@ -1,0 +1,42 @@
+micronaut:
+  application:
+    name: rest-proxy-stub
+  server:
+    port: ${APP_PORT}
+    read-timeout: 30
+  http:
+    client:
+      max-content-length: 104857600
+      read-timeout: 30s
+    services:
+      my-service:
+        url: http://localhost:${APP_PORT}
+  codec:
+    additional-types:
+      - text/plain
+datasources:
+  default:
+    url: mongodb://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?authSource=admin&retryWrites=true&w=majority
+    driverClassName: io.micronaut.configuration.mongo.sync.MongoSyncDriver
+    schema-generate: none
+mongodb:
+  uri: mongodb://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?authSource=admin&retryWrites=true&w=majority
+jpa.default:
+  packages-to-scan: 'ru.vtb.stub.db'
+
+logger:
+  levels:
+    ru.vtb.stub: ${LOGGING_LEVEL}
+
+path:
+  data: /stub/data
+  response: /stub/response
+
+team:
+  codes:
+    - team1
+    - team2
+
+rest-proxy-stub:
+  storage-mode: ${STORAGE_MODE}
+  is-save-history: true

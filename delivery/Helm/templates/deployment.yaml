@@ -1,0 +1,75 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.main.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Release.Name }}
+          image: "{{ .Values.global.registry }}/{{ .Values.main.image }}:{{ .Values.main.tag }}"
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "{{ .Values.main.env.springProfile }}"
+            - name: SPRING_MAIN_BANNER-MODE
+              value: "off"
+            - name: TZ
+              value: Europe/Moscow
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Dfile.encoding=UTF-8 -Duser.language=ru -Duser.country=RU -Dspring.config.location=file:/opt/app/application-{{ .Values.main.env.springProfile }}.yaml"
+          volumeMounts:
+            - name: {{ .Release.Name }}-application-config
+              mountPath: /opt/app/application-{{ .Values.main.env.springProfile }}.yaml
+              subPath: application-{{ .Values.main.env.springProfile }}.yaml
+        {{- if .Values.main.Probe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.main.Probe.livenessProbe.path }}
+              port: {{ .Values.main.Probe.port }}
+              scheme: HTTP
+            failureThreshold: {{ .Values.main.Probe.livenessProbe.failureThreshold }}
+            initialDelaySeconds: {{ .Values.main.Probe.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.main.Probe.livenessProbe.periodSeconds }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.main.Probe.readinessProbe.path }}
+              port: {{ .Values.main.Probe.port }}
+              scheme: HTTP
+            failureThreshold: {{ .Values.main.Probe.readinessProbe.failureThreshold }}
+            initialDelaySeconds: {{ .Values.main.Probe.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.main.Probe.readinessProbe.periodSeconds }}
+        {{- end }}
+          ports:
+            - containerPort: {{ .Values.main.port }}
+              protocol: TCP
+          resources: {{ toYaml .Values.main.resources | nindent 12 }}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: {{ .Values.main.pullPolicy }}
+      volumes:
+        - name: {{ .Release.Name }}-application-config
+          secret:
+            secretName: {{ .Release.Name }}-application-config
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      schedulerName: default-scheduler
+
+{{- if ne .Values.global.stand "prod" }}
+  strategy:
+    type: Recreate
+{{- end }}
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600

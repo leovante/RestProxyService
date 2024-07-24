@@ -22,6 +22,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.springframework.cloud.netflix.zuul.filters.ZuulProperties.ZuulRoute;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.velocity.app.VelocityEngine;
+import ru.vtb.stub.velocity.TemplateInitializer;
+import ru.vtb.stub.velocity.TemplateProcessor;
+import ru.vtb.stub.velocity.impl.JsonContextInitializer;
+import ru.vtb.stub.velocity.impl.TemplateInitializerImpl;
+import ru.vtb.stub.velocity.impl.TemplateProcessorImpl;
 
 @Slf4j
 @Configuration
@@ -29,6 +36,32 @@ import static org.springframework.cloud.netflix.zuul.filters.ZuulProperties.Zuul
 public class ZuulProxyConfig {
 
     @Bean
+    public VelocityEngine velocityEngine() {
+        VelocityEngine velocityEngine = new VelocityEngine();
+        velocityEngine.init();
+        return velocityEngine;
+    }
+
+    @Bean
+    public TemplateInitializer templateInitializer(VelocityEngine velocityEngine) {
+        return new TemplateInitializerImpl(velocityEngine);
+    }
+
+    @Bean
+    public TemplateProcessor templateProcessor() {
+        return new TemplateProcessorImpl();
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
+    }
+
+    @Bean
+    public JsonContextInitializer jsonContextInitializer(ObjectMapper objectMapper) {
+        return new JsonContextInitializer(objectMapper);
+    }
+
     public HostFilter simpleFilter() {
         return new HostFilter();
     }

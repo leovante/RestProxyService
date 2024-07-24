@@ -47,4 +47,5 @@ public class ResponseController {
                 e.getSupportedMediaTypes());
         return ResponseEntity.badRequest().build();
     }
+
 }

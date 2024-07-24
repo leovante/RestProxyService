@@ -66,6 +66,18 @@ zuul:
     egr:
       url: ${ZUUL_ROUTES_EGR_URL}
       path: ${ZUUL_ROUTES_EGR_PATH}
+generate:
+  fields:
+    - name: requestId
+      type: uuid
+    - name: mdmCode
+      type: long
+      min: 1000000000
+      max: 9999999999
+    - name: mdmCode2
+      type: longAsString
+      min: 1000000000
+      max: 9999999999
 
 prefix:
   teams:

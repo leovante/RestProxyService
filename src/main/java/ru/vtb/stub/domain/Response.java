@@ -32,6 +32,9 @@ public class Response {
     @Schema(description = "Тело ответа в формате byte array")
     private byte[] bodyAsByteArray;
 
+    @Schema(description = "Темплейт Velocity")
+    private String template;
+
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private Integer idx;
 

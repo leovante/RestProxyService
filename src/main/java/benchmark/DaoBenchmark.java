@@ -46,7 +46,7 @@ public class DaoBenchmark extends AbstractBenchmark {
     @Benchmark
     public void benchmarkSave() {
         var headers = new Header("name", "value");
-        var resp = new Response(200, List.of(headers), "body", null, false);
+        var resp = new Response(200, List.of(headers), "body", null, 0);
         DaoBenchmark.requestController.putData(new StubData("team", "path", RequestMethod.GET, 100, resp, List.of(resp)));
     }
 

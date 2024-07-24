@@ -15,9 +15,14 @@ confluence: https://wiki.corp.dev.vtb/display/RKOSMB/REST-proxy-stub
 эндпоинтами, устанавливать в заглушку различные данные независимо друг от друга*
 
 ### запуск в docker локально
-- Build your image: docker build -t rest-proxy-stub .
-- Invoke your program inside a container: docker run --name rest-proxy-stub -p 24224:8888 rest-proxy-stub
-- Your program changed? Rebuild the image!: docker rmi rest-proxy-stub, docker build -t rest-proxy-stub .
+- mvn clean install
+- docker compose up -d
+
+### иногда докер поднимает старый image, по этому нужно удалить image вручную
+- docker rmi rest-proxy-stub
+
+### удаление docker containers локально
+- docker compose down -v
 
 ### docker-compose
 - что бы создаль локально БД нужно открыть терминал в root папке этого проекта и ввести команду: docker compose up

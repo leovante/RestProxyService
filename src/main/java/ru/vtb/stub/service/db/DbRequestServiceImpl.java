@@ -37,9 +37,7 @@ public class DbRequestServiceImpl implements RequestService {
     @Override
     @Transactional
     public StubData getDataByPkAndMarkUsed(GetDataBaseRequest key) {
-        return endpointDao.getDataByPkAndMarkUsed(key)
-                .map(entityToDtoMapper::mapEntityToStubData)
-                .orElse(null);
+        return endpointDao.getDataByPkAndSaveIdx(key);
     }
 
     @Override

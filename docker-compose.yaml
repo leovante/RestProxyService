@@ -1,19 +1,50 @@
 version: '3.5'
 services:
 
-  postgres:
-    container_name: rest_proxy_stub_db
+  postgres1:
+    container_name: postgres_rest_proxy_stub
     image: postgres
+    restart: always
     environment:
+      POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
       PGDATA: /data/postgres
+    networks:
+      - my_network
+    ports:
+      - 27017:${DB_PORT}
     volumes:
       - postgres:/data/postgres
+
+  rest-proxy-stub:
+    container_name: rest_proxy_stub
+    build:
+      context: .
+    depends_on:
+      - postgres1
+    restart: always
+    environment:
+      APP_PORT: ${APP_PORT}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JVM_OPTS: >
+        -XX:+CrashOnOutOfMemoryError
+    networks:
+      - my_network
     ports:
-      - "5440:5432"
-    restart: unless-stopped
+      - 24224:${APP_PORT}
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 300M
 
 volumes:
   postgres:
+
+networks:
+  my_network:

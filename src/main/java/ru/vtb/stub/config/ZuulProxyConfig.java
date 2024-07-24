@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.springframework.cloud.netflix.zuul.filters.ZuulProperties.ZuulRoute;
-import static ru.vtb.stub.config.TeamsConfig.getCodes;
 
 @Slf4j
 @Configuration
@@ -65,20 +64,20 @@ public class ZuulProxyConfig {
                 return;
             }
 
-            if (ObjectUtils.isEmpty(getCodes())) {
+            /*if (ObjectUtils.isEmpty(getCodes())) {
                 log.info("Zuul proxy config. No teams prefixes. Default routes:");
                 zuulProperties.getRoutes().forEach((k, v) -> log.info("{} --> {}", k, v));
                 return;
-            }
+            }*/
 
             Map<String, ZuulRoute> routes = new HashMap<>(zuulProperties.getRoutes());
-            getCodes().forEach(p -> routes.forEach((k, r) -> {
+            /*getCodes().forEach(p -> routes.forEach((k, r) -> {
                 ZuulRoute route = new ZuulRoute();
                 route.setId(p + "-" + k);
                 route.setPath("/" + p + r.getPath());
                 route.setUrl(r.getUrl());
                 zuulProperties.getRoutes().put(route.getId(), route);
-            }));
+            }));*/
 
             // Удаление маршрутов по-умолчанию
             routes.keySet().forEach(k -> zuulProperties.getRoutes().remove(k));

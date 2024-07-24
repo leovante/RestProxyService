@@ -2,9 +2,18 @@ package ru.vtb.stub.db.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.type.SqlTypes;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.format.annotation.DateTimeFormat;
+import ru.vtb.stub.domain.Response;
+import ru.vtb.stub.domain.StubData;
 
+import java.time.Instant;
 import java.util.List;
 
 @Getter
@@ -16,6 +25,7 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 @Table(name = "endpoint", uniqueConstraints = @UniqueConstraint(name = "path_method_team", columnNames = {"path", "method", "team"}))
+@EntityListeners(AuditingEntityListener.class)
 public class EndpointEntity {
 
     @Column(name = "id", insertable = false, updatable = false, columnDefinition = "serial")
@@ -30,11 +40,28 @@ public class EndpointEntity {
     @Column(name = "is_regex")
     private Boolean isRegex;
 
-    @OneToMany(mappedBy = "endpoint", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "response_stub", columnDefinition = "jsonb")
+    private List<Response> responses;
+
+    @Column(name = "idx")
+    private Integer idx;
+
+    @Column(name = "created_at")
+    @CreatedDate
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private Instant createdAt;
+
+    @Column(name = "updated_at")
+    @LastModifiedDate
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private Instant updatedAt;
+
+    /*@OneToMany(mappedBy = "endpoint", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    private List<ResponseEntity> responses;
+    private List<ResponseEntity> responses;*/
 
     @OneToMany(mappedBy = "endpoint", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @OnDelete(action = OnDeleteAction.CASCADE)

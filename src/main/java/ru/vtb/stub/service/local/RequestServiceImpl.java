@@ -51,6 +51,11 @@ public class RequestServiceImpl implements RequestService {
         return data;
     }
 
+    @Override
+    public StubData getDataByPkAndMarkUsed(GetDataBaseRequest key) {
+        return null;
+    }
+
     public StubData[] getTeamData(String team) {
         List<StubData> data = new ArrayList<>();
         Stream.of(getTeamValues(dataByKeyMap, team), getTeamValues(dataByRegexMap, team))

@@ -33,6 +33,6 @@ public class Response {
     private byte[] bodyAsByteArray;
 
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
-    private Boolean isUsed;
+    private Integer idx;
 
 }

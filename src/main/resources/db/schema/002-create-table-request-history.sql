@@ -1,5 +1,5 @@
 --liquibase formatted sql
---changeset temnikov_do:005-create-table-request-history
+--changeset temnikov_do:002-create-table-request-history
 
 create table request_history
 (

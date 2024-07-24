@@ -8,12 +8,16 @@ create sequence endpoint_ordinal_number_seq
 
 create table endpoint
 (
-    id       SERIAL       not null,
-    path     varchar(255) not null,
-    method   varchar(255) not null,
-    team     varchar(255) not null,
-    wait     bigint,
-    is_regex bool,
+    id            SERIAL                      not null,
+    path          varchar(255)                not null,
+    method        varchar(255)                not null,
+    team          varchar(255)                not null,
+    wait          bigint,
+    is_regex      bool,
+    response_stub jsonb                       not null,
+    idx           int                         not null,
+    created_at    timestamp without time zone not null,
+    updated_at    timestamp without time zone not null,
     constraint path_method_team_pk primary key (path, method, team)
 );
 

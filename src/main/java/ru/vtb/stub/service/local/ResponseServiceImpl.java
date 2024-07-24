@@ -117,8 +117,8 @@ public class ResponseServiceImpl implements ResponseService {
         }*/
         return Optional.of(responseList)
                 .map(it -> it.stream()
-                        .filter(it2 -> !it2.getIsUsed())
-                        .peek(it3 -> it3.setIsUsed(true))
+//                        .filter(it2 -> !it2.getIsUsed()) ?????
+//                        .peek(it3 -> it3.setIsUsed(true))
                         .findFirst().get())
                 .orElse(data.getResponse());
     }

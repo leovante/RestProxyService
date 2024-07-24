@@ -17,8 +17,8 @@ public interface EndpointRepository extends JpaRepository<EndpointEntity, Endpoi
 
     @Query(value = "select e.* "
             + "from endpoint e "
-            + "where regexp_match(e.path, '^' || REPLACE(:#{#pk.path}, '--', '[a-zA-Z0-9.@%/_-]+') || '$') is not null and is_regex = false "
-            + "or :#{#pk.path} is not null and is_regex = true "
+            + "where (regexp_match(e.path, '^' || REPLACE(:#{#pk.path}, '--', '[a-zA-Z0-9.@%/_-]+') || '$') is not null and is_regex = false) "
+            + "or (regexp_match(:#{#pk.path}, '^' || REPLACE(e.path, '--', '[a-zA-Z0-9.@%/_-]+') || '$') is not null and is_regex = true) "
             + "  and e.team = :#{#pk.team} "
             + "  and e.method = :#{#pk.method.name()} ", nativeQuery = true)
     Optional<EndpointEntity> findByPrimaryKey(EndpointPathMethodTeamPk pk);
@@ -32,7 +32,7 @@ public interface EndpointRepository extends JpaRepository<EndpointEntity, Endpoi
     @Modifying
     @Query(value = "delete from endpoint e "
             + "where regexp_match(e.path, '^' || REPLACE(:#{#pk.path}, '--', '[a-zA-Z0-9.@%/_-]+') || '$') is not null and is_regex = false "
-            + "or :#{#pk.path} is not null and is_regex = true "
+            + "or (regexp_match(:#{#pk.path}, '^' || REPLACE(e.path, '--', '[a-zA-Z0-9.@%/_-]+') || '$') is not null and is_regex = true) "
             + "  and e.team = :#{#pk.team} "
             + "  and e.method = :#{#pk.method.name()} ", nativeQuery = true)
     void removeByPrimaryKey(EndpointPathMethodTeamPk pk);

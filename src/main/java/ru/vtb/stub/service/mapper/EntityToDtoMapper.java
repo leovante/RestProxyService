@@ -3,6 +3,7 @@ package ru.vtb.stub.service.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.vtb.stub.db.entity.EndpointEntity;
+import ru.vtb.stub.db.entity.ResponseEntity;
 import ru.vtb.stub.domain.Response;
 import ru.vtb.stub.domain.StubData;
 
@@ -19,12 +20,20 @@ public interface EntityToDtoMapper {
     @Mapping(target = "responses", expression = "java(mapResponsesEntityToDto(data.getResponses()))")
     StubData mapEntityToStubData(EndpointEntity data);
 
-    default List<Response> mapResponsesEntityToDto(List<Response> data) {
-        return data != null && data.size() > 1 ? data : null;
+    default List<Response> mapResponsesEntityToDto(List<ResponseEntity> data) {
+        return data != null && data.size() > 1 ? data.stream().map(this::mapResponseEntityToDto).toList() : null;
     }
 
-    default Response mapResponseEntityToDto(List<Response> data) {
-        return data != null && data.size() <= 1 ? data.get(0) : null;
+    default Response mapResponseEntityToDto(List<ResponseEntity> data) {
+        return data != null && data.size() <= 1 ? mapResponseEntityToDto(data.get(0)) : null;
     }
+
+    @Mapping(target = "status", source = "status")
+    @Mapping(target = "body", source = "body")
+    @Mapping(target = "headers", source = "headers")
+    @Mapping(target = "bodyAsByteArray", source = "bodyAsByteArray")
+    @Mapping(target = "template", source = "template")
+    @Mapping(target = "idx", source = "idx")
+    Response mapResponseEntityToDto(ResponseEntity response);
 
 }

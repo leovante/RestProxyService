@@ -58,7 +58,7 @@ public class EndpointDao {
                     } else if (responses.size() - 1 == entityEndpoint.getIdx()) {
                         entityEndpoint.setIdx(0);
                     }
-                    response.setResponse(first.get());
+                    response.setResponse(entityToDtoMapper.mapResponseEntityToDto(first.get()));
                 } /*else {
                     responses.forEach(it2 -> it2.setIsUsed(false));
                     responses.get(0).setIsUsed(true);

@@ -26,7 +26,7 @@ public class Response {
     private List<Header> headers;
 
     @Schema(description = "Тело ответа в формате JSON")
-    @JsonDeserialize(using = BodyToStringDeserializer.class)
+    @JsonDeserialize(using = JsonToStringDeserializer.class)
     private String body;
 
     @Schema(description = "Тело ответа в формате byte array")

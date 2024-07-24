@@ -4,6 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.vtb.stub.db.entity.EndpointEntity;
 import ru.vtb.stub.db.entity.EndpointPathMethodTeamPk;
+import ru.vtb.stub.db.entity.ResponseEntity;
 import ru.vtb.stub.domain.Response;
 import ru.vtb.stub.domain.StubData;
 import ru.vtb.stub.dto.GetDataBaseRequest;
@@ -35,14 +36,22 @@ public interface StubDataToEntityMapper {
     @Mapping(target = "team", source = "team")
     EndpointPathMethodTeamPk mapBaseRequestToEndpointPathMethodTeamPk(GetDataBaseRequest data);
 
-    default List<Response> mapResponseDtoToEntity(StubData data) {
+    default List<ResponseEntity> mapResponseDtoToEntity(StubData data) {
         if (data.getResponses() != null && !data.getResponses().isEmpty()) {
 
-            return data.getResponses();
+            return data.getResponses().stream().map(this::mapResponseDtoToEntity).toList();
         } else if (data.getResponse() != null) {
-            return List.of(data.getResponse());
+            return List.of(mapResponseDtoToEntity(data.getResponse()));
         }
         return Collections.emptyList();
     }
+
+    @Mapping(target = "status", source = "status")
+    @Mapping(target = "body", source = "body")
+    @Mapping(target = "headers", source = "headers")
+    @Mapping(target = "bodyAsByteArray", source = "bodyAsByteArray")
+    @Mapping(target = "template", source = "template")
+    @Mapping(target = "idx", source = "idx")
+    ResponseEntity mapResponseDtoToEntity(Response response);
 
 }

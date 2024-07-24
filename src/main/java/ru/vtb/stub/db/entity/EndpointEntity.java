@@ -42,7 +42,7 @@ public class EndpointEntity {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "response_stub", columnDefinition = "jsonb")
-    private List<Response> responses;
+    private List<ResponseEntity> responses;
 
     @Column(name = "idx")
     private Integer idx;

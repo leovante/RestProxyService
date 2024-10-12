@@ -24,8 +24,9 @@ services:
 
   rest-proxy-stub:
     container_name: rest_proxy_stub
-    build:
-      context: .
+    image: leovante/rest-proxy-stub
+#    build:
+#      context: .
     depends_on:
       - postgres1
     restart: always

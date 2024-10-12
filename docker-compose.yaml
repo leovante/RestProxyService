@@ -51,7 +51,7 @@ services:
 
   rest-proxy-stub:
     container_name: rest_proxy_stub
-    image: rest-proxy-stub
+    image: leovante/rest-proxy-stub
     restart: always
     ports:
       - 24224:8888
